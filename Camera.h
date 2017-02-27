@@ -23,10 +23,15 @@ class Camera
     glm::vec3 planePosition;
 
 public:
-    Camera(const ImagePlane& plane) : imagePlane(plane), up({0, 1, 0}), front({0, 0, -1}), position({0, 0, 0})
+    Camera(const ImagePlane& plane, glm::vec3 u = {0, 1, 0},
+                                    glm::vec3 f = {0, 0, -1},
+                                    glm::vec3 p = {0, 0, 0}) : imagePlane(plane), position(p)
     {
-        right = glm::cross(front, up);
-        std::cout << "Right is : " << right.x << ", " << right.y << ", " << right.z << '\n';
+        up    = glm::normalize(u);
+        front = glm::normalize(f);
+        right = glm::normalize(glm::cross(front, up));
+
+//        std::cout << "Right is : " << right.x << ", " << right.y << ", " << right.z << '\n';
         planePosition = position + imagePlane.Left() * right + imagePlane.Top() * up - imagePlane.DistanceToCamera() * front;
     };
 
