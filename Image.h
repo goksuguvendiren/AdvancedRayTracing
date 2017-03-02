@@ -23,6 +23,9 @@ public :
     Color& at(int i, int j) { return pixels[i + j * width]; }
     Color at(int i, int j) const { return pixels[i + j * width]; }
 
+    unsigned int Width() const { return width; }
+    unsigned int Height() const { return height; }
+
     void Print();
 };
 
