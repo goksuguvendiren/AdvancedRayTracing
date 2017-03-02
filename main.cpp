@@ -18,6 +18,7 @@ int main()
 
     for (const auto& image : images){
         cv::Mat im = cv::Mat(image.Height(), image.Width(), CV_32FC4);
+
         for (int i = 0; i < image.Height(); i++){
             for (int j = 0; j < image.Width(); j++){
                 im.at<cv::Vec4f>(i, j)[0] = image.at(i, j).R();
@@ -26,9 +27,11 @@ int main()
                 im.at<cv::Vec4f>(i, j)[3] = image.at(i, j).A();
             }
         }
-        cv::imshow("winname", cv::Mat(im));
+
+        cv::imshow("output image", cv::Mat(im));
         cv::waitKey(0);
     }
+
 
     return 0;
 }

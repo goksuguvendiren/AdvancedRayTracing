@@ -18,7 +18,6 @@ bool Sphere::Hit(const Ray &ray)
 
     auto delta = B * B - 4 * A * C;
 
-    std::cout << delta << '\n';
     if (delta < 0) return false;
 
     return true;

@@ -1,9 +1,7 @@
 //
 // Created by Göksu Güvendiren on 24/02/2017.
 //
-
-#ifndef RAYTRACER_CAMERA_H
-#define RAYTRACER_CAMERA_H
+#pragma once
 
 #include <iostream>
 #include "glm/vec3.hpp"
@@ -24,14 +22,13 @@ class Camera
 
 public:
     Camera(const ImagePlane& plane, glm::vec3 u = {0, 1, 0},
-                                    glm::vec3 f = {0, 0, -1},
+                                    glm::vec3 f = {0, 0, 1},
                                     glm::vec3 p = {0, 0, 0}) : imagePlane(plane), position(p)
     {
         up    = glm::normalize(u);
         front = glm::normalize(f);
         right = glm::normalize(glm::cross(front, up));
 
-//        std::cout << "Right is : " << right.x << ", " << right.y << ", " << right.z << '\n';
         planePosition = position + imagePlane.Left() * right + imagePlane.Top() * up - imagePlane.DistanceToCamera() * front;
     };
 
@@ -46,5 +43,3 @@ public:
     glm::vec3 GetPixelLocation(int i, int j) const;
 };
 
-
-#endif //RAYTRACER_CAMERA_H

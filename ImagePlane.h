@@ -2,8 +2,7 @@
 // Created by Göksu Güvendiren on 24/02/2017.
 //
 
-#ifndef RAYTRACER_IMAGEPLANE_H
-#define RAYTRACER_IMAGEPLANE_H
+#pragma once
 
 #include <vector>
 #include "Image.h"
@@ -59,5 +58,3 @@ public:
 };
 
 ImagePlane ReadImagePlane();
-
-#endif //RAYTRACER_IMAGEPLANE_H

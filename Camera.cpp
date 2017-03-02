@@ -14,8 +14,8 @@ Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
 
-    for (int i = 0; i < imagePlane.NX(); i++){
-        for (int j = 0; j < imagePlane.NY(); j++){
+    for (int i = 0; i < imagePlane.NY(); i++){          // nx = width
+        for (int j = 0; j < imagePlane.NX(); j++){      // ny = height
             auto pixLocation = GetPixelLocation(i, j);
             auto ray = Ray(position, pixLocation);
 
@@ -23,17 +23,11 @@ Image Camera::Render() const
                 if (sphere.Hit(ray)){
                     image.at(i, j) = Color(255, 255, 255);
                 }
-                else {
-                    image.at(i, j) = Color(0, 0, 0);
-                }
             }
 
             for (auto triangle : scene.Triangles()){
                 if (triangle.Hit(ray)){
                     image.at(i, j) = Color(255, 255, 255);
-                }
-                else {
-                    image.at(i, j) = Color(0, 0, 0);
                 }
             }
         }
@@ -44,6 +38,6 @@ Image Camera::Render() const
 
 glm::vec3 Camera::GetPixelLocation(int i, int j) const
 {
-        return planePosition + (i + 0.5f) * imagePlane.PixelWidth() * right -
-                           (j + 0.5f) * imagePlane.PixelHeight() * up;
+        return PlanePosition() - (i + 0.5f) * imagePlane.PixelHeight() * up +
+                                 (j + 0.5f) * imagePlane.PixelWidth()  * right;
 }

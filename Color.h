@@ -2,8 +2,7 @@
 // Created by Göksu Güvendiren on 24/02/2017.
 //
 
-#ifndef RAYTRACER_COLOR_H
-#define RAYTRACER_COLOR_H
+#pragma once
 
 #include <algorithm>
 #include <boost/algorithm/clamp.hpp>
@@ -34,5 +33,3 @@ inline void Color::Clamp()
 
     a = boost::algorithm::clamp(a, 0, 1.0f);
 }
-
-#endif //RAYTRACER_COLOR_H
