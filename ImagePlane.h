@@ -2,8 +2,7 @@
 // Created by Göksu Güvendiren on 24/02/2017.
 //
 
-#ifndef RAYTRACER_IMAGEPLANE_H
-#define RAYTRACER_IMAGEPLANE_H
+#pragma once
 
 #include <vector>
 #include "Image.h"
@@ -33,8 +32,8 @@ public:
                                                                                                    top(t), bottom(b),
                                                                                                    n_x(nx), n_y(ny)
     {
-        pixel_width  = float(right - left) / n_x;
-        pixel_height = float(top - bottom) / n_y;
+        pixel_width  = (right - left) / n_x;
+        pixel_height = (top - bottom) / n_y;
     }
 
     float DistanceToCamera() const { return distance_to_camera; }
@@ -59,5 +58,3 @@ public:
 };
 
 ImagePlane ReadImagePlane();
-
-#endif //RAYTRACER_IMAGEPLANE_H
