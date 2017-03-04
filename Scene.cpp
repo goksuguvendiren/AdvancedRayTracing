@@ -8,11 +8,11 @@ Scene CreateScene()
 {
     Scene scene;
     ImagePlane plane = ReadImagePlane();
-    Camera camera(plane);
+    Camera camera(plane, {0, 5, 25}, {0, 0, -1}, {0, 1, 0});
 
     scene.AddCamera(camera);
-    scene.AddSphere({5.0f, {0, 0, 15}});
-    scene.AddTriangle({{-1.0f, -1.0f, 20.0f}, {7.0f, -1.0f, 20.0f}, {3.0f, 5.0f, 20.0f}});
+//    scene.AddSphere({5.0f, {0, 5.0f, 0.0f}});
+    scene.AddTriangle({{100.0f, 0.0f, -100.0f}, {-100.0f, 0.0f,  100.0f}, {100.0f, 0.0f,  100.0f}});
 
     return scene;
 }
