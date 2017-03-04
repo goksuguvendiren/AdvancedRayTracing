@@ -7,8 +7,9 @@
 #include "glm/glm.hpp"
 #include "Sphere.h"
 #include "Ray.h"
+#include "HitInfo.h"
 
-bool Sphere::Hit(const Ray &ray)
+std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
 {
     auto eminc = ray.Origin() - center;
 
@@ -18,7 +19,12 @@ bool Sphere::Hit(const Ray &ray)
 
     auto delta = B * B - 4 * A * C;
 
-    if (delta < 0) return false;
+    if (delta < 0) return std::make_pair(false, HitInfo());
 
-    return true;
+    auto param = (- B - std::sqrt(delta)) / (2.0f * A);
+
+    auto pointOfIntersection = ray.Origin() + param * ray.Direction();
+    auto surfaceNormal = pointOfIntersection - center;
+
+    return std::make_pair(true, HitInfo(pointOfIntersection, surfaceNormal, param, ray));
 }

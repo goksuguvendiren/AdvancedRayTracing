@@ -1,0 +1,3 @@
+[submodule "tinyxml"]
+	path = tinyxml
+	url = git@github.com:leethomason/tinyxml2.git
