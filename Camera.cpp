@@ -17,16 +17,16 @@ Image Camera::Render() const
     for (int i = 0; i < imagePlane.NY(); i++){          // nx = width
         for (int j = 0; j < imagePlane.NX(); j++){      // ny = height
             auto pixLocation = GetPixelLocation(i, j);
-            auto ray = Ray(position, pixLocation);
+            auto ray = Ray(position, pixLocation - position);
 
             for (auto sphere : scene.Spheres()) {
-                if (sphere.Hit(ray)){
+                if (sphere.Hit(ray).first){
                     image.at(i, j) = Color(255, 255, 255);
                 }
             }
 
             for (auto triangle : scene.Triangles()){
-                if (triangle.Hit(ray)){
+                if (triangle.Hit(ray).first){
                     image.at(i, j) = Color(255, 255, 255);
                 }
             }
