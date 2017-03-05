@@ -8,7 +8,7 @@ Scene scene;
 
 int main()
 {
-    scene = CreateScene();
+    scene = CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/simple.xml");
 
     std::vector<Image> images;
 

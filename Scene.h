@@ -38,6 +38,6 @@ public:
     Material GetMaterial(unsigned int id) { return materials[id - 1]; }
 };
 
-Scene CreateScene();
+Scene CreateScene(std::string filename);
 
 #endif //RAYTRACER_SCENE_H
