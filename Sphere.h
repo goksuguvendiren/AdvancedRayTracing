@@ -15,7 +15,7 @@ class Sphere
 {
     float radius;
     glm::vec3 center;
-    Material mat;
+    unsigned int materialID;
 
 public:
     Sphere() : radius(1.0f), center({0, 0, 0}) {}

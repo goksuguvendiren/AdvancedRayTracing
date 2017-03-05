@@ -20,14 +20,17 @@ Image Camera::Render() const
             auto ray = Ray(position, pixLocation - position);
 
             for (auto sphere : scene.Spheres()) {
-                if (sphere.Hit(ray).first){
-                    image.at(i, j) = Color(255, 255, 255);
+//                auto val = sphere.Hit(ray);
+                std::pair<bool, HitInfo> hit;
+                if ((hit = sphere.Hit(ray)).first){
+                    image.at(i, j) = hit.second.Material().Ambient();
                 }
             }
 
             for (auto triangle : scene.Triangles()){
-                if (triangle.Hit(ray).first){
-                    image.at(i, j) = Color(255, 255, 255);
+                std::pair<bool, HitInfo> hit;
+                if ((hit = triangle.Hit(ray)).first){
+                    image.at(i, j) = hit.second.Material().Ambient();
                 }
             }
         }

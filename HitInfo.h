@@ -18,7 +18,9 @@ class HitInfo
 
 public:
     HitInfo(glm::vec3 n = {0, 0, 0},
-            Material m = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+            Material m = {0, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
             float param = 0.0f,
             Ray r = {{0, 0, 0}, {}}) : normal(n), mat(m), t(param), ray(r) {}
+
+    const Material& Material() { return mat; }
 };

@@ -8,6 +8,9 @@
 #include "Sphere.h"
 #include "Ray.h"
 #include "HitInfo.h"
+#include "Scene.h"
+
+extern Scene scene;
 
 std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
 {
@@ -26,5 +29,5 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
     auto pointOfIntersection = ray.Origin() + param * ray.Direction();
     auto surfaceNormal = pointOfIntersection - center;
 
-    return std::make_pair(true, HitInfo(pointOfIntersection, surfaceNormal, param, ray));
+    return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
 }

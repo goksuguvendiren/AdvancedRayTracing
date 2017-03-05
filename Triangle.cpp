@@ -5,6 +5,10 @@
 #include <vector>
 #include "Triangle.h"
 
+#include "Scene.h"
+
+extern Scene scene;
+
 inline double determinant(const glm::vec3& col1,
                           const glm::vec3& col2,
                           const glm::vec3& col3)   // only for a 3x3 matrix !
@@ -33,10 +37,9 @@ std::pair<bool, HitInfo> Triangle::Hit(const Ray &ray)
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < 0 || gamma < 0 || beta < 0 || param < 0) return std::make_pair(false, HitInfo());
+    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return std::make_pair(false, HitInfo());
 
     auto point = ray.Origin() + (float)param * ray.Direction();
 
-    return std::make_pair(true, HitInfo(point, surfNormal, param, ray));
-
+    return std::make_pair(true, HitInfo(surfNormal, scene.GetMaterial(materialID), param, ray));
 }
