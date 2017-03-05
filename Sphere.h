@@ -18,8 +18,8 @@ class Sphere
     unsigned int materialID;
 
 public:
-    Sphere() : radius(1.0f), center({0, 0, 0}) {}
-    Sphere(float rd, glm::vec3 c) : radius(rd), center(c) {}
+    Sphere() : radius(1.0f), center({0, 0, 0}), materialID(1) {}
+    Sphere(float rd, glm::vec3 c, unsigned int id) : radius(rd), center(c), materialID(id) {}
     std::pair<bool, HitInfo> Hit(const Ray &ray);
 };
 

@@ -14,13 +14,14 @@ class HitInfo
     Material mat;
     Ray ray;
 
-    float t;
+    float param;
 
 public:
     HitInfo(glm::vec3 n = {0, 0, 0},
             Material m = {0, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
-            float param = 0.0f,
-            Ray r = {{0, 0, 0}, {}}) : normal(n), mat(m), t(param), ray(r) {}
+            float t = std::numeric_limits<float>::max(),
+            Ray r = {{0, 0, 0}, {}}) : normal(n), mat(m), param(t), ray(r) {}
 
     const Material& Material() { return mat; }
+    float Parameter() { return param; }
 };

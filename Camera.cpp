@@ -19,20 +19,23 @@ Image Camera::Render() const
             auto pixLocation = GetPixelLocation(i, j);
             auto ray = Ray(position, pixLocation - position);
 
+            HitInfo ultHit;
+
             for (auto sphere : scene.Spheres()) {
-//                auto val = sphere.Hit(ray);
                 std::pair<bool, HitInfo> hit;
-                if ((hit = sphere.Hit(ray)).first){
-                    image.at(i, j) = hit.second.Material().Ambient();
+                if ((hit = sphere.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                    ultHit = hit.second;
                 }
             }
 
             for (auto triangle : scene.Triangles()){
                 std::pair<bool, HitInfo> hit;
-                if ((hit = triangle.Hit(ray)).first){
-                    image.at(i, j) = hit.second.Material().Ambient();
+                if ((hit = triangle.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                    ultHit = hit.second;
                 }
             }
+
+            image.at(i, j) = ultHit.Material().Ambient();
         }
     }
 
