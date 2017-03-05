@@ -6,6 +6,7 @@
 #define RAYTRACER_RAY_H
 
 #include "glm/vec3.hpp"
+#include "glm/geometric.hpp"
 
 class Ray
 {
@@ -14,7 +15,10 @@ class Ray
 
 public:
     Ray() : origin({0, 0, 0}), direction({1, 0, 0}) {};
-    Ray(glm::vec3 o, glm::vec3 d) : origin(o), direction(d) {};
+    Ray(glm::vec3 o, glm::vec3 d) : origin(o)
+    {
+        direction = glm::normalize(d);
+    };
 
     glm::vec3 Origin() const { return origin; }
     glm::vec3 Direction() const { return direction; }

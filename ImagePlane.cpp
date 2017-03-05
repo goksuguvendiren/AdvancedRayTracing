@@ -6,5 +6,5 @@
 
 ImagePlane ReadImagePlane()
 {
-    return ImagePlane(10.0f, -5.0f, 5.0f, 5.0f, -5.0f, 600, 500);
+    return ImagePlane(1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 800, 800);
 }

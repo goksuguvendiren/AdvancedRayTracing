@@ -9,7 +9,7 @@ void Image::Print()
 {
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
-            std::cout << at(i, j).R() << ", ";
+            std::cout << at(i, j).r << ", ";
         }
         std::cout << '\n';
     }

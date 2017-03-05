@@ -17,19 +17,25 @@ Image Camera::Render() const
     for (int i = 0; i < imagePlane.NY(); i++){          // nx = width
         for (int j = 0; j < imagePlane.NX(); j++){      // ny = height
             auto pixLocation = GetPixelLocation(i, j);
-            auto ray = Ray(position, pixLocation);
+            auto ray = Ray(position, pixLocation - position);
+
+            HitInfo ultHit;
 
             for (auto sphere : scene.Spheres()) {
-                if (sphere.Hit(ray)){
-                    image.at(i, j) = Color(255, 255, 255);
+                std::pair<bool, HitInfo> hit;
+                if ((hit = sphere.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                    ultHit = hit.second;
                 }
             }
 
             for (auto triangle : scene.Triangles()){
-                if (triangle.Hit(ray)){
-                    image.at(i, j) = Color(255, 255, 255);
+                std::pair<bool, HitInfo> hit;
+                if ((hit = triangle.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                    ultHit = hit.second;
                 }
             }
+
+            image.at(i, j) = ultHit.Material().Ambient();
         }
     }
 

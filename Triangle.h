@@ -7,6 +7,7 @@
 
 #include "glm/glm.hpp"
 #include "Ray.h"
+#include "HitInfo.h"
 
 class Triangle
 {
@@ -14,12 +15,20 @@ class Triangle
     glm::vec3 pointB;
     glm::vec3 pointC;
 
-public:
-    Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {1, 0, 0}, glm::vec3 c = {0, 1, 0}) : pointA(a),
-                                                                                          pointB(b),
-                                                                                          pointC(c) {}
+    glm::vec3 surfNormal;
+    unsigned int materialID;
 
-    bool Hit(const Ray& ray); //TODO : replace the return type with HitInfo
+public:
+    Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {1, 0, 0}, glm::vec3 c = {0, 1, 0}, unsigned int id = 1) : pointA(a),
+                                                                                                               pointB(b),
+                                                                                                               pointC(c),
+                                                                                                               materialID(id)
+    {
+        surfNormal = glm::normalize(glm::cross(pointC - pointA, pointB - pointA));
+    }
+
+    unsigned int Material() { return materialID; }
+    std::pair<bool, HitInfo> Hit(const Ray& ray); //TODO : replace the return type with HitInfo
 };
 
 

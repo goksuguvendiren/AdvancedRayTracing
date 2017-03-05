@@ -27,7 +27,7 @@ class ImagePlane
 
 public:
     ImagePlane();
-    ImagePlane(float dist, float l, float r, float t, float b, unsigned int nx, unsigned int ny) : distance_to_camera(dist),
+    ImagePlane(float dist, float l, float r, float b, float t, unsigned int nx, unsigned int ny) : distance_to_camera(dist),
                                                                                                    left(l), right(r),
                                                                                                    top(t), bottom(b),
                                                                                                    n_x(nx), n_y(ny)
