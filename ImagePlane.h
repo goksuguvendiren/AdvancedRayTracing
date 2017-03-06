@@ -7,6 +7,7 @@
 #include <vector>
 #include "Image.h"
 #include "glm/vec3.hpp"
+#include "tinyxml/tinyxml2.h"
 
 // ImagePlane does not contain any information about the values of pixels.
 
@@ -26,7 +27,7 @@ class ImagePlane
 
 
 public:
-    ImagePlane();
+    ImagePlane() {}
     ImagePlane(float dist, float l, float r, float b, float t, unsigned int nx, unsigned int ny) : distance_to_camera(dist),
                                                                                                    left(l), right(r),
                                                                                                    top(t), bottom(b),
@@ -58,3 +59,5 @@ public:
 };
 
 ImagePlane ReadImagePlane();
+
+ImagePlane CreatePlane(tinyxml2::XMLElement* element);

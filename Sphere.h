@@ -2,9 +2,9 @@
 // Created by Göksu Güvendiren on 24/02/2017.
 //
 
-#ifndef RAYTRACER_SPHERE_H
-#define RAYTRACER_SPHERE_H
+#pragma once
 
+#include <vector>
 #include "glm/vec3.hpp"
 #include "Material.h"
 
@@ -15,13 +15,11 @@ class Sphere
 {
     float radius;
     glm::vec3 center;
-    unsigned int materialID;
+    int materialID;
 
 public:
-    Sphere() : radius(1.0f), center({0, 0, 0}), materialID(1) {}
-    Sphere(float rd, glm::vec3 c, unsigned int id) : radius(rd), center(c), materialID(id) {}
+    Sphere(float rd = 1.0f, glm::vec3 c = {1.0f, 0.0f, 0.0f}, int id = 1) : radius(rd), center(c), materialID(id) {}
     std::pair<bool, HitInfo> Hit(const Ray &ray);
 };
 
-
-#endif //RAYTRACER_SPHERE_H
+std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem);

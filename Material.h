@@ -4,7 +4,9 @@
 
 #pragma once
 
+#include <vector>
 #include "glm/vec3.hpp"
+#include "tinyxml/tinyxml2.h"
 
 class Material
 {
@@ -25,3 +27,5 @@ public:
     glm::vec3 Specular() const { return specular; }
     glm::vec3 Ambient() const { return ambient; }
 };
+
+std::vector<Material> CreateMaterials(tinyxml2::XMLElement* elem);

@@ -3,12 +3,15 @@
 //
 
 #include <iostream>
+#include <sstream>
 #include "Camera.h"
 #include "glm/vec3.hpp"
 #include "Ray.h"
 #include "Scene.h"
-
-extern Scene scene;
+#include "Triangle.h"
+#include "Sphere.h"
+#include "HitInfo.h"
+#include "tinyxml/tinyxml2.h"
 
 Image Camera::Render() const
 {
@@ -46,4 +49,35 @@ glm::vec3 Camera::GetPixelLocation(int i, int j) const
 {
         return PlanePosition() - (i + 0.5f) * imagePlane.PixelHeight() * up +
                                  (j + 0.5f) * imagePlane.PixelWidth()  * right;
+}
+
+inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+{
+    glm::vec3 color;
+
+    std::istringstream ss {element->GetText()};
+    ss >> color.r;
+    ss >> color.g;
+    ss >> color.b;
+
+    return color;
+}
+
+Camera CreateCamera(tinyxml2::XMLElement* element)
+{
+    int id;
+    if (element->QueryIntAttribute("id", &id) == tinyxml2::XML_NO_ATTRIBUTE){
+        std::cerr << "No such attribute as id" << '\n';
+        std::abort();
+    }
+
+    ImagePlane plane = CreatePlane(element);
+
+    glm::vec3 position = GetElem(element->FirstChildElement("Position"));
+    glm::vec3 gaze = GetElem(element->FirstChildElement("Gaze"));
+    glm::vec3 up = GetElem(element->FirstChildElement("Up"));
+
+    std::string name = element->FirstChildElement("ImageName")->GetText();
+
+    return Camera(plane, id, position, gaze, up, name);
 }

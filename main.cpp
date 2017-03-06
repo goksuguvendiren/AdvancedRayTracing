@@ -8,7 +8,7 @@ Scene scene;
 
 int main()
 {
-    scene = CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/simple.xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/simple.xml");
 
     std::vector<Image> images;
 
@@ -31,7 +31,6 @@ int main()
         cv::imshow("output image", cv::Mat(im));
         cv::waitKey(0);
     }
-
 
     return 0;
 }
