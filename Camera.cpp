@@ -40,29 +40,18 @@ Image Camera::Render() const
             HitInfo ultHit;
             bool hashit = false;
 
-            for (auto& sphere : scene.Spheres()) {
+            auto proc_shape = [&](auto& shape)
+            {
                 std::pair<bool, HitInfo> hit;
-                if ((hit = sphere.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                if ((hit = shape.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
                     hashit = true;
                 }
-            }
+            };
 
-            for (auto& triangle : scene.Triangles()){
-                std::pair<bool, HitInfo> hit;
-                if ((hit = triangle.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
-                    ultHit = hit.second;
-                    hashit = true;
-                }
-            }
-
-            for (auto& mesh : scene.Meshes()){
-                std::pair<bool, HitInfo> hit;
-                if ((hit = mesh.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
-                    ultHit = hit.second;
-                    hashit = true;
-                }
-            }
+            for_each(scene.Spheres().begin(), scene.Spheres().end(), proc_shape);
+            for_each(scene.Triangles().begin(), scene.Triangles().end(), proc_shape);
+            for_each(scene.Meshes().begin(), scene.Meshes().end(), proc_shape);
 
             if (hashit)
                 image.at(i, j) = (ultHit.Normal() + glm::vec3(1, 1, 1)) / 2.0f; //NCalculateReflectance(ultHit);

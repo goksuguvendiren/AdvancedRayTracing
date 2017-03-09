@@ -38,8 +38,8 @@ int main()
             }
         }
 
-//        cv::imshow("output image", cv::Mat(im));
-//        cv::waitKey(0);
+        cv::imshow("output image", cv::Mat(im));
+        cv::waitKey(0);
         cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/bunny" + sceneName + ".png", im);
     }
 

@@ -9,6 +9,11 @@
 #include "Ray.h"
 #include "Material.h"
 
+inline float len(const glm::vec3& n)
+{
+    return std::sqrt(n.r * n.r + n.g * n.g + n.b * n.b);
+}
+
 class HitInfo
 {
     glm::vec3 normal;
@@ -23,7 +28,7 @@ public:
             float t = std::numeric_limits<float>::infinity(),
             Ray r = {{0, 0, 0}, {}}) : normal(n), mat(m), param(t), ray(r)
     {
-        assert(normal.length() < 1.0f);
+        assert(len(normal) <= 1.0001f);
     }
 
     const Material& Material() const { return mat; }

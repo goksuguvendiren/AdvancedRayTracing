@@ -6,7 +6,7 @@
 #include <sstream>
 #include "Triangle.h"
 
-inline double determinant(const glm::vec3& col1,
+inline float determinant(const glm::vec3& col1,
                           const glm::vec3& col2,
                           const glm::vec3& col3)   // only for a 3x3 matrix !
 {
