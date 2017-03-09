@@ -12,6 +12,7 @@
 class Triangle;
 class Sphere;
 class Mesh;
+class LightSource;
 
 class Scene
 {
@@ -26,6 +27,7 @@ class Scene
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
     std::vector<Mesh> meshes;
+    std::vector<LightSource> lights;
 
 public:
     Scene(glm::vec3 bg = {0, 0, 0}, glm::vec3 al = {0, 0, 0});
@@ -50,6 +52,7 @@ public:
     const std::vector<Triangle>& Triangles() const;
     const std::vector<Material>& Materials() const;
     const std::vector<Mesh>& Meshes() const;
+    const std::vector<LightSource>& Lights() const;
 
     void AddCamera(Camera&& cam);
     void AddCamera(const Camera& cam);

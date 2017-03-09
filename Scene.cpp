@@ -96,6 +96,7 @@ void Scene::CreateScene(std::string filename)
     triangles = std::move(tris);
     spheres   = std::move(sphs);
     meshes    = std::move(mshs);
+    lights    = std::move(lights);
 }
 
 Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al) {}
@@ -163,6 +164,11 @@ const std::vector<Triangle>& Scene::Triangles() const
 const std::vector<Mesh>& Scene::Meshes() const
 {
     return meshes;
+}
+
+const std::vector<LightSource>& Scene::Lights() const
+{
+    return lights;
 }
 
 const std::vector<Material>& Scene::Materials() const

@@ -13,6 +13,19 @@
 #include "HitInfo.h"
 #include "tinyxml/tinyxml2.h"
 #include "Mesh.h"
+#include "LightSource.h"
+
+glm::vec3 CalculateReflectance(const HitInfo& hit)
+{
+    auto ambient = hit.Material().Ambient() * scene.AmbientLight();
+
+    for (auto& light : scene.Lights()){
+        glm::vec3 pointToLight = glm::normalize(light.Position() - hit.Ray().Origin());
+        auto theta = glm::dot(hit.Normal(), pointToLight);
+    }
+
+    return ambient;
+}
 
 Image Camera::Render() const
 {
@@ -46,7 +59,7 @@ Image Camera::Render() const
                 }
             }
 
-            image.at(i, j) = ultHit.Material().Ambient();
+            image.at(i, j) = CalculateReflectance(ultHit);
         }
     }
 

@@ -39,7 +39,7 @@ int main()
 
         cv::imshow("output image", cv::Mat(im));
         cv::waitKey(0);
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/inputs/bunny.png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/bunny.jpg", im);
     }
 
     return 0;

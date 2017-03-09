@@ -23,6 +23,9 @@ public:
                 glm::vec3 intens = {0, 0, 0}) : id(lid),
                                                 position(pos),
                                                 intensity(intens) {}
+
+    auto Position()  const { return position; }
+    auto Intensity() const { return intensity; }
 };
 
 std::vector<LightSource> CreateLights(tinyxml2::XMLElement* elem);
