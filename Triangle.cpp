@@ -7,8 +7,8 @@
 #include "Triangle.h"
 
 inline float determinant(const glm::vec3& col1,
-                          const glm::vec3& col2,
-                          const glm::vec3& col3)   // only for a 3x3 matrix !
+                         const glm::vec3& col2,
+                         const glm::vec3& col3)   // only for a 3x3 matrix !
 {
     return col1.x * (col2.y * col3.z - col2.z * col3.y) -
            col2.x * (col1.y * col3.z - col1.z * col3.y) +
@@ -27,9 +27,10 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     auto B = scene.GetVertex(pointB);
     auto C = scene.GetVertex(pointC);
 
-    col1.x = A.Data().x - B.Data().x; col2.x = A.Data().x - C.Data().x; col3.x = ray.Direction().x; col4.x = A.Data().x - ray.Origin().x;
-    col1.y = A.Data().y - B.Data().y; col2.y = A.Data().y - C.Data().y; col3.y = ray.Direction().y; col4.y = A.Data().y - ray.Origin().y;
-    col1.z = A.Data().z - B.Data().z; col2.z = A.Data().z - C.Data().z; col3.z = ray.Direction().z; col4.z = A.Data().z - ray.Origin().z;
+    col1 = A.Data() - B.Data();
+    col2 = A.Data() - C.Data();
+    col3 = ray.Direction();
+    col4 = A.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -40,7 +41,7 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
 
     if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return std::make_pair(false, HitInfo());
 
-    auto point = ray.Origin() + (float)param * ray.Direction();
+    auto point = ray.Origin() + param * ray.Direction();
 
     return std::make_pair(true, HitInfo(surfNormal, scene.GetMaterial(materialID), param, ray));
 }

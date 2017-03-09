@@ -15,16 +15,21 @@
 #include "Mesh.h"
 #include "LightSource.h"
 
-glm::vec3 CalculateReflectance(const HitInfo& hit)
+glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
 {
-    auto ambient = hit.Material().Ambient(); // * scene.AmbientLight();
+    // Ambient shading :
+    auto ambient = hit.Material().Ambient() * scene.AmbientLight();
 
     for (auto& light : scene.Lights()){
-        glm::vec3 pointToLight = glm::normalize(light.Position() - hit.Ray().Origin());
+        glm::vec3 pointToLight = glm::normalize(light.Position() - hit.Position());
+        auto intensity = light.Intensity(pointToLight);
+        // Diffuse shading :
         auto theta = glm::dot(hit.Normal(), pointToLight);
-        ambient += (theta * hit.Material().Diffuse() * light.Intensity());
+        ambient += (theta * hit.Material().Diffuse() * intensity);
+
     }
 
+//    std::cerr << ambient.r << ", " << ambient.g << ", " << ambient.b << '\n';
     return ambient;
 }
 
@@ -54,7 +59,7 @@ Image Camera::Render() const
             for_each(scene.Meshes().begin(), scene.Meshes().end(), proc_shape);
 
             if (hashit)
-                image.at(i, j) = (ultHit.Normal() + glm::vec3(1, 1, 1)) / 2.0f; //NCalculateReflectance(ultHit);
+                image.at(i, j) = CalculateReflectance(ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
         }

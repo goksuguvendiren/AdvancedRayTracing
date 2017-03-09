@@ -5,10 +5,16 @@
 #pragma once
 
 #include <vector>
+#include <cmath>
 #include "glm/vec3.hpp"
 #include "tinyxml/tinyxml2.h"
 
 // Point light source
+
+inline float len(const glm::vec3& n)
+{
+    return std::sqrt(n.r * n.r + n.g * n.g + n.b * n.b);
+}
 
 class LightSource
 {
@@ -25,7 +31,7 @@ public:
                                                 intensity(intens) {}
 
     auto Position()  const { return position; }
-    auto Intensity() const { return intensity; }
+    auto Intensity(const glm::vec3& dist) const { return intensity / std::powf(len(dist), 2); }
 };
 
 std::vector<LightSource> CreateLights(tinyxml2::XMLElement* elem);

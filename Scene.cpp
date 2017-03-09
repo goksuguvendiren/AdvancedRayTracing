@@ -60,13 +60,13 @@ void Scene::CreateScene(std::string filename)
         std::abort();
     }
 
-    std::vector<LightSource> lights;
+    std::vector<LightSource> ls;
     if (auto elem = docscene->FirstChildElement("Lights")){
         if (auto al = elem->FirstChildElement("AmbientLight")){
             auto ambient = GetElem(al);
             AmbientLight(ambient);
         }
-        lights = CreateLights(elem);
+        ls = CreateLights(elem);
     }
 
     std::vector<Material> mats;
@@ -96,7 +96,7 @@ void Scene::CreateScene(std::string filename)
     triangles = std::move(tris);
     spheres   = std::move(sphs);
     meshes    = std::move(mshs);
-    lights    = std::move(lights);
+    lights    = std::move(ls);
 }
 
 Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al) {}
