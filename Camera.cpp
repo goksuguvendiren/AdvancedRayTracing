@@ -17,11 +17,12 @@
 
 glm::vec3 CalculateReflectance(const HitInfo& hit)
 {
-    auto ambient = hit.Material().Ambient() * scene.AmbientLight();
+    auto ambient = hit.Material().Ambient(); // * scene.AmbientLight();
 
     for (auto& light : scene.Lights()){
         glm::vec3 pointToLight = glm::normalize(light.Position() - hit.Ray().Origin());
         auto theta = glm::dot(hit.Normal(), pointToLight);
+        ambient += (theta * hit.Material().Diffuse() * light.Intensity());
     }
 
     return ambient;
@@ -37,29 +38,36 @@ Image Camera::Render() const
             auto ray = Ray(position, pixLocation - position);
 
             HitInfo ultHit;
+            bool hashit = false;
 
-            for (auto sphere : scene.Spheres()) {
+            for (auto& sphere : scene.Spheres()) {
                 std::pair<bool, HitInfo> hit;
                 if ((hit = sphere.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
+                    hashit = true;
                 }
             }
 
-            for (auto triangle : scene.Triangles()){
+            for (auto& triangle : scene.Triangles()){
                 std::pair<bool, HitInfo> hit;
                 if ((hit = triangle.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
+                    hashit = true;
                 }
             }
 
-            for (auto mesh : scene.Meshes()){
+            for (auto& mesh : scene.Meshes()){
                 std::pair<bool, HitInfo> hit;
                 if ((hit = mesh.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
+                    hashit = true;
                 }
             }
 
-            image.at(i, j) = CalculateReflectance(ultHit);
+            if (hashit)
+                image.at(i, j) = (ultHit.Normal() + glm::vec3(1, 1, 1)) / 2.0f; //NCalculateReflectance(ultHit);
+            else
+                image.at(i, j) = scene.BackgroundColor();
         }
     }
 

@@ -16,7 +16,7 @@ inline double determinant(const glm::vec3& col1,
 
 }
 
-std::pair<bool, HitInfo> Triangle::Hit(const Ray &ray)
+std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
 {
     glm::vec3 col1(3);
     glm::vec3 col2(3);
@@ -54,8 +54,8 @@ Triangle::Triangle(int a, int b, int c, int mid, int tid) : pointA(a),
     auto vertA = scene.GetVertex(pointA);
     auto vertB = scene.GetVertex(pointB);
     auto vertC = scene.GetVertex(pointC);
-    surfNormal = glm::normalize(glm::cross(vertC.Data() - vertA.Data(),
-                                           vertB.Data() - vertA.Data()));
+    surfNormal = glm::normalize(glm::cross(vertB.Data() - vertA.Data(),
+                                           vertC.Data() - vertA.Data()));
 }
 
 Triangle::~Triangle() {}

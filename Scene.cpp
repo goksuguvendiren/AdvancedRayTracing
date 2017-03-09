@@ -175,5 +175,3 @@ const std::vector<Material>& Scene::Materials() const
 {
     return materials;
 }
-
-Scene &Scene::operator=(const Scene &) = default;

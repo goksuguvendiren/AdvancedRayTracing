@@ -32,8 +32,8 @@ class Scene
 public:
     Scene(glm::vec3 bg = {0, 0, 0}, glm::vec3 al = {0, 0, 0});
     ~Scene();
-
-    Scene& operator=(const Scene&);
+    Scene(const Scene& s) = delete;
+    Scene& operator=(const Scene&) = delete;
 
     glm::vec3 BackgroundColor();
     void BackgroundColor(glm::vec3 bg);

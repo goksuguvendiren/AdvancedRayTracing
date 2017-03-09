@@ -11,7 +11,7 @@
 #include "HitInfo.h"
 #include "Scene.h"
 
-std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
+std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
 {
     auto eminc = ray.Origin() - center;
 
@@ -26,7 +26,7 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
 
     auto pointOfIntersection = ray.Origin() + param * ray.Direction();
-    auto surfaceNormal = pointOfIntersection - center;
+    auto surfaceNormal = glm::normalize(pointOfIntersection - center);
 
     return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
 }
