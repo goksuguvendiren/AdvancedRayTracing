@@ -3,7 +3,7 @@
 //
 
 #include "Scene.h"
-#include "Camera.h"
+#include "LightSource.h"
 #include "Triangle.h"
 #include "Mesh.h"
 #include "tinyxml/tinyxml2.h"
@@ -60,6 +60,15 @@ void Scene::CreateScene(std::string filename)
         std::abort();
     }
 
+    std::vector<LightSource> lights;
+    if (auto elem = docscene->FirstChildElement("Lights")){
+        if (auto al = elem->FirstChildElement("AmbientLight")){
+            auto ambient = GetElem(al);
+            AmbientLight(ambient);
+        }
+        lights = CreateLights(elem);
+    }
+
     std::vector<Material> mats;
     if (auto elem = docscene->FirstChildElement("Materials")){
         mats = CreateMaterials(elem);
@@ -89,7 +98,7 @@ void Scene::CreateScene(std::string filename)
     meshes    = std::move(mshs);
 }
 
-Scene::Scene(glm::vec3 bg) : backgroundColor(bg) {}
+Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al) {}
 
 Scene::~Scene() {}
 
@@ -98,6 +107,12 @@ glm::vec3 Scene::BackgroundColor()
 
 void Scene::BackgroundColor(glm::vec3 bg)
 { backgroundColor = bg; }
+
+glm::vec3 Scene::AmbientLight()
+{ return ambientLight; }
+
+void Scene::AmbientLight(glm::vec3 al)
+{ ambientLight = al; }
 
 float Scene::ShadowRayEpsilon()
 { return shadowRayEpsilon; }

@@ -16,6 +16,7 @@ class Mesh;
 class Scene
 {
     glm::vec3 backgroundColor;
+    glm::vec3 ambientLight;
     float shadowRayEpsilon;
     float intersectionTestEpsilon;
 
@@ -27,13 +28,16 @@ class Scene
     std::vector<Mesh> meshes;
 
 public:
-    Scene(glm::vec3 bg = {0, 0, 0});
+    Scene(glm::vec3 bg = {0, 0, 0}, glm::vec3 al = {0, 0, 0});
     ~Scene();
 
     Scene& operator=(const Scene&);
 
     glm::vec3 BackgroundColor();
     void BackgroundColor(glm::vec3 bg);
+
+    glm::vec3 AmbientLight();
+    void AmbientLight(glm::vec3 ac);
 
     float ShadowRayEpsilon();
     void ShadowRayEpsilon(float sre);
