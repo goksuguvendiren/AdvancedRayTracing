@@ -12,6 +12,7 @@
 #include "Sphere.h"
 #include "HitInfo.h"
 #include "tinyxml/tinyxml2.h"
+#include "Mesh.h"
 
 Image Camera::Render() const
 {
@@ -34,6 +35,13 @@ Image Camera::Render() const
             for (auto triangle : scene.Triangles()){
                 std::pair<bool, HitInfo> hit;
                 if ((hit = triangle.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                    ultHit = hit.second;
+                }
+            }
+
+            for (auto mesh : scene.Meshes()){
+                std::pair<bool, HitInfo> hit;
+                if ((hit = mesh.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
                 }
             }

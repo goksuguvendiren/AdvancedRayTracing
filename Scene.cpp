@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Triangle.h"
+#include "Mesh.h"
 #include "tinyxml/tinyxml2.h"
 #include <sstream>
 
@@ -73,9 +74,11 @@ void Scene::CreateScene(std::string filename)
 
     std::vector<Triangle> tris;
     std::vector<Sphere> sphs;
+    std::vector<Mesh> mshs;
     if(auto objects = docscene->FirstChildElement("Objects")){
         tris = CreateTriangles(objects);
         sphs = CreateSpheres(objects);
+        mshs = CreateMeshes(objects);
     }
 
     AddCamera(camera);
@@ -83,6 +86,7 @@ void Scene::CreateScene(std::string filename)
     materials = std::move(mats);
     triangles = std::move(tris);
     spheres   = std::move(sphs);
+    meshes    = std::move(mshs);
 }
 
 Scene::Scene(glm::vec3 bg) : backgroundColor(bg) {}
@@ -139,6 +143,11 @@ const std::vector<Sphere>& Scene::Spheres() const
 const std::vector<Triangle>& Scene::Triangles() const
 {
     return triangles;
+}
+
+const std::vector<Mesh>& Scene::Meshes() const
+{
+    return meshes;
 }
 
 const std::vector<Material>& Scene::Materials() const
