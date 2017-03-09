@@ -38,17 +38,6 @@ std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
 
         std::pair<bool, Triangle> tr;
         while((tr = GetFace(stream)).first){
-//            auto fc = ([&stream] {
-//
-//                int a, b, c;
-//                stream >> a;
-//                stream >> b;
-//                stream >> c;
-//
-//                return Triangle {a, b, c};
-//
-//            })();
-
             m.AddFace(tr.second);
         }
         meshes.push_back(m);

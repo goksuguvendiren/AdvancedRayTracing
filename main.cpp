@@ -3,18 +3,27 @@
 #include "Camera.h"
 #include "Scene.h"
 #include <opencv2/highgui/highgui.hpp>
+#include <iomanip>
 
 Scene scene;
 
 int main()
 {
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/simple.xml");
+    std::cerr << "Started loading the scene...\n";
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/bunny.xml");
+    std::cerr << "Finished loading...\n";
 
     std::vector<Image> images;
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
+    std::cerr << "Started rendering the scene...\n";
     for (auto& cam : scene.Cameras()){
         images.push_back(cam.Render());
     }
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cerr << "Rendering took "
+              << std::chrono::duration_cast<std::chrono::seconds>(end - start).count()
+              << "s.\n";
 
     for (const auto& image : images){
         cv::Mat im = cv::Mat(image.Height(), image.Width(), CV_32FC3);
