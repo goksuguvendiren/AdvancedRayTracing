@@ -2,42 +2,70 @@
 // Created by Göksu Güvendiren on 24/02/2017.
 //
 
-#ifndef RAYTRACER_SCENE_H
-#define RAYTRACER_SCENE_H
+#pragma once
 
 #include <vector>
 #include "Camera.h"
 #include "Sphere.h"
-#include "Triangle.h"
+#include "Vertex.h"
+
+class Triangle;
+class Sphere;
+class Mesh;
 
 class Scene
 {
+    glm::vec3 backgroundColor;
+    float shadowRayEpsilon;
+    float intersectionTestEpsilon;
+
     std::vector<Camera> cameras;
     std::vector<Sphere> spheres;
     std::vector<Triangle> triangles;
     std::vector<Material> materials;
+    std::vector<Vertex> vertices;
+    std::vector<Mesh> meshes;
 
 public:
-    const std::vector<Camera>& Cameras() const { return cameras; }
-    const std::vector<Sphere>& Spheres() const { return spheres; }
-    const std::vector<Triangle>& Triangles() const { return triangles; }
-    const std::vector<Material>& Materials() const { return materials; }
+    Scene(glm::vec3 bg = {0, 0, 0});
+    ~Scene();
 
-    void AddCamera(Camera&& cam) { cameras.push_back(std::move(cam)); }
-    void AddCamera(const Camera& cam) { cameras.push_back(cam); }
+    Scene& operator=(const Scene&);
 
-    void AddSphere(Sphere&& sph) { spheres.push_back(std::move(sph)); }
-    void AddSphere(const Sphere& sph) { spheres.push_back(sph); }
+    glm::vec3 BackgroundColor();
+    void BackgroundColor(glm::vec3 bg);
 
-    void AddTriangle(Triangle&& tri) { triangles.push_back(std::move(tri)); }
-    void AddTriangle(const Triangle& tri) { triangles.push_back(tri); }
+    float ShadowRayEpsilon();
+    void ShadowRayEpsilon(float sre);
 
-    void AddMaterial(Material&& mat) { materials.push_back(std::move(mat)); }
-    void AddMaterial(const Material& mat) { materials.push_back(mat); }
+    float IntersectionTestEpsilon();
+    void IntersectionTestEpsilon(float ite);
 
-    Material GetMaterial(unsigned int id) { return materials[id - 1]; }
+    const std::vector<Camera>& Cameras() const;
+    const std::vector<Sphere>& Spheres() const;
+    const std::vector<Triangle>& Triangles() const;
+    const std::vector<Material>& Materials() const;
+    const std::vector<Mesh>& Meshes() const;
+
+    void AddCamera(Camera&& cam);
+    void AddCamera(const Camera& cam);
+
+    void AddSphere(Sphere&& sph);
+    void AddSphere(const Sphere& sph);
+
+    void AddTriangle(Triangle&& tri);
+    void AddTriangle(const Triangle& tri);
+
+    void AddMaterial(Material&& mat);
+    void AddMaterial(const Material& mat);
+
+    void AddVertex(Vertex&& vert);
+    void AddVertex(const Vertex& vert);
+
+    Material GetMaterial(unsigned int id);
+    Vertex GetVertex(unsigned int id);
+
+    void CreateScene(std::string filename);
 };
 
-Scene CreateScene();
-
-#endif //RAYTRACER_SCENE_H
+extern Scene scene;

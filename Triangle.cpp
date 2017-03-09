@@ -3,11 +3,8 @@
 //
 
 #include <vector>
+#include <sstream>
 #include "Triangle.h"
-
-#include "Scene.h"
-
-extern Scene scene;
 
 inline double determinant(const glm::vec3& col1,
                           const glm::vec3& col2,
@@ -26,9 +23,13 @@ std::pair<bool, HitInfo> Triangle::Hit(const Ray &ray)
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    col1.x = pointA.x - pointB.x; col2.x = pointA.x - pointC.x; col3.x = ray.Direction().x; col4.x = pointA.x - ray.Origin().x;
-    col1.y = pointA.y - pointB.y; col2.y = pointA.y - pointC.y; col3.y = ray.Direction().y; col4.y = pointA.y - ray.Origin().y;
-    col1.z = pointA.z - pointB.z; col2.z = pointA.z - pointC.z; col3.z = ray.Direction().z; col4.z = pointA.z - ray.Origin().z;
+    auto A = scene.GetVertex(pointA);
+    auto B = scene.GetVertex(pointB);
+    auto C = scene.GetVertex(pointC);
+
+    col1.x = A.Data().x - B.Data().x; col2.x = A.Data().x - C.Data().x; col3.x = ray.Direction().x; col4.x = A.Data().x - ray.Origin().x;
+    col1.y = A.Data().y - B.Data().y; col2.y = A.Data().y - C.Data().y; col3.y = ray.Direction().y; col4.y = A.Data().y - ray.Origin().y;
+    col1.z = A.Data().z - B.Data().z; col2.z = A.Data().z - C.Data().z; col3.z = ray.Direction().z; col4.z = A.Data().z - ray.Origin().z;
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -42,4 +43,61 @@ std::pair<bool, HitInfo> Triangle::Hit(const Ray &ray)
     auto point = ray.Origin() + (float)param * ray.Direction();
 
     return std::make_pair(true, HitInfo(surfNormal, scene.GetMaterial(materialID), param, ray));
+}
+
+Triangle::Triangle(int a, int b, int c, int mid, int tid) : pointA(a),
+                                                            pointB(b),
+                                                            pointC(c),
+                                                            materialID(mid),
+                                                            ID(tid)
+{
+    auto vertA = scene.GetVertex(pointA);
+    auto vertB = scene.GetVertex(pointB);
+    auto vertC = scene.GetVertex(pointC);
+    surfNormal = glm::normalize(glm::cross(vertC.Data() - vertA.Data(),
+                                           vertB.Data() - vertA.Data()));
+}
+
+Triangle::~Triangle() {}
+
+inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+{
+    glm::vec3 color;
+
+    std::istringstream ss {element->GetText()};
+    ss >> color.r;
+    ss >> color.g;
+    ss >> color.b;
+
+    return color;
+}
+
+inline int GetInt(std::istringstream& stream)
+{
+    int val;
+
+    stream >> val;
+
+    return val;
+}
+
+std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem)
+{
+    std::vector<Triangle> tris;
+
+    for (auto child = elem->FirstChildElement("Triangle"); child != NULL; child = child->NextSiblingElement("Triangle")) {
+        int id;
+        child->QueryIntAttribute("id", &id);
+        int matID = child->FirstChildElement("Material")->IntText(0);
+
+        std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
+
+        auto ind0 = GetInt(stream);
+        auto ind1 = GetInt(stream);
+        auto ind2 = GetInt(stream);
+
+        tris.push_back({ind0, ind1, ind2, matID});
+    }
+
+    return tris;
 }

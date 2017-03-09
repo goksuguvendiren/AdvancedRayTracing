@@ -3,14 +3,13 @@
 //
 
 #include <cmath>
+#include <sstream>
 #include <iostream>
 #include "glm/glm.hpp"
 #include "Sphere.h"
 #include "Ray.h"
 #include "HitInfo.h"
 #include "Scene.h"
-
-extern Scene scene;
 
 std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
 {
@@ -30,4 +29,31 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray)
     auto surfaceNormal = pointOfIntersection - center;
 
     return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
+}
+
+inline int GetInt(std::istringstream& stream)
+{
+    int val;
+    stream >> val;
+
+    return val;
+}
+
+std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem)
+{
+    std::vector<Sphere> spheres;
+
+    for (auto child = elem->FirstChildElement("Sphere"); child != NULL; child = child->NextSiblingElement("Sphere")) {
+        int id;
+        child->QueryIntAttribute("id", &id);
+        int matID = child->FirstChildElement("Material")->IntText(0);
+        int centerID = child->FirstChildElement("Center")->IntText(0);
+        float radius = child->FirstChildElement("Radius")->FloatText(0);
+
+        glm::vec3 center = scene.GetVertex(centerID).Data();
+
+        spheres.push_back({radius, center, matID});
+    }
+
+    return spheres;
 }

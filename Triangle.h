@@ -2,34 +2,33 @@
 // Created by Göksu Güvendiren on 27/02/2017.
 //
 
-#ifndef RAYTRACER_TRIANGLE_H
-#define RAYTRACER_TRIANGLE_H
+#pragma once
 
 #include "glm/glm.hpp"
 #include "Ray.h"
 #include "HitInfo.h"
+#include "tinyxml/tinyxml2.h"
+#include "Scene.h"
 
 class Triangle
 {
-    glm::vec3 pointA;
-    glm::vec3 pointB;
-    glm::vec3 pointC;
+    int pointA;
+    int pointB;
+    int pointC;
 
     glm::vec3 surfNormal;
-    unsigned int materialID;
+    int materialID;
+    int ID;
 
 public:
-    Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {1, 0, 0}, glm::vec3 c = {0, 1, 0}, unsigned int id = 1) : pointA(a),
-                                                                                                               pointB(b),
-                                                                                                               pointC(c),
-                                                                                                               materialID(id)
-    {
-        surfNormal = glm::normalize(glm::cross(pointC - pointA, pointB - pointA));
-    }
+    Triangle(int a = 1, int b = 1, int c = 1,
+             int mid = 1, int tid = 1);
 
-    unsigned int Material() { return materialID; }
+    ~Triangle();
+
+    int Material() { return materialID; }
     std::pair<bool, HitInfo> Hit(const Ray& ray); //TODO : replace the return type with HitInfo
 };
 
+std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem);
 
-#endif //RAYTRACER_TRIANGLE_H

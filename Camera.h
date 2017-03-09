@@ -7,10 +7,14 @@
 #include "glm/vec3.hpp"
 #include "glm/glm.hpp"
 #include "ImagePlane.h"
+#include "tinyxml/tinyxml2.h"
 
 class Image;
 class Camera
 {
+    unsigned int id;
+    std::string imageName;
+
     glm::vec3 position;
     glm::vec3 up;
     glm::vec3 gaze;
@@ -21,9 +25,12 @@ class Camera
     glm::vec3 planePosition;
 
 public:
-    Camera(const ImagePlane& plane, glm::vec3 p = {0, 0, 0},
-                                    glm::vec3 g = {0, 1, 0},
-                                    glm::vec3 u = {0, 0, 1}) : imagePlane(plane), position(p)
+    Camera(const ImagePlane& plane = {} ,unsigned int i = 0, glm::vec3 p = {0, 0, 0},
+                                                             glm::vec3 g = {0, 1, 0},
+                                                             glm::vec3 u = {0, 0, 1},
+                                                             std::string name = "") : imagePlane(plane),
+                                                                                      position(p), id(i),
+                                                                                      imageName(name)
     {
         up    = glm::normalize(u);
         gaze  = glm::normalize(g);
@@ -42,4 +49,6 @@ public:
     glm::vec3 PlanePosition() const { return planePosition; }
     glm::vec3 GetPixelLocation(int i, int j) const;
 };
+
+Camera CreateCamera(tinyxml2::XMLElement* element);
 
