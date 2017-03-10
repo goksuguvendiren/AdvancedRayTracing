@@ -21,7 +21,7 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto delta = B * B - 4 * A * C;
 
-    if (delta < 0) return std::make_pair(false, HitInfo());
+    if (delta < scene.IntersectionTestEpsilon()) return std::make_pair(false, HitInfo());
 
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
 
@@ -29,6 +29,23 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
     auto surfaceNormal = glm::normalize(pointOfIntersection - center);
 
     return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
+}
+
+bool Sphere::BoolHit(const Ray &ray) const
+{
+    auto eminc = ray.Origin() - center;
+
+    auto A = glm::dot(ray.Direction(), ray.Direction());
+    auto B = 2.0f * glm::dot(ray.Direction(), eminc);
+    auto C = glm::dot(eminc, eminc) - radius * radius;
+
+    auto delta = B * B - 4 * A * C;
+
+    if (delta < scene.IntersectionTestEpsilon()) return false;
+
+    if (- B - std::sqrt(delta) < 0) return false;
+
+    return true;
 }
 
 inline int GetInt(std::istringstream& stream)

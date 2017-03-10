@@ -20,6 +20,7 @@ public:
     void AddFace(int a, int b, int c) { faces.push_back( Triangle{a, b, c} ); }
     void AddFace(const Triangle& face) { faces.push_back(face); }
     std::pair<bool, HitInfo> Hit(const Ray &ray) const;
+    bool BoolHit(const Ray &ray) const;
 };
 
 std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem);

@@ -99,7 +99,11 @@ void Scene::CreateScene(std::string filename)
     lights    = std::move(ls);
 }
 
-Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al) {}
+Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al)
+{
+    shadowRayEpsilon = 1e-3;
+    intersectionTestEpsilon = - 1e-6;
+}
 
 Scene::~Scene() {}
 

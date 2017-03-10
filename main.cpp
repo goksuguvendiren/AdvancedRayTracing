@@ -9,7 +9,7 @@ Scene scene;
 
 int main()
 {
-    std::string sceneName = "simple";
+    std::string sceneName = "simple_shading";
     std::cerr << "Started loading the scene...\n";
     scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/" + sceneName + ".xml");
     std::cerr << "Finished loading...\n";
@@ -32,15 +32,13 @@ int main()
         for (int i = 0; i < image.Height(); i++){
             for (int j = 0; j < image.Width(); j++){
                 // ATTENTION : OpenCV expects BGR color space
-                im.at<cv::Vec3f>(i, j)[0] = image.at(i, j).b * 255;
-                im.at<cv::Vec3f>(i, j)[1] = image.at(i, j).g * 255;
-                im.at<cv::Vec3f>(i, j)[2] = image.at(i, j).r * 255;
+                im.at<cv::Vec3f>(i, j)[0] = image.at(i, j).b;
+                im.at<cv::Vec3f>(i, j)[1] = image.at(i, j).g;
+                im.at<cv::Vec3f>(i, j)[2] = image.at(i, j).r;
             }
         }
 
-        cv::imshow("output image", cv::Mat(im));
-        cv::waitKey(0);
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/bunny" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/" + sceneName + "_specular_shadowy.png", im);
     }
 
     return 0;

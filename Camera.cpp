@@ -21,21 +21,45 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
     auto ambient = hit.Material().Ambient() * scene.AmbientLight();
 
     for (auto& light : scene.Lights()){
-        glm::vec3 pointToLight = glm::normalize(light.Position() - hit.Position());
+        auto direction = light.Position() - hit.Position();
+        Ray ray(hit.Position() + (scene.ShadowRayEpsilon() * direction),
+                direction);
+
+        if (std::any_of(scene.Spheres().begin(), scene.Spheres().end(), [&ray](const Sphere& sph) {
+            return sph.BoolHit(ray);
+        })) continue;
+
+        if (std::any_of(scene.Triangles().begin(), scene.Triangles().end(), [&ray](const Triangle& tr) {
+            return tr.BoolHit(ray);
+        })) continue;
+
+        if (std::any_of(scene.Meshes().begin(), scene.Meshes().end(), [&ray](const Mesh& ms) {
+            return ms.BoolHit(ray);
+        })) continue;
+
+        glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);
+
+        pointToLight = glm::normalize(pointToLight);
+
         // Diffuse shading :
-        auto theta = glm::dot(hit.Normal(), pointToLight);
+        auto theta = glm::dot(glm::normalize(hit.Normal()), pointToLight);
         ambient += (theta * hit.Material().Diffuse() * intensity);
 
+        // Specular shading :
+        auto half = glm::normalize(pointToLight + glm::normalize(Position() - hit.Position()));
+        ambient  += intensity *
+                    hit.Material().Specular() *
+                    std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.Material().PhongExp());
     }
 
-//    std::cerr << ambient.r << ", " << ambient.g << ", " << ambient.b << '\n';
     return ambient;
 }
 
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
+    auto pixLocation = GetPixelLocation(0, 0);
 
     for (int i = 0; i < imagePlane.NY(); i++){          // nx = width
         for (int j = 0; j < imagePlane.NX(); j++){      // ny = height

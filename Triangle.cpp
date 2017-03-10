@@ -46,6 +46,35 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     return std::make_pair(true, HitInfo(surfNormal, scene.GetMaterial(materialID), param, ray));
 }
 
+
+bool Triangle::BoolHit (const Ray &ray) const
+{
+    glm::vec3 col1(3);
+    glm::vec3 col2(3);
+    glm::vec3 col3(3);
+    glm::vec3 col4(3);
+
+    auto A = scene.GetVertex(pointA);
+    auto B = scene.GetVertex(pointB);
+    auto C = scene.GetVertex(pointC);
+
+    col1 = A.Data() - B.Data();
+    col2 = A.Data() - C.Data();
+    col3 = ray.Direction();
+    col4 = A.Data() - ray.Origin();
+
+    auto detA  = determinant(col1, col2, col3);
+
+    auto beta  = determinant(col4, col2, col3) / detA;
+    auto gamma = determinant(col1, col4, col3) / detA;
+    auto param = determinant(col1, col2, col4) / detA;
+    auto alpha = 1 - beta - gamma;
+
+    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return false;
+
+    return true;
+}
+
 Triangle::Triangle(int a, int b, int c, int mid, int tid) : pointA(a),
                                                             pointB(b),
                                                             pointC(c),

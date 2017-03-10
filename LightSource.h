@@ -11,9 +11,9 @@
 
 // Point light source
 
-inline float len(const glm::vec3& n)
+inline float lensquared(const glm::vec3& n)
 {
-    return std::sqrt(n.r * n.r + n.g * n.g + n.b * n.b);
+    return n.r * n.r + n.g * n.g + n.b * n.b;
 }
 
 class LightSource
@@ -31,7 +31,7 @@ public:
                                                 intensity(intens) {}
 
     auto Position()  const { return position; }
-    auto Intensity(const glm::vec3& dist) const { return intensity / std::powf(len(dist), 2); }
+    auto Intensity(const glm::vec3& dist) const { return intensity / lensquared(dist); }
 };
 
 std::vector<LightSource> CreateLights(tinyxml2::XMLElement* elem);
