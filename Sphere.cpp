@@ -67,7 +67,7 @@ std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem)
         int centerID = child->FirstChildElement("Center")->IntText(0);
         float radius = child->FirstChildElement("Radius")->FloatText(0);
 
-        glm::vec3 center = scene.GetVertex(centerID).Data();
+        glm::vec3 center = scene.GetVertex(centerID);
 
         spheres.push_back({radius, center, matID});
     }

@@ -15,4 +15,4 @@ public:
     auto Data() const { return data; }
 };
 
-std::vector<Vertex> CreateVertexData(tinyxml2::XMLElement* elem);
+std::vector<glm::vec3> CreateVertexData(tinyxml2::XMLElement* elem);

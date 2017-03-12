@@ -25,7 +25,7 @@ class Scene
     std::vector<Sphere> spheres;
     std::vector<Triangle> triangles;
     std::vector<Material> materials;
-    std::vector<Vertex> vertices;
+    std::vector<glm::vec3> vertices;
     std::vector<Mesh> meshes;
     std::vector<LightSource> lights;
 
@@ -66,11 +66,11 @@ public:
     void AddMaterial(Material&& mat);
     void AddMaterial(const Material& mat);
 
-    void AddVertex(Vertex&& vert);
-    void AddVertex(const Vertex& vert);
+    void AddVertex(glm::vec3&& vert);
+    void AddVertex(const glm::vec3& vert);
 
     Material GetMaterial(unsigned int id);
-    Vertex GetVertex(unsigned int id);
+    glm::vec3 GetVertex(int id);
 
     void CreateScene(std::string filename);
 };

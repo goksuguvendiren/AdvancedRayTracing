@@ -23,14 +23,10 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    auto A = scene.GetVertex(pointA);
-    auto B = scene.GetVertex(pointB);
-    auto C = scene.GetVertex(pointC);
-
-    col1 = A.Data() - B.Data();
-    col2 = A.Data() - C.Data();
+    col1 = pointA - pointB;
+    col2 = pointA - pointC;
     col3 = ray.Direction();
-    col4 = A.Data() - ray.Origin();
+    col4 = pointA - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -54,14 +50,10 @@ bool Triangle::BoolHit (const Ray &ray) const
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    auto A = scene.GetVertex(pointA);
-    auto B = scene.GetVertex(pointB);
-    auto C = scene.GetVertex(pointC);
-
-    col1 = A.Data() - B.Data();
-    col2 = A.Data() - C.Data();
+    col1 = pointA - pointB;
+    col2 = pointA - pointC;
     col3 = ray.Direction();
-    col4 = A.Data() - ray.Origin();
+    col4 = pointA - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -75,17 +67,14 @@ bool Triangle::BoolHit (const Ray &ray) const
     return true;
 }
 
-Triangle::Triangle(int a, int b, int c, int mid, int tid) : pointA(a),
+Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int mid, int tid) : pointA(a),
                                                             pointB(b),
                                                             pointC(c),
                                                             materialID(mid),
                                                             ID(tid)
 {
-    auto vertA = scene.GetVertex(pointA);
-    auto vertB = scene.GetVertex(pointB);
-    auto vertC = scene.GetVertex(pointC);
-    surfNormal = glm::normalize(glm::cross(vertB.Data() - vertA.Data(),
-                                           vertC.Data() - vertA.Data()));
+    surfNormal = glm::normalize(glm::cross(pointB - pointA,
+                                           pointC - pointA));
 }
 
 Triangle::~Triangle() {}
@@ -122,9 +111,9 @@ std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem)
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
 
-        auto ind0 = GetInt(stream);
-        auto ind1 = GetInt(stream);
-        auto ind2 = GetInt(stream);
+        auto ind0 = scene.GetVertex(GetInt(stream));
+        auto ind1 = scene.GetVertex(GetInt(stream));
+        auto ind2 = scene.GetVertex(GetInt(stream));
 
         tris.push_back({ind0, ind1, ind2, matID});
     }

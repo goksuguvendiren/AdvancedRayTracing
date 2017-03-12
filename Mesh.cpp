@@ -11,16 +11,16 @@ inline std::pair<bool, Triangle> GetFace(std::istringstream& stream)
     int x, y, z;
 
     if (!(stream >> x)) {
-        return std::make_pair(false, Triangle {1, 1, 1});
+        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
     }
     if (!(stream >> y)) {
-        return std::make_pair(false, Triangle {1, 1, 1});
+        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
     }
     if (!(stream >> z)) {
-        return std::make_pair(false, Triangle {1, 1, 1});
+        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
     }
 
-    return std::make_pair(true, Triangle {x, y, z});
+    return std::make_pair(true, Triangle {scene.GetVertex(x), scene.GetVertex(y), scene.GetVertex(z)});
 }
 
 std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
