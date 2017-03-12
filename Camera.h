@@ -10,9 +10,11 @@
 #include "tinyxml/tinyxml2.h"
 
 class Image;
+class HitInfo;
+
 class Camera
 {
-    unsigned int id;
+    int id;
     std::string imageName;
 
     glm::vec3 position;
@@ -25,7 +27,7 @@ class Camera
     glm::vec3 planePosition;
 
 public:
-    Camera(const ImagePlane& plane = {} ,unsigned int i = 0, glm::vec3 p = {0, 0, 0},
+    Camera(const ImagePlane& plane = {} , int i = 0, glm::vec3 p = {0, 0, 0},
                                                              glm::vec3 g = {0, 1, 0},
                                                              glm::vec3 u = {0, 0, 1},
                                                              std::string name = "") : imagePlane(plane),
@@ -48,6 +50,9 @@ public:
 
     glm::vec3 PlanePosition() const { return planePosition; }
     glm::vec3 GetPixelLocation(int i, int j) const;
+
+
+    glm::vec3 CalculateReflectance(const HitInfo& hit) const;
 };
 
 Camera CreateCamera(tinyxml2::XMLElement* element);

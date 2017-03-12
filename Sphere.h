@@ -19,7 +19,8 @@ class Sphere
 
 public:
     Sphere(float rd = 1.0f, glm::vec3 c = {1.0f, 0.0f, 0.0f}, int id = 1) : radius(rd), center(c), materialID(id) {}
-    std::pair<bool, HitInfo> Hit(const Ray &ray);
+    std::pair<bool, HitInfo> Hit (const Ray &ray) const;
+    bool BoolHit (const Ray &ray) const;
 };
 
 std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem);

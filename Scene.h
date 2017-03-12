@@ -12,10 +12,12 @@
 class Triangle;
 class Sphere;
 class Mesh;
+class LightSource;
 
 class Scene
 {
     glm::vec3 backgroundColor;
+    glm::vec3 ambientLight;
     float shadowRayEpsilon;
     float intersectionTestEpsilon;
 
@@ -25,15 +27,19 @@ class Scene
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
     std::vector<Mesh> meshes;
+    std::vector<LightSource> lights;
 
 public:
-    Scene(glm::vec3 bg = {0, 0, 0});
+    Scene(glm::vec3 bg = {0, 0, 0}, glm::vec3 al = {0, 0, 0});
     ~Scene();
-
-    Scene& operator=(const Scene&);
+    Scene(const Scene& s) = delete;
+    Scene& operator=(const Scene&) = delete;
 
     glm::vec3 BackgroundColor();
     void BackgroundColor(glm::vec3 bg);
+
+    glm::vec3 AmbientLight();
+    void AmbientLight(glm::vec3 ac);
 
     float ShadowRayEpsilon();
     void ShadowRayEpsilon(float sre);
@@ -46,6 +52,7 @@ public:
     const std::vector<Triangle>& Triangles() const;
     const std::vector<Material>& Materials() const;
     const std::vector<Mesh>& Meshes() const;
+    const std::vector<LightSource>& Lights() const;
 
     void AddCamera(Camera&& cam);
     void AddCamera(const Camera& cam);

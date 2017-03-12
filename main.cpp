@@ -9,8 +9,9 @@ Scene scene;
 
 int main()
 {
+    std::string sceneName = "simple_shading";
     std::cerr << "Started loading the scene...\n";
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/bunny.xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/" + sceneName + ".xml");
     std::cerr << "Finished loading...\n";
 
     std::vector<Image> images;
@@ -37,8 +38,7 @@ int main()
             }
         }
 
-        cv::imshow("output image", cv::Mat(im));
-        cv::waitKey(0);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/" + sceneName + "_specular_shadowy.png", im);
     }
 
     return 0;
