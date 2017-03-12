@@ -26,6 +26,8 @@ public:
     glm::vec3 Diffuse() const { return diffuse; }
     glm::vec3 Specular() const { return specular; }
     glm::vec3 Ambient() const { return ambient; }
+
+    float PhongExp() const { return phongExponent; }
 };
 
 std::vector<Material> CreateMaterials(tinyxml2::XMLElement* elem);

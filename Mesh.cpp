@@ -40,13 +40,13 @@ std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
         while((tr = GetFace(stream)).first){
             m.AddFace(tr.second);
         }
-        meshes.push_back(m);
+        meshes.push_back(std::move(m));
     }
 
     return meshes;
 }
 
-std::pair<bool, HitInfo> Mesh::Hit(const Ray &ray)
+std::pair<bool, HitInfo> Mesh::Hit(const Ray &ray) const
 {
     HitInfo ultHit;
     for (auto& face : faces) {
@@ -57,4 +57,13 @@ std::pair<bool, HitInfo> Mesh::Hit(const Ray &ray)
     }
 
     return std::make_pair(true, ultHit);
+};
+
+bool Mesh::BoolHit(const Ray &ray) const
+{
+    for (auto& face : faces) {
+        if (face.BoolHit(ray)) return true;
+    }
+
+    return false;
 };

@@ -14,12 +14,19 @@ class Image
 {
     std::vector<glm::vec3> pixels;
 
+    float min, max;
+
     unsigned int width;
     unsigned int height;
 
 public :
     Image() : width(0), height(0) {}
-    Image(unsigned int w, unsigned int h) : width(w), height(h) { pixels.resize(width * height); }
+    Image(unsigned int w, unsigned int h) : width(w), height(h) {
+        pixels.resize(width * height);
+
+        min = std::numeric_limits<float>::infinity();
+        max = 0.0f;
+    }
 
     glm::vec3& at(int i, int j) { return pixels[i * width + j]; }
     glm::vec3  at(int i, int j) const { return pixels[i * width + j]; }

@@ -27,7 +27,8 @@ public:
     ~Triangle();
 
     int Material() { return materialID; }
-    std::pair<bool, HitInfo> Hit(const Ray& ray); //TODO : replace the return type with HitInfo
+    std::pair<bool, HitInfo> Hit (const Ray& ray) const;
+    bool BoolHit (const Ray& ray) const;
 };
 
 std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem);
