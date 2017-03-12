@@ -7,10 +7,13 @@
 
 Scene scene;
 
-int main()
+int main(int argc, char** argv)
 {
-    std::string sceneName = "simple_shading";
-    std::cerr << "Started loading the scene...\n";
+    std::string sceneName = "bunny";
+    if (argc == 2){
+        sceneName = argv[1];
+    }
+    std::cerr << "Started loading the scene " << sceneName << "...\n";
     scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/" + sceneName + ".xml");
     std::cerr << "Finished loading...\n";
 
@@ -38,7 +41,7 @@ int main()
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/" + sceneName + "_specular_shadowy.png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/" + sceneName + ".png", im);
     }
 
     return 0;

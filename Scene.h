@@ -69,7 +69,7 @@ public:
     void AddVertex(glm::vec3&& vert);
     void AddVertex(const glm::vec3& vert);
 
-    Material GetMaterial(unsigned int id);
+    const Material& GetMaterial(int id);
     glm::vec3 GetVertex(int id);
 
     void CreateScene(std::string filename);

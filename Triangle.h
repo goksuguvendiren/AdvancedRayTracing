@@ -10,6 +10,8 @@
 #include "tinyxml/tinyxml2.h"
 #include "Scene.h"
 
+class Material;
+
 class Triangle
 {
     glm::vec3 pointA;
@@ -17,7 +19,7 @@ class Triangle
     glm::vec3 pointC;
 
     glm::vec3 surfNormal;
-    int materialID;
+    const Material* material;
     int ID;
 
 public:
@@ -26,7 +28,7 @@ public:
 
     ~Triangle();
 
-    int Material() { return materialID; }
+    const Material* Material() const;
     std::pair<bool, HitInfo> Hit (const Ray& ray) const;
     bool BoolHit (const Ray& ray) const;
 };

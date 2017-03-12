@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include "Triangle.h"
+#include "Material.h"
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
@@ -39,7 +40,7 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
 
     auto point = ray.Origin() + param * ray.Direction();
 
-    return std::make_pair(true, HitInfo(surfNormal, scene.GetMaterial(materialID), param, ray));
+    return std::make_pair(true, HitInfo(surfNormal, *material, param, ray));
 }
 
 
@@ -70,11 +71,16 @@ bool Triangle::BoolHit (const Ray &ray) const
 Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int mid, int tid) : pointA(a),
                                                             pointB(b),
                                                             pointC(c),
-                                                            materialID(mid),
+                                                            material(&scene.GetMaterial(mid)),
                                                             ID(tid)
 {
     surfNormal = glm::normalize(glm::cross(pointB - pointA,
                                            pointC - pointA));
+}
+
+const Material* Triangle::Material() const
+{
+    return material;
 }
 
 Triangle::~Triangle() {}
