@@ -10,23 +10,25 @@
 #include "tinyxml/tinyxml2.h"
 #include "Scene.h"
 
+class Material;
+
 class Triangle
 {
-    int pointA;
-    int pointB;
-    int pointC;
+    glm::vec3 pointA;
+    glm::vec3 pointB;
+    glm::vec3 pointC;
 
     glm::vec3 surfNormal;
-    int materialID;
+    const Material* material;
     int ID;
 
 public:
-    Triangle(int a = 1, int b = 1, int c = 1,
+    Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {0, 0, 0}, glm::vec3 c = {0, 0, 0},
              int mid = 1, int tid = 1);
 
     ~Triangle();
 
-    int Material() { return materialID; }
+    const Material* Material() const;
     std::pair<bool, HitInfo> Hit (const Ray& ray) const;
     bool BoolHit (const Ray& ray) const;
 };

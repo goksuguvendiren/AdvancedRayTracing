@@ -17,7 +17,7 @@ public:
     Mesh(const Mesh& m) = delete;
     Mesh(Mesh&& m) = default;
 
-    void AddFace(int a, int b, int c) { faces.push_back( Triangle{a, b, c} ); }
+    void AddFace(int a, int b, int c) { faces.push_back( Triangle{scene.GetVertex(a), scene.GetVertex(a), scene.GetVertex(a)} ); }
     void AddFace(const Triangle& face) { faces.push_back(face); }
     std::pair<bool, HitInfo> Hit(const Ray &ray) const;
     bool BoolHit(const Ray &ray) const;
