@@ -5,13 +5,9 @@
 #include <iostream>
 #include <sstream>
 #include "Camera.h"
-#include "glm/vec3.hpp"
 #include "Ray.h"
 #include "Scene.h"
 #include "Triangle.h"
-#include "Sphere.h"
-#include "HitInfo.h"
-#include "tinyxml/tinyxml2.h"
 #include "Mesh.h"
 #include "LightSource.h"
 
@@ -59,12 +55,24 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
-    auto pixLocation = GetPixelLocation(0, 0);
 
-    for (int i = 0; i < imagePlane.NY(); i++){          // nx = width
-        for (int j = 0; j < imagePlane.NX(); j++){      // ny = height
-            auto pixLocation = GetPixelLocation(i, j);
-            auto ray = Ray(position, pixLocation - position);
+    auto oneRight = imagePlane.PixelWidth() * right;
+    auto oneDown  = -imagePlane.PixelHeight() * up;
+
+    auto pixLocation = PlanePosition();
+    pixLocation -= oneRight * 0.5f;
+    pixLocation -= oneDown * 0.5f;
+
+    auto rowPixLocation = pixLocation;
+    auto rowBeginning   = pixLocation;
+
+    for (int i = 0; i < imagePlane.NY(); i++){          // ny = height
+        rowBeginning += oneDown;
+        rowPixLocation = rowBeginning;
+        for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
+            rowPixLocation += oneRight;
+//            rowPixLocation = GetPixelLocation(i, j);
+            auto ray = Ray(position, rowPixLocation - position);
 
             HitInfo ultHit;
             bool hashit = false;
