@@ -44,7 +44,7 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
 }
 
 
-bool Triangle::BoolHit (const Ray &ray) const
+bool Triangle::FastHit(const Ray &ray) const
 {
     glm::vec3 col1(3);
     glm::vec3 col2(3);
@@ -72,10 +72,15 @@ Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int mid, int tid) : po
                                                             pointB(b),
                                                             pointC(c),
                                                             material(&scene.GetMaterial(mid)),
-                                                            ID(tid)
+                                                            id(tid)
 {
     surfNormal = glm::normalize(glm::cross(pointB - pointA,
                                            pointC - pointA));
+}
+
+int Triangle::ID() const
+{
+    return id;
 }
 
 const Material* Triangle::Material() const

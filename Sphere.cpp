@@ -31,7 +31,7 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
     return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
 }
 
-bool Sphere::BoolHit(const Ray &ray) const
+bool Sphere::FastHit(const Ray &ray) const
 {
     auto eminc = ray.Origin() - center;
 
@@ -69,7 +69,7 @@ std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem)
 
         glm::vec3 center = scene.GetVertex(centerID);
 
-        spheres.push_back({radius, center, matID});
+        spheres.push_back({id, radius, center, matID});
     }
 
     return spheres;

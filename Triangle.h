@@ -12,7 +12,7 @@
 
 class Material;
 
-class Triangle
+class Triangle : public Shape
 {
     glm::vec3 pointA;
     glm::vec3 pointB;
@@ -20,7 +20,7 @@ class Triangle
 
     glm::vec3 surfNormal;
     const Material* material;
-    int ID;
+    int id;
 
 public:
     Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {0, 0, 0}, glm::vec3 c = {0, 0, 0},
@@ -30,7 +30,8 @@ public:
 
     const Material* Material() const;
     std::pair<bool, HitInfo> Hit (const Ray& ray) const;
-    bool BoolHit (const Ray& ray) const;
+    bool FastHit(const Ray& ray) const;
+    int ID() const;
 };
 
 std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem);
