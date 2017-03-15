@@ -4,23 +4,17 @@
 #include "Scene.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <iomanip>
-#include "Shape.h"
 
 Scene scene;
 
-void deneme(Shape& shape)
-{
-    std::cout << shape.ID() << '\n';
-}
-
 int main(int argc, char** argv)
 {
-    std::string sceneName = "simple_shading";
+    std::string sceneName = "bunny";
     if (argc == 2){
         sceneName = argv[1];
     }
     std::cerr << "Started loading the scene " << sceneName << "...\n";
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/hw1_inputs/" + sceneName + ".xml");
     std::cerr << "Finished loading...\n";
 
     std::vector<Image> images;
@@ -47,7 +41,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/hw1_outputs/" + sceneName + ".png", im);
     }
 
     return 0;
