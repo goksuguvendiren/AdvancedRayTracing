@@ -97,6 +97,10 @@ void Scene::CreateScene(std::string filename)
     spheres   = std::move(sphs);
     meshes    = std::move(mshs);
     lights    = std::move(ls);
+
+    for_each(triangles.begin(), triangles.end(), [this](auto& tri) { shapes.push_back(&tri); });
+    for_each(spheres.begin(), spheres.end(), [this](auto& sph) { shapes.push_back(&sph); });
+    for_each(meshes.begin(), meshes.end(), [this](auto& msh) { shapes.push_back(&msh); });
 }
 
 Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al)
@@ -107,25 +111,29 @@ Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al)
 
 Scene::~Scene() {}
 
-glm::vec3 Scene::BackgroundColor()
+
+const std::vector<Shape*>& Scene::Shapes() const
+{ return shapes; }
+
+glm::vec3 Scene::BackgroundColor() const
 { return backgroundColor; }
 
 void Scene::BackgroundColor(glm::vec3 bg)
 { backgroundColor = bg; }
 
-glm::vec3 Scene::AmbientLight()
+glm::vec3 Scene::AmbientLight() const
 { return ambientLight; }
 
 void Scene::AmbientLight(glm::vec3 al)
 { ambientLight = al; }
 
-float Scene::ShadowRayEpsilon()
+float Scene::ShadowRayEpsilon() const
 { return shadowRayEpsilon; }
 
 void Scene::ShadowRayEpsilon(float sre)
 { shadowRayEpsilon = sre; }
 
-float Scene::IntersectionTestEpsilon()
+float Scene::IntersectionTestEpsilon() const
 { return intersectionTestEpsilon; }
 
 void Scene::IntersectionTestEpsilon(float ite)

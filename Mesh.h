@@ -7,7 +7,7 @@
 #include <vector>
 #include "Triangle.h"
 
-class Mesh
+class Mesh : public Shape
 {
     int id;
     int materialID;
@@ -20,7 +20,9 @@ public:
     void AddFace(int a, int b, int c) { faces.push_back( Triangle{scene.GetVertex(a), scene.GetVertex(a), scene.GetVertex(a)} ); }
     void AddFace(const Triangle& face) { faces.push_back(face); }
     std::pair<bool, HitInfo> Hit(const Ray &ray) const;
-    bool BoolHit(const Ray &ray) const;
+    bool FastHit(const Ray &ray) const;
+
+    int ID() const { return id; }
 };
 
 std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem);

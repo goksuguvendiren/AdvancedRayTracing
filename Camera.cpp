@@ -21,16 +21,8 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
         Ray ray(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                 direction);
 
-        if (std::any_of(scene.Spheres().begin(), scene.Spheres().end(), [&ray](const Sphere& sph) {
-            return sph.BoolHit(ray);
-        })) continue;
-
-        if (std::any_of(scene.Triangles().begin(), scene.Triangles().end(), [&ray](const Triangle& tr) {
-            return tr.BoolHit(ray);
-        })) continue;
-
-        if (std::any_of(scene.Meshes().begin(), scene.Meshes().end(), [&ray](const Mesh& ms) {
-            return ms.BoolHit(ray);
+        if (std::any_of(scene.Shapes().begin(), scene.Shapes().end(), [&ray](auto shape) {
+            return shape->FastHit(ray);
         })) continue;
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
@@ -71,24 +63,18 @@ Image Camera::Render() const
         rowPixLocation = rowBeginning;
         for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
             rowPixLocation += oneRight;
-//            rowPixLocation = GetPixelLocation(i, j);
             auto ray = Ray(position, rowPixLocation - position);
 
             HitInfo ultHit;
             bool hashit = false;
 
-            auto proc_shape = [&](auto& shape)
-            {
+            for (auto shape : scene.Shapes()){
                 std::pair<bool, HitInfo> hit;
-                if ((hit = shape.Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
+                if ((hit = shape->Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
                     ultHit = hit.second;
                     hashit = true;
                 }
-            };
-
-            for_each(scene.Spheres().begin(), scene.Spheres().end(), proc_shape);
-            for_each(scene.Triangles().begin(), scene.Triangles().end(), proc_shape);
-            for_each(scene.Meshes().begin(), scene.Meshes().end(), proc_shape);
+            }
 
             if (hashit)
                 image.at(i, j) = CalculateReflectance(ultHit);

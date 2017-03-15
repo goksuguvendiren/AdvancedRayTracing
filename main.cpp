@@ -4,12 +4,18 @@
 #include "Scene.h"
 #include <opencv2/highgui/highgui.hpp>
 #include <iomanip>
+#include "Shape.h"
 
 Scene scene;
 
+void deneme(Shape& shape)
+{
+    std::cout << shape.ID() << '\n';
+}
+
 int main(int argc, char** argv)
 {
-    std::string sceneName = "bunny";
+    std::string sceneName = "simple_shading";
     if (argc == 2){
         sceneName = argv[1];
     }

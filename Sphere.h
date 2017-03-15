@@ -7,20 +7,23 @@
 #include <vector>
 #include "glm/vec3.hpp"
 #include "Material.h"
+#include "Shape.h"
 
 class Ray;
 class HitInfo;
 
-class Sphere
+class Sphere : public Shape
 {
+    int id;
     float radius;
     glm::vec3 center;
     int materialID;
 
 public:
-    Sphere(float rd = 1.0f, glm::vec3 c = {1.0f, 0.0f, 0.0f}, int id = 1) : radius(rd), center(c), materialID(id) {}
-    std::pair<bool, HitInfo> Hit (const Ray &ray) const;
-    bool BoolHit (const Ray &ray) const;
+    Sphere(int sid = 1, float rd = 1.0f, glm::vec3 c = {1.0f, 0.0f, 0.0f}, int mid = 1) : id(sid), radius(rd), center(c), materialID(mid) {}
+    std::pair<bool, HitInfo> Hit(const Ray &ray) const;
+    bool FastHit (const Ray &ray) const;
+    int ID() const { return id; }
 };
 
 std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem);

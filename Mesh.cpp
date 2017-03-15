@@ -59,10 +59,10 @@ std::pair<bool, HitInfo> Mesh::Hit(const Ray &ray) const
     return std::make_pair(true, ultHit);
 };
 
-bool Mesh::BoolHit(const Ray &ray) const
+bool Mesh::FastHit(const Ray &ray) const
 {
     for (auto& face : faces) {
-        if (face.BoolHit(ray)) return true;
+        if (face.FastHit(ray)) return true;
     }
 
     return false;
