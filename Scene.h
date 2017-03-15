@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include "Camera.h"
 #include "Sphere.h"
 #include "Vertex.h"
@@ -30,6 +31,7 @@ class Scene
 
     std::vector<Material> materials;
     std::vector<glm::vec3> vertices;
+    std::map<std::string, glm::mat4> transformations;
     std::vector<LightSource> lights;
     std::vector<Camera> cameras;
 
@@ -40,6 +42,8 @@ public:
     Scene& operator=(const Scene&) = delete;
 
     const std::vector<Shape*>& Shapes() const;
+
+    glm::mat4 GetTransformation(std::string str) const;
 
     glm::vec3 BackgroundColor() const;
     void BackgroundColor(glm::vec3 bg);
