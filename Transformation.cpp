@@ -78,7 +78,7 @@ std::map<std::string, glm::mat4> CreateRotations(tinyxml2::XMLElement* elem)
 
         auto angle   = GetAngle(ss);
         auto details = GetElem(ss);
-        auto matrix  = glm::rotate(glm::mat4(1.), angle, details);
+        auto matrix  = glm::rotate(glm::mat4(1.), glm::radians(angle), details);
 
         auto sth = "r" + std::to_string(id);
         rts.insert(std::make_pair(sth, matrix));

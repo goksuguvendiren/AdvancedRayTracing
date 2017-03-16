@@ -4,9 +4,8 @@
 
 #include <sstream>
 #include "Mesh.h"
-#include "tinyxml/tinyxml2.h"
 
-inline std::pair<bool, Triangle> GetFace(std::istringstream& stream)
+inline std::pair<bool, Triangle> GetFace(std::istringstream& stream, const glm::mat4& matrix)
 {
     int x, y, z;
 
@@ -20,7 +19,28 @@ inline std::pair<bool, Triangle> GetFace(std::istringstream& stream)
         return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
     }
 
-    return std::make_pair(true, Triangle {scene.GetVertex(x), scene.GetVertex(y), scene.GetVertex(z)});
+    auto ind0 = glm::vec4(scene.GetVertex(x), 1);
+    auto ind1 = glm::vec4(scene.GetVertex(y), 1);
+    auto ind2 = glm::vec4(scene.GetVertex(z), 1);
+
+    ind0 = matrix * ind0;
+    ind1 = matrix * ind1;
+    ind2 = matrix * ind2;
+
+    return std::make_pair(true, Triangle{ind0, ind1, ind2});
+}
+
+inline auto GetTransformations(std::istringstream& stream)
+{
+    std::vector<std::string> result;
+
+    while(stream.good()){
+        std::string tr;
+        stream >> tr;
+        result.push_back(tr);
+    }
+
+    return result;
 }
 
 std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
@@ -33,14 +53,27 @@ std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
 
         int matID = child->FirstChildElement("Material")->IntText(0);
 
-        Mesh m {id, matID};
+        std::vector<std::string> transformations;
+        if(auto trns = child->FirstChildElement("Transformations")){
+            std::istringstream ss {trns->GetText()};
+            transformations = std::move(GetTransformations(ss));
+        }
+
+        glm::mat4 matrix;
+        for (auto& tr : transformations){
+            auto m = scene.GetTransformation(tr);
+            matrix = m * matrix;
+        }
+
+        Mesh msh {id, matID};
         std::istringstream stream { child->FirstChildElement("Faces")->GetText() };
 
         std::pair<bool, Triangle> tr;
-        while((tr = GetFace(stream)).first){
-            m.AddFace(tr.second);
+        while((tr = GetFace(stream, matrix)).first){
+            msh.AddFace(tr.second);
         }
-        meshes.push_back(std::move(m));
+
+        meshes.push_back(std::move(msh));
     }
 
     return meshes;

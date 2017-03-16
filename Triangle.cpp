@@ -100,7 +100,7 @@ inline int GetInt(std::istringstream& stream)
     return val;
 }
 
-auto GetTransformations(std::istringstream& stream)
+inline auto GetTransformations(std::istringstream& stream)
 {
     std::vector<std::string> result;
 
@@ -137,7 +137,7 @@ std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem)
         glm::mat4 matrix;
         for (auto& tr : transformations){
             auto m = scene.GetTransformation(tr);
-            matrix = matrix * m;
+            matrix = m * matrix;
         }
 
         glm::vec4 v0(ind0, 1);

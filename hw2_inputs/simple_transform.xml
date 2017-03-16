@@ -62,7 +62,7 @@
         </Mesh>
         <Triangle id="1">
             <Material>1</Material>
-            <Transformations>t2 r1 s1 t1</Transformations>
+            <Transformations>t3</Transformations>
             <Indices>
                 5 6 7
             </Indices>
