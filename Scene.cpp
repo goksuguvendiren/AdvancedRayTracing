@@ -71,7 +71,6 @@ void Scene::CreateScene(std::string filename)
         lights = LoadLights(elem);
     }
 
-    std::vector<Material> mats;
     if (auto elem = docscene->FirstChildElement("Materials")){
         materials = LoadMaterials(elem);
     }
@@ -87,6 +86,7 @@ void Scene::CreateScene(std::string filename)
     std::vector<Triangle> tris;
     std::vector<Sphere> sphs;
     std::vector<Mesh> mshs;
+
     if(auto objects = docscene->FirstChildElement("Objects")){
         triangles = LoadTriangles(objects);
         spheres   = LoadSpheres(objects);

@@ -23,10 +23,10 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    col1 = pointA - pointB;
-    col2 = pointA - pointC;
+    col1 = pointA.Data() - pointB.Data();
+    col2 = pointA.Data() - pointC.Data();
     col3 = ray.Direction();
-    col4 = pointA - ray.Origin();
+    col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -50,10 +50,10 @@ bool Triangle::FastHit(const Ray &ray) const
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    col1 = pointA - pointB;
-    col2 = pointA - pointC;
+    col1 = pointA.Data() - pointB.Data();
+    col2 = pointA.Data() - pointC.Data();
     col3 = ray.Direction();
-    col4 = pointA - ray.Origin();
+    col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -67,14 +67,18 @@ bool Triangle::FastHit(const Ray &ray) const
     return true;
 }
 
-Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int mid, int tid) : pointA(a),
-                                                            pointB(b),
-                                                            pointC(c),
-                                                            material(&scene.GetMaterial(mid)),
-                                                            id(tid)
+Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid) : pointA(a),
+                                                                     pointB(b),
+                                                                     pointC(c),
+                                                                     material(&scene.GetMaterial(mid)),
+                                                                     id(tid)
 {
-    surfNormal = glm::normalize(glm::cross(pointB - pointA,
-                                           pointC - pointA));
+    surfNormal = glm::normalize(glm::cross(pointB.Data() - pointA.Data(),
+                                           pointC.Data() - pointA.Data()));
+
+    pointA.Normal(surfNormal);
+    pointB.Normal(surfNormal);
+    pointC.Normal(surfNormal);
 }
 
 int Triangle::ID() const
@@ -146,7 +150,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         ind1 = matrix * v1;
         ind2 = matrix * v2;
 
-        tris.push_back({ind0, ind1, ind2, matID});
+        tris.push_back({Vertex{ind0}, Vertex{ind1}, Vertex{ind2}, matID});
     }
 
     return tris;
