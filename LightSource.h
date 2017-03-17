@@ -34,4 +34,4 @@ public:
     auto Intensity(const glm::vec3& dist) const { return intensity / lensquared(dist); }
 };
 
-std::vector<LightSource> CreateLights(tinyxml2::XMLElement* elem);
+std::vector<LightSource> LoadLights(tinyxml2::XMLElement *elem);

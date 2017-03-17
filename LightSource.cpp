@@ -17,7 +17,7 @@ inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
     return color;
 }
 
-std::vector<LightSource> CreateLights(tinyxml2::XMLElement* elem)
+std::vector<LightSource> LoadLights(tinyxml2::XMLElement *elem)
 {
     std::vector<LightSource> lights;
     for (auto child = elem->FirstChildElement("PointLight"); child != NULL; child = child->NextSiblingElement()){

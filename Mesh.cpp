@@ -43,7 +43,7 @@ inline auto GetTransformations(std::istringstream& stream)
     return result;
 }
 
-std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem)
+std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 {
     std::vector<Mesh> meshes;
 

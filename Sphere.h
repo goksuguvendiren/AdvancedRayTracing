@@ -26,4 +26,4 @@ public:
     int ID() const { return id; }
 };
 
-std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem);
+std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem);

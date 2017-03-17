@@ -56,7 +56,7 @@ inline int GetInt(std::istringstream& stream)
     return val;
 }
 
-std::vector<Sphere> CreateSpheres(tinyxml2::XMLElement* elem)
+std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
 {
     std::vector<Sphere> spheres;
 

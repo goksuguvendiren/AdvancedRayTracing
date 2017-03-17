@@ -17,7 +17,7 @@ inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
     return color;
 }
 
-std::vector<Material> CreateMaterials(tinyxml2::XMLElement* elem)
+std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
 {
     std::vector<Material> mats;
     for (auto child = elem->FirstChildElement("Material"); child != NULL; child = child->NextSiblingElement()){
