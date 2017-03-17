@@ -30,4 +30,4 @@ public:
     float PhongExp() const { return phongExponent; }
 };
 
-std::vector<Material> CreateMaterials(tinyxml2::XMLElement* elem);
+std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);

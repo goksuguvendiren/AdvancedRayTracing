@@ -25,4 +25,4 @@ public:
     int ID() const { return id; }
 };
 
-std::vector<Mesh> CreateMeshes(tinyxml2::XMLElement* elem);
+std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem);

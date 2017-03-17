@@ -55,7 +55,7 @@ void Scene::CreateScene(std::string filename)
 
     Camera camera;
     if (auto elem = docscene->FirstChildElement("Camera")){
-        camera = CreateCamera(elem);
+        camera = LoadCamera(elem);
     }
     else {
         std::cerr << "Could not read camera information\n";
@@ -68,42 +68,32 @@ void Scene::CreateScene(std::string filename)
             auto ambient = GetElem(al);
             AmbientLight(ambient);
         }
-        ls = CreateLights(elem);
+        lights = LoadLights(elem);
     }
 
     std::vector<Material> mats;
     if (auto elem = docscene->FirstChildElement("Materials")){
-        mats = CreateMaterials(elem);
+        materials = LoadMaterials(elem);
     }
 
-    materials = std::move(mats);
-
-    std::vector<glm::vec3> verts;
     if (auto elem = docscene->FirstChildElement("VertexData")){
-        verts = CreateVertexData(elem);
+        vertices = LoadVertexData(elem);
     }
-    vertices = std::move(verts);
 
-    std::map<std::string, glm::mat4> trs;
     if (auto elem = docscene->FirstChildElement("Transformations")){
-        trs  = CreateTransformations(elem);
+        transformations  = LoadTransformations(elem);
     }
-    transformations = std::move(trs);
 
     std::vector<Triangle> tris;
     std::vector<Sphere> sphs;
     std::vector<Mesh> mshs;
     if(auto objects = docscene->FirstChildElement("Objects")){
-        tris = CreateTriangles(objects);
-        sphs = CreateSpheres(objects);
-        mshs = CreateMeshes(objects);
+        triangles = LoadTriangles(objects);
+        spheres   = LoadSpheres(objects);
+        meshes    = LoadMeshes(objects);
     }
 
     AddCamera(camera);
-    triangles = std::move(tris);
-    spheres   = std::move(sphs);
-    meshes    = std::move(mshs);
-    lights    = std::move(ls);
 
     for_each(triangles.begin(), triangles.end(), [this](auto& tri) { shapes.push_back(&tri); });
     for_each(spheres.begin(), spheres.end(), [this](auto& sph) { shapes.push_back(&sph); });

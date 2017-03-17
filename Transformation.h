@@ -15,7 +15,7 @@ enum class Transformations
     Rotation
 };
 
-std::map<std::string, glm::mat4> CreateTransformations(tinyxml2::XMLElement* elem);
-std::map<std::string, glm::mat4> CreateTranslations(tinyxml2::XMLElement* elem);
-std::map<std::string, glm::mat4> CreateRotations(tinyxml2::XMLElement* elem);
-std::map<std::string, glm::mat4> CreateScalings(tinyxml2::XMLElement* elem);
+std::map<std::string, glm::mat4> LoadTransformations(tinyxml2::XMLElement *elem);
+std::map<std::string, glm::mat4> LoadTranslations(tinyxml2::XMLElement *elem);
+std::map<std::string, glm::mat4> LoadRotations(tinyxml2::XMLElement *elem);
+std::map<std::string, glm::mat4> LoadScalings(tinyxml2::XMLElement *elem);

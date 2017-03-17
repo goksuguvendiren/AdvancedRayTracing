@@ -22,7 +22,7 @@ glm::vec3 GetVertex(std::istringstream& stream)
     return {datax, datay, dataz};
 }
 
-std::vector<glm::vec3> CreateVertexData(tinyxml2::XMLElement* elem)
+std::vector<glm::vec3> LoadVertexData(tinyxml2::XMLElement *elem)
 {
     std::istringstream stream { elem->GetText() };
 

@@ -26,21 +26,21 @@ inline float GetAngle(std::istringstream& ss)
     return angle;
 }
 
-std::map<std::string, glm::mat4> CreateTransformations(tinyxml2::XMLElement* elem)
+std::map<std::string, glm::mat4> LoadTransformations(tinyxml2::XMLElement *elem)
 {
     std::map<std::string, glm::mat4> trs;
 
-    auto translations = std::move(CreateTranslations(elem));
+    auto translations = std::move(LoadTranslations(elem));
     for (auto translation : translations){
         trs.insert(translation);
     }
 
-    auto rotations = std::move(CreateRotations(elem));
+    auto rotations = std::move(LoadRotations(elem));
     for (auto rotation : rotations){
         trs.insert(rotation);
     }
 
-    auto scalings = std::move(CreateScalings(elem));
+    auto scalings = std::move(LoadScalings(elem));
     for (auto scaling : scalings){
         trs.insert(scaling);
     }
@@ -48,7 +48,7 @@ std::map<std::string, glm::mat4> CreateTransformations(tinyxml2::XMLElement* ele
     return trs;
 }
 
-std::map<std::string, glm::mat4> CreateTranslations(tinyxml2::XMLElement* elem)
+std::map<std::string, glm::mat4> LoadTranslations(tinyxml2::XMLElement *elem)
 {
     std::map<std::string, glm::mat4> trs;
     for (auto child = elem->FirstChildElement("Translation"); child != NULL; child = child->NextSiblingElement()){
@@ -67,7 +67,7 @@ std::map<std::string, glm::mat4> CreateTranslations(tinyxml2::XMLElement* elem)
 }
 
 
-std::map<std::string, glm::mat4> CreateRotations(tinyxml2::XMLElement* elem)
+std::map<std::string, glm::mat4> LoadRotations(tinyxml2::XMLElement *elem)
 {
     std::map<std::string, glm::mat4> rts;
     for (auto child = elem->FirstChildElement("Rotation"); child != NULL; child = child->NextSiblingElement()){
@@ -78,7 +78,7 @@ std::map<std::string, glm::mat4> CreateRotations(tinyxml2::XMLElement* elem)
 
         auto angle   = GetAngle(ss);
         auto details = GetElem(ss);
-        auto matrix  = glm::rotate(glm::mat4(1.), angle, details);
+        auto matrix  = glm::rotate(glm::mat4(1.), glm::radians(angle), details);
 
         auto sth = "r" + std::to_string(id);
         rts.insert(std::make_pair(sth, matrix));
@@ -87,7 +87,7 @@ std::map<std::string, glm::mat4> CreateRotations(tinyxml2::XMLElement* elem)
     return rts;
 }
 
-std::map<std::string, glm::mat4> CreateScalings(tinyxml2::XMLElement* elem)
+std::map<std::string, glm::mat4> LoadScalings(tinyxml2::XMLElement *elem)
 {
     std::map<std::string, glm::mat4> scls;
     for (auto child = elem->FirstChildElement("Scaling"); child != NULL; child = child->NextSiblingElement()){

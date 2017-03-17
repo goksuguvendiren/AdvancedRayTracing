@@ -55,5 +55,5 @@ public:
     glm::vec3 CalculateReflectance(const HitInfo& hit) const;
 };
 
-Camera CreateCamera(tinyxml2::XMLElement* element);
+Camera LoadCamera(tinyxml2::XMLElement *element);
 

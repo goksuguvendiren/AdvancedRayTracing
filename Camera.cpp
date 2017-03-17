@@ -104,7 +104,7 @@ inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
     return color;
 }
 
-Camera CreateCamera(tinyxml2::XMLElement* element)
+Camera LoadCamera(tinyxml2::XMLElement *element)
 {
     int id;
     if (element->QueryIntAttribute("id", &id) == tinyxml2::XML_NO_ATTRIBUTE){

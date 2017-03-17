@@ -34,5 +34,5 @@ public:
     int ID() const;
 };
 
-std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem);
+std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);
 
