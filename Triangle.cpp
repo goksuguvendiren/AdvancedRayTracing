@@ -132,9 +132,9 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
 
-        auto ind0 = scene.GetVertex(GetInt(stream));
-        auto ind1 = scene.GetVertex(GetInt(stream));
-        auto ind2 = scene.GetVertex(GetInt(stream));
+        auto ind0 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
+        auto ind1 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
+        auto ind2 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
 
         glm::mat4 matrix;
         for (auto& tr : transformations){
@@ -142,15 +142,17 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
             matrix = m * matrix;
         }
 
-        glm::vec4 v0(ind0, 1);
-        glm::vec4 v1(ind1, 1);
-        glm::vec4 v2(ind2, 1);
+        ind0 = matrix * ind0;
+        ind1 = matrix * ind1;
+        ind2 = matrix * ind2;
 
-        ind0 = matrix * v0;
-        ind1 = matrix * v1;
-        ind2 = matrix * v2;
+//        return std::make_pair(true, Triangle{Vertex{{ind0.x, ind0.y, ind0.z}},
+//                                             Vertex{{ind1.x, ind1.y, ind1.z}},
+//                                             Vertex{{ind2.x, ind2.y, ind2.z}}});
 
-        tris.push_back({Vertex{ind0}, Vertex{ind1}, Vertex{ind2}, matID});
+        tris.push_back({Vertex{{ind0.x, ind0.y, ind0.z}},
+                        Vertex{{ind1.x, ind1.y, ind1.z}},
+                        Vertex{{ind2.x, ind2.y, ind2.z}}, matID});
     }
 
     return tris;

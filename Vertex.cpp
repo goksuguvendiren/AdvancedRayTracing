@@ -7,7 +7,7 @@
 #include "Vertex.h"
 #include "tinyxml/tinyxml2.h"
 
-glm::vec3 GetVertex(std::istringstream& stream)
+Vertex GetVertex(std::istringstream& stream)
 {
     Vertex vert;
 
@@ -19,14 +19,14 @@ glm::vec3 GetVertex(std::istringstream& stream)
     stream >> datay;
     stream >> dataz;
 
-    return {datax, datay, dataz};
+    return Vertex{glm::vec3{datax, datay, dataz}};
 }
 
 std::vector<Vertex> LoadVertexData(tinyxml2::XMLElement *elem)
 {
     std::istringstream stream { elem->GetText() };
 
-    std::vector<glm::vec3> verts;
+    std::vector<Vertex> verts;
     while(stream){
         verts.push_back(GetVertex(stream));
     }

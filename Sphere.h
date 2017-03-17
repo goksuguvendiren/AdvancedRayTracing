@@ -8,19 +8,21 @@
 #include "glm/vec3.hpp"
 #include "Material.h"
 #include "Shape.h"
+#include "Vertex.h"
 
 class Ray;
 class HitInfo;
+class Vertex;
 
 class Sphere : public Shape
 {
     int id;
     float radius;
-    glm::vec3 center;
+    Vertex center;
     int materialID;
 
 public:
-    Sphere(int sid = 1, float rd = 1.0f, glm::vec3 c = {1.0f, 0.0f, 0.0f}, int mid = 1) : id(sid), radius(rd), center(c), materialID(mid) {}
+    Sphere(int sid = 1, float rd = 1.0f, Vertex c = Vertex{glm::vec3{1.0f, 0.0f, 0.0f}}, int mid = 1);
     std::pair<bool, HitInfo> Hit(const Ray &ray) const;
     bool FastHit (const Ray &ray) const;
     int ID() const { return id; }

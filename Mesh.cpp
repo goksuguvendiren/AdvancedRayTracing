@@ -10,24 +10,26 @@ inline std::pair<bool, Triangle> GetFace(std::istringstream& stream, const glm::
     int x, y, z;
 
     if (!(stream >> x)) {
-        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
+        return std::make_pair(false, Triangle {Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}});
     }
     if (!(stream >> y)) {
-        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
+        return std::make_pair(false, Triangle {Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}});
     }
     if (!(stream >> z)) {
-        return std::make_pair(false, Triangle {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}});
+        return std::make_pair(false, Triangle {Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}, Vertex{glm::vec3{1, 0, 0}}});
     }
 
-    auto ind0 = glm::vec4(scene.GetVertex(x), 1);
-    auto ind1 = glm::vec4(scene.GetVertex(y), 1);
-    auto ind2 = glm::vec4(scene.GetVertex(z), 1);
+    auto ind0 = glm::vec4(scene.GetVertex(x).Data(), 1);
+    auto ind1 = glm::vec4(scene.GetVertex(y).Data(), 1);
+    auto ind2 = glm::vec4(scene.GetVertex(z).Data(), 1);
 
     ind0 = matrix * ind0;
     ind1 = matrix * ind1;
     ind2 = matrix * ind2;
 
-    return std::make_pair(true, Triangle{ind0, ind1, ind2});
+    return std::make_pair(true, Triangle{Vertex{{ind0.x, ind0.y, ind0.z}},
+                                         Vertex{{ind1.x, ind1.y, ind1.z}},
+                                         Vertex{{ind2.x, ind2.y, ind2.z}}});
 }
 
 inline auto GetTransformations(std::istringstream& stream)

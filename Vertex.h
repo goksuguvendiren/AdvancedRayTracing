@@ -14,9 +14,10 @@ class Vertex
 
 public:
     Vertex(glm::vec3 d = {0, 0, 0}) : data(d) {}
+
     auto Data() const { return data; }
     auto Normal() const { return normal; }
     auto Normal(glm::vec3 n) { normal = n; }
 };
 
-std::vector<glm::vec3> LoadVertexData(tinyxml2::XMLElement *elem);
+std::vector<Vertex> LoadVertexData(tinyxml2::XMLElement *elem);

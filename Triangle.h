@@ -24,7 +24,7 @@ class Triangle : public Shape
     int id;
 
 public:
-    Triangle(Vertex a = {0, 0, 0}, Vertex b = {0, 0, 0}, Vertex c = {0, 0, 0},
+    Triangle(Vertex a = glm::vec3{0, 0, 0}, Vertex b = glm::vec3{0, 0, 0}, Vertex c = glm::vec3{0, 0, 0},
              int mid = 1, int tid = 1);
 
     ~Triangle();

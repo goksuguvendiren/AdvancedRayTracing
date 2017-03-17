@@ -154,11 +154,11 @@ void Scene::AddTriangle(const Triangle& tri) { triangles.push_back(tri); }
 void Scene::AddMaterial(Material&& mat) { materials.push_back(std::move(mat)); }
 void Scene::AddMaterial(const Material& mat) { materials.push_back(mat); }
 
-void Scene::AddVertex(glm::vec3&& vert) { vertices.push_back(std::move(vert)); }
-void Scene::AddVertex(const glm::vec3& vert) { vertices.push_back(vert); }
+void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
+void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
 const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
-glm::vec3 Scene::GetVertex(int id) { return vertices[id - 1]; }
+Vertex Scene::GetVertex(int id) { return vertices[id - 1]; }
 
 const std::vector<Camera> & Scene::Cameras() const
 {

@@ -30,7 +30,7 @@ class Scene
     std::vector<Mesh> meshes;
 
     std::vector<Material> materials;
-    std::vector<glm::vec3> vertices;
+    std::vector<Vertex> vertices;
     std::map<std::string, glm::mat4> transformations;
     std::vector<LightSource> lights;
     std::vector<Camera> cameras;
@@ -76,11 +76,11 @@ public:
     void AddMaterial(Material&& mat);
     void AddMaterial(const Material& mat);
 
-    void AddVertex(glm::vec3&& vert);
-    void AddVertex(const glm::vec3& vert);
+    void AddVertex(Vertex&& vert);
+    void AddVertex(const Vertex& vert);
 
     const Material& GetMaterial(int id);
-    glm::vec3 GetVertex(int id);
+    Vertex GetVertex(int id);
 
     void CreateScene(std::string filename);
 };
