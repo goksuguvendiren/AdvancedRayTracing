@@ -9,12 +9,12 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::string sceneName = "bunny";
+    std::string sceneName = "simple_transform";
     if (argc == 2){
         sceneName = argv[1];
     }
     std::cerr << "Started loading the scene " << sceneName << "...\n";
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/hw1_inputs/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/hw2_inputs/" + sceneName + ".xml");
     std::cerr << "Finished loading...\n";
 
     std::vector<Image> images;
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/hw1_outputs/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/hw2_outputs/" + sceneName + ".png", im);
     }
 
     return 0;

@@ -6,6 +6,7 @@
 #include <sstream>
 #include "Triangle.h"
 #include "Material.h"
+#include <sstream>
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
@@ -90,18 +91,6 @@ const Material* Triangle::Material() const
 
 Triangle::~Triangle() {}
 
-inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
-{
-    glm::vec3 color;
-
-    std::istringstream ss {element->GetText()};
-    ss >> color.r;
-    ss >> color.g;
-    ss >> color.b;
-
-    return color;
-}
-
 inline int GetInt(std::istringstream& stream)
 {
     int val;
@@ -109,6 +98,19 @@ inline int GetInt(std::istringstream& stream)
     stream >> val;
 
     return val;
+}
+
+auto GetTransformations(std::istringstream& stream)
+{
+    std::vector<std::string> result;
+
+    while(stream.good()){
+        std::string tr;
+        stream >> tr;
+        result.push_back(tr);
+    }
+
+    return result;
 }
 
 std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem)
@@ -120,11 +122,31 @@ std::vector<Triangle> CreateTriangles(tinyxml2::XMLElement* elem)
         child->QueryIntAttribute("id", &id);
         int matID = child->FirstChildElement("Material")->IntText(0);
 
+        std::vector<std::string> transformations;
+        if(auto trns = child->FirstChildElement("Transformations")){
+            std::istringstream ss {trns->GetText()};
+            transformations = std::move(GetTransformations(ss));
+        }
+
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
 
         auto ind0 = scene.GetVertex(GetInt(stream));
         auto ind1 = scene.GetVertex(GetInt(stream));
         auto ind2 = scene.GetVertex(GetInt(stream));
+
+        glm::mat4 matrix;
+        for (auto& tr : transformations){
+            auto m = scene.GetTransformation(tr);
+            matrix = matrix * m;
+        }
+
+        glm::vec4 v0(ind0, 1);
+        glm::vec4 v1(ind1, 1);
+        glm::vec4 v2(ind2, 1);
+
+        ind0 = matrix * v0;
+        ind1 = matrix * v1;
+        ind2 = matrix * v2;
 
         tris.push_back({ind0, ind1, ind2, matID});
     }

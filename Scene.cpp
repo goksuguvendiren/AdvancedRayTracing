@@ -5,9 +5,11 @@
 #include "Scene.h"
 #include "LightSource.h"
 #include "Triangle.h"
+#include "Transformation.h"
 #include "Mesh.h"
 #include "tinyxml/tinyxml2.h"
 #include <sstream>
+#include <map>
 
 inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
@@ -80,8 +82,13 @@ void Scene::CreateScene(std::string filename)
     if (auto elem = docscene->FirstChildElement("VertexData")){
         verts = CreateVertexData(elem);
     }
-
     vertices = std::move(verts);
+
+    std::map<std::string, glm::mat4> trs;
+    if (auto elem = docscene->FirstChildElement("Transformations")){
+        trs  = CreateTransformations(elem);
+    }
+    transformations = std::move(trs);
 
     std::vector<Triangle> tris;
     std::vector<Sphere> sphs;
@@ -101,6 +108,11 @@ void Scene::CreateScene(std::string filename)
     for_each(triangles.begin(), triangles.end(), [this](auto& tri) { shapes.push_back(&tri); });
     for_each(spheres.begin(), spheres.end(), [this](auto& sph) { shapes.push_back(&sph); });
     for_each(meshes.begin(), meshes.end(), [this](auto& msh) { shapes.push_back(&msh); });
+}
+
+glm::mat4 Scene::GetTransformation(std::string str) const
+{
+    return transformations.find(str)->second;
 }
 
 Scene::Scene(glm::vec3 bg, glm::vec3 al) : backgroundColor(bg), ambientLight(al)
