@@ -44,6 +44,21 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
     return ambient;
 }
 
+void UpdateProgress(float progress)
+{
+    int barWidth = 70;
+
+    std::cout << "[";
+    int pos = barWidth * progress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(progress * 100.0) << " %\r";
+    std::cout.flush();
+}
+
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
@@ -65,23 +80,25 @@ Image Camera::Render() const
             rowPixLocation += oneRight;
             auto ray = Ray(position, rowPixLocation - position);
 
-            HitInfo ultHit;
-            bool hashit = false;
+            boost::optional<HitInfo> ultHit;
 
             for (auto shape : scene.Shapes()){
-                std::pair<bool, HitInfo> hit;
-                if ((hit = shape->Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
-                    ultHit = hit.second;
-                    hashit = true;
+                boost::optional<HitInfo> hit;
+                if ((hit = shape->Hit(ray)) && (!ultHit || hit->Parameter() < ultHit->Parameter())){
+                    ultHit = *hit;
                 }
             }
 
-            if (hashit)
-                image.at(i, j) = CalculateReflectance(ultHit);
+            if (ultHit)
+                image.at(i, j) = CalculateReflectance(*ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
         }
+
+        auto progress = i / (float)imagePlane.NY();
+        UpdateProgress(progress);
     }
+    std::cout << std::endl;
 
     return image;
 }

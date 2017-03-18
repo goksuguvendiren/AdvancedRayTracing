@@ -4,7 +4,10 @@
 
 #include <vector>
 #include <sstream>
+#include <boost/optional.hpp>
 #include "Triangle.h"
+
+extern Scene scene;
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
@@ -16,17 +19,17 @@ inline float determinant(const glm::vec3& col1,
 
 }
 
-std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
+boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
     glm::vec3 col1(3);
     glm::vec3 col2(3);
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    col1 = pointA - pointB;
-    col2 = pointA - pointC;
+    col1 = pointA.Data() - pointB.Data();
+    col2 = pointA.Data() - pointC.Data();
     col3 = ray.Direction();
-    col4 = pointA - ray.Origin();
+    col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -35,11 +38,13 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return std::make_pair(false, HitInfo());
+    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return boost::none;
 
     auto point = ray.Origin() + param * ray.Direction();
 
-    return std::make_pair(true, HitInfo(surfNormal, *material, param, ray));
+    glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
+
+    return HitInfo(normal, *material, param, ray);
 }
 
 
@@ -50,10 +55,10 @@ bool Triangle::FastHit(const Ray &ray) const
     glm::vec3 col3(3);
     glm::vec3 col4(3);
 
-    col1 = pointA - pointB;
-    col2 = pointA - pointC;
+    col1 = pointA.Data() - pointB.Data();
+    col2 = pointA.Data() - pointC.Data();
     col3 = ray.Direction();
-    col4 = pointA - ray.Origin();
+    col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -67,14 +72,18 @@ bool Triangle::FastHit(const Ray &ray) const
     return true;
 }
 
-Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c, int mid, int tid) : pointA(a),
-                                                            pointB(b),
-                                                            pointC(c),
-                                                            material(&scene.GetMaterial(mid)),
-                                                            id(tid)
+Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid) : pointA(a),
+                                                                     pointB(b),
+                                                                     pointC(c),
+                                                                     material(&scene.GetMaterial(mid)),
+                                                                     id(tid)
 {
-    surfNormal = glm::normalize(glm::cross(pointB - pointA,
-                                           pointC - pointA));
+    surfNormal = glm::normalize(glm::cross(pointB.Data() - pointA.Data(),
+                                           pointC.Data() - pointA.Data()));
+
+    pointA.Normal(surfNormal);
+    pointB.Normal(surfNormal);
+    pointC.Normal(surfNormal);
 }
 
 int Triangle::ID() const
@@ -128,9 +137,13 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
 
-        auto ind0 = scene.GetVertex(GetInt(stream));
-        auto ind1 = scene.GetVertex(GetInt(stream));
-        auto ind2 = scene.GetVertex(GetInt(stream));
+        auto id0 = GetInt(stream);
+        auto id1 = GetInt(stream);
+        auto id2 = GetInt(stream);
+
+        auto ind0 = glm::vec4(scene.GetVertex(id0).Data(), 1);
+        auto ind1 = glm::vec4(scene.GetVertex(id1).Data(), 1);
+        auto ind2 = glm::vec4(scene.GetVertex(id2).Data(), 1);
 
         glm::mat4 matrix;
         for (auto& tr : transformations){
@@ -138,15 +151,17 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
             matrix = m * matrix;
         }
 
-        glm::vec4 v0(ind0, 1);
-        glm::vec4 v1(ind1, 1);
-        glm::vec4 v2(ind2, 1);
+        ind0 = matrix * ind0;
+        ind1 = matrix * ind1;
+        ind2 = matrix * ind2;
 
-        ind0 = matrix * v0;
-        ind1 = matrix * v1;
-        ind2 = matrix * v2;
+//        return std::make_pair(true, Triangle{Vertex{{ind0.x, ind0.y, ind0.z}},
+//                                             Vertex{{ind1.x, ind1.y, ind1.z}},
+//                                             Vertex{{ind2.x, ind2.y, ind2.z}}});
 
-        tris.push_back({ind0, ind1, ind2, matID});
+        tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
+                        Vertex{id1, {ind1.x, ind1.y, ind1.z}},
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
     }
 
     return tris;

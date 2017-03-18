@@ -9,7 +9,7 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::string sceneName = "simple_transform";
+    std::string sceneName = "bunny";
     if (argc == 2){
         sceneName = argv[1];
     }

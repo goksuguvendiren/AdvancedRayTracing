@@ -71,7 +71,6 @@ void Scene::CreateScene(std::string filename)
         lights = LoadLights(elem);
     }
 
-    std::vector<Material> mats;
     if (auto elem = docscene->FirstChildElement("Materials")){
         materials = LoadMaterials(elem);
     }
@@ -87,6 +86,7 @@ void Scene::CreateScene(std::string filename)
     std::vector<Triangle> tris;
     std::vector<Sphere> sphs;
     std::vector<Mesh> mshs;
+
     if(auto objects = docscene->FirstChildElement("Objects")){
         triangles = LoadTriangles(objects);
         spheres   = LoadSpheres(objects);
@@ -154,11 +154,14 @@ void Scene::AddTriangle(const Triangle& tri) { triangles.push_back(tri); }
 void Scene::AddMaterial(Material&& mat) { materials.push_back(std::move(mat)); }
 void Scene::AddMaterial(const Material& mat) { materials.push_back(mat); }
 
-void Scene::AddVertex(glm::vec3&& vert) { vertices.push_back(std::move(vert)); }
-void Scene::AddVertex(const glm::vec3& vert) { vertices.push_back(vert); }
+void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
+void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
 const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
-glm::vec3 Scene::GetVertex(int id) { return vertices[id - 1]; }
+const Triangle& Scene::GetTriangle(int id) { return triangles[id - 1]; }
+Vertex& Scene::GetVertex(int id) { return vertices[id - 1]; }
+
+
 
 const std::vector<Camera> & Scene::Cameras() const
 {

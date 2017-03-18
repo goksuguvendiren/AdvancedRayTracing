@@ -11,27 +11,33 @@
 #include "Scene.h"
 
 class Material;
+class Vertex;
 
 class Triangle : public Shape
 {
-    glm::vec3 pointA;
-    glm::vec3 pointB;
-    glm::vec3 pointC;
+    Vertex pointA;
+    Vertex pointB;
+    Vertex pointC;
 
     glm::vec3 surfNormal;
     const Material* material;
     int id;
 
 public:
-    Triangle(glm::vec3 a = {0, 0, 0}, glm::vec3 b = {0, 0, 0}, glm::vec3 c = {0, 0, 0},
-             int mid = 1, int tid = 1);
+    Triangle() = default;
+    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1);
 
     ~Triangle();
 
     const Material* Material() const;
-    std::pair<bool, HitInfo> Hit (const Ray& ray) const;
+    boost::optional<HitInfo> Hit (const Ray& ray) const;
     bool FastHit(const Ray& ray) const;
     int ID() const;
+
+    auto Normal() const { return surfNormal; }
+    Vertex& PointA() { return pointA; }
+    Vertex& PointB() { return pointB; }
+    Vertex& PointC() { return pointC; }
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);
