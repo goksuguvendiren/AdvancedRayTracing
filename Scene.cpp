@@ -158,7 +158,10 @@ void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
 void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
 const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
-Vertex Scene::GetVertex(int id) { return vertices[id - 1]; }
+const Triangle& Scene::GetTriangle(int id) { return triangles[id - 1]; }
+Vertex& Scene::GetVertex(int id) { return vertices[id - 1]; }
+
+
 
 const std::vector<Camera> & Scene::Cameras() const
 {

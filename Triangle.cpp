@@ -4,7 +4,10 @@
 
 #include <vector>
 #include <sstream>
+#include <boost/optional.hpp>
 #include "Triangle.h"
+
+extern Scene scene;
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
@@ -16,7 +19,7 @@ inline float determinant(const glm::vec3& col1,
 
 }
 
-std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
+boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
     glm::vec3 col1(3);
     glm::vec3 col2(3);
@@ -35,11 +38,13 @@ std::pair<bool, HitInfo> Triangle::Hit (const Ray &ray) const
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return std::make_pair(false, HitInfo());
+    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return boost::none;
 
     auto point = ray.Origin() + param * ray.Direction();
 
-    return std::make_pair(true, HitInfo(surfNormal, *material, param, ray));
+    glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
+
+    return HitInfo(normal, *material, param, ray);
 }
 
 
@@ -132,9 +137,13 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};
 
-        auto ind0 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
-        auto ind1 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
-        auto ind2 = glm::vec4(scene.GetVertex(GetInt(stream)).Data(), 1);
+        auto id0 = GetInt(stream);
+        auto id1 = GetInt(stream);
+        auto id2 = GetInt(stream);
+
+        auto ind0 = glm::vec4(scene.GetVertex(id0).Data(), 1);
+        auto ind1 = glm::vec4(scene.GetVertex(id1).Data(), 1);
+        auto ind2 = glm::vec4(scene.GetVertex(id2).Data(), 1);
 
         glm::mat4 matrix;
         for (auto& tr : transformations){
@@ -150,9 +159,9 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 //                                             Vertex{{ind1.x, ind1.y, ind1.z}},
 //                                             Vertex{{ind2.x, ind2.y, ind2.z}}});
 
-        tris.push_back({Vertex{{ind0.x, ind0.y, ind0.z}},
-                        Vertex{{ind1.x, ind1.y, ind1.z}},
-                        Vertex{{ind2.x, ind2.y, ind2.z}}, matID});
+        tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
+                        Vertex{id1, {ind1.x, ind1.y, ind1.z}},
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
     }
 
     return tris;

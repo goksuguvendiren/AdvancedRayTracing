@@ -14,7 +14,7 @@
 Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), center(c), materialID(mid) {}
 
 
-std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
+boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 {
     auto eminc = ray.Origin() - center.Data();
 
@@ -24,14 +24,14 @@ std::pair<bool, HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto delta = B * B - 4 * A * C;
 
-    if (delta < scene.IntersectionTestEpsilon()) return std::make_pair(false, HitInfo());
+    if (delta < scene.IntersectionTestEpsilon()) return boost::none;
 
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
 
     auto pointOfIntersection = ray.Origin() + param * ray.Direction();
     auto surfaceNormal = glm::normalize(pointOfIntersection - center.Data());
 
-    return std::make_pair(true, HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray));
+    return HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray);
 }
 
 bool Sphere::FastHit(const Ray &ray) const

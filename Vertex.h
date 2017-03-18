@@ -12,12 +12,15 @@ class Vertex
     glm::vec3 data;
     glm::vec3 normal;
 
+    int id;
+
 public:
-    Vertex(glm::vec3 d = {0, 0, 0}) : data(d) {}
+    Vertex(int i = 0, glm::vec3 d = {0, 0, 0}, glm::vec3 n = {1, 0, 0}) : id(i), data(d), normal(n) {}
 
     auto Data() const { return data; }
     auto Normal() const { return normal; }
     auto Normal(glm::vec3 n) { normal = n; }
+    auto ID() const { return id; }
 };
 
 std::vector<Vertex> LoadVertexData(tinyxml2::XMLElement *elem);

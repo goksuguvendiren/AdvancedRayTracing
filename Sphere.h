@@ -22,8 +22,8 @@ class Sphere : public Shape
     int materialID;
 
 public:
-    Sphere(int sid = 1, float rd = 1.0f, Vertex c = Vertex{glm::vec3{1.0f, 0.0f, 0.0f}}, int mid = 1);
-    std::pair<bool, HitInfo> Hit(const Ray &ray) const;
+    Sphere(int sid = 1, float rd = 1.0f, Vertex c = Vertex{1, glm::vec3{1.0f, 0.0f, 0.0f}}, int mid = 1);
+    boost::optional<HitInfo> Hit(const Ray &ray) const;
     bool FastHit (const Ray &ray) const;
     int ID() const { return id; }
 };

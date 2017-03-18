@@ -80,7 +80,10 @@ public:
     void AddVertex(const Vertex& vert);
 
     const Material& GetMaterial(int id);
-    Vertex GetVertex(int id);
+    const Triangle& GetTriangle(int id);
+    Vertex& GetVertex(int id);
+
+
 
     void CreateScene(std::string filename);
 };

@@ -65,22 +65,22 @@ Image Camera::Render() const
             rowPixLocation += oneRight;
             auto ray = Ray(position, rowPixLocation - position);
 
-            HitInfo ultHit;
-            bool hashit = false;
+            boost::optional<HitInfo> ultHit;
 
             for (auto shape : scene.Shapes()){
-                std::pair<bool, HitInfo> hit;
-                if ((hit = shape->Hit(ray)).first && hit.second.Parameter() < ultHit.Parameter()){
-                    ultHit = hit.second;
-                    hashit = true;
+                boost::optional<HitInfo> hit;
+                if ((hit = shape->Hit(ray)) && (!ultHit || hit->Parameter() < ultHit->Parameter())){
+                    ultHit = *hit;
                 }
             }
 
-            if (hashit)
-                image.at(i, j) = CalculateReflectance(ultHit);
+            if (ultHit)
+                image.at(i, j) = CalculateReflectance(*ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
         }
+
+        std::cerr << i / (float)imagePlane.NY() << '\n';
     }
 
     return image;

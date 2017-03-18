@@ -24,15 +24,20 @@ class Triangle : public Shape
     int id;
 
 public:
-    Triangle(Vertex a = glm::vec3{0, 0, 0}, Vertex b = glm::vec3{0, 0, 0}, Vertex c = glm::vec3{0, 0, 0},
-             int mid = 1, int tid = 1);
+    Triangle() = default;
+    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1);
 
     ~Triangle();
 
     const Material* Material() const;
-    std::pair<bool, HitInfo> Hit (const Ray& ray) const;
+    boost::optional<HitInfo> Hit (const Ray& ray) const;
     bool FastHit(const Ray& ray) const;
     int ID() const;
+
+    auto Normal() const { return surfNormal; }
+    Vertex& PointA() { return pointA; }
+    Vertex& PointB() { return pointB; }
+    Vertex& PointC() { return pointC; }
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);
