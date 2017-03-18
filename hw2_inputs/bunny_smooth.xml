@@ -2545,9 +2545,8 @@
     </VertexData>
 
     <Objects>
-        <Mesh id="1">
+        <Mesh id="1" shadingMode="smooth">
             <Material>1</Material>
-            <Transformations>t1</Transformations>
             <Faces>
                 1069 1647 1578
                 1058 909 939
