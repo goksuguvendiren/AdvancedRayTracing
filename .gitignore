@@ -1,5 +1,6 @@
 .idea/
-cmake-build-debug/
+cmake-build-debug
+cmake-build-release
 build
 hw1_outputs
 hw2_outputs
