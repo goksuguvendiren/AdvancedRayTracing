@@ -6,6 +6,7 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
+#include "Mesh.h"
 
 extern Scene scene;
 
@@ -72,11 +73,12 @@ bool Triangle::FastHit(const Ray &ray) const
     return true;
 }
 
-Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid) : pointA(a),
-                                                                     pointB(b),
-                                                                     pointC(c),
-                                                                     material(&scene.GetMaterial(mid)),
-                                                                     id(tid)
+Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : pointA(a),
+                                                                              pointB(b),
+                                                                              pointC(c),
+                                                                              material(&scene.GetMaterial(mid)),
+                                                                              id(tid), smooth(sm)
+
 {
     surfNormal = glm::normalize(glm::cross(pointB.Data() - pointA.Data(),
                                            pointC.Data() - pointA.Data()));

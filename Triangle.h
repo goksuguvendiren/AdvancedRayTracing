@@ -22,10 +22,11 @@ class Triangle : public Shape
     glm::vec3 surfNormal;
     const Material* material;
     int id;
+    bool smooth;
 
 public:
     Triangle() = default;
-    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1);
+    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1, bool sm = false);
 
     ~Triangle();
 
@@ -35,9 +36,14 @@ public:
     int ID() const;
 
     auto Normal() const { return surfNormal; }
+
     Vertex& PointA() { return pointA; }
     Vertex& PointB() { return pointB; }
     Vertex& PointC() { return pointC; }
+
+    Vertex PointA() const { return pointA; }
+    Vertex PointB() const { return pointB; }
+    Vertex PointC() const { return pointC; }
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);

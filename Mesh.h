@@ -28,7 +28,7 @@ public:
     Mesh(const Mesh& m) = delete;
     Mesh(Mesh&& m) = default;
 
-    void AddFace(Triangle& face) {
+    void AddFace(Triangle&& face) {
         faces.push_back(std::move(face));
     }
 
@@ -36,12 +36,16 @@ public:
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
 
-    void ShadingMode(ShadingMode mode) { shmode = mode; }
+    void ShadingMode(enum ShadingMode mode);
+    enum ShadingMode ShadingMode() const { return shmode; }
 
     boost::optional<HitInfo> Hit(const Ray &ray) const;
     bool FastHit(const Ray &ray) const;
 
     int ID() const { return id; }
+    const auto& Faces() const { return faces; }
+    auto MaterialID() const { return materialID; }
 };
 
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem);
+std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem);

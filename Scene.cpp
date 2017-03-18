@@ -88,9 +88,10 @@ void Scene::CreateScene(std::string filename)
     std::vector<Mesh> mshs;
 
     if(auto objects = docscene->FirstChildElement("Objects")){
-        triangles = LoadTriangles(objects);
-        spheres   = LoadSpheres(objects);
-        meshes    = LoadMeshes(objects);
+        triangles     = LoadTriangles(objects);
+        spheres       = LoadSpheres(objects);
+        meshes        = LoadMeshes(objects);
+        meshInstances = LoadMeshInstances(objects);
     }
 
     AddCamera(camera);
@@ -98,6 +99,7 @@ void Scene::CreateScene(std::string filename)
     for_each(triangles.begin(), triangles.end(), [this](auto& tri) { shapes.push_back(&tri); });
     for_each(spheres.begin(), spheres.end(), [this](auto& sph) { shapes.push_back(&sph); });
     for_each(meshes.begin(), meshes.end(), [this](auto& msh) { shapes.push_back(&msh); });
+    for_each(meshInstances.begin(), meshInstances.end(), [this](auto& msh) { shapes.push_back(&msh); });
 }
 
 glm::mat4 Scene::GetTransformation(std::string str) const
