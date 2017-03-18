@@ -78,7 +78,17 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             msh.AddFace(*tr);
         }
 
-        msh.AssociateV2T();
+        const char* asd = child->Attribute("shadingMode");
+        if (asd != nullptr){
+            std::string sm = std::string(asd);
+            if (sm == "smooth") {
+                msh.ShadingMode(ShadingMode::Smooth);
+                msh.AssociateV2T();
+            }
+        }
+        else {
+            msh.ShadingMode(ShadingMode::Flat);
+        }
 
         meshes.push_back(std::move(msh));
     }

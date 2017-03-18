@@ -44,6 +44,21 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
     return ambient;
 }
 
+void UpdateProgress(float progress)
+{
+    int barWidth = 70;
+
+    std::cout << "[";
+    int pos = barWidth * progress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(progress * 100.0) << " %\r";
+    std::cout.flush();
+}
+
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
@@ -80,8 +95,10 @@ Image Camera::Render() const
                 image.at(i, j) = scene.BackgroundColor();
         }
 
-        std::cerr << i / (float)imagePlane.NY() << '\n';
+        auto progress = i / (float)imagePlane.NY();
+        UpdateProgress(progress);
     }
+    std::cout << std::endl;
 
     return image;
 }
