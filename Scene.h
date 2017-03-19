@@ -28,6 +28,7 @@ class Scene
     std::vector<Sphere> spheres;
     std::vector<Triangle> triangles;
     std::vector<Mesh> meshes;
+    std::vector<Mesh> meshInstances;
 
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
