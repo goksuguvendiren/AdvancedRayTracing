@@ -44,12 +44,16 @@ public:
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
 
-    void ShadingMode(ShadingMode mode) { shmode = mode; }
+    void ShadingMode(enum ShadingMode mode);
+    enum ShadingMode ShadingMode() const { return shmode; }
 
     boost::optional<HitInfo> Hit(const Ray &ray) const;
     bool FastHit(const Ray &ray) const;
 
     int ID() const { return id; }
+    const auto& Faces() const { return faces; }
+    auto MaterialID() const { return materialID; }
 };
 
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem);
+std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem);
