@@ -37,6 +37,7 @@ public:
         up    = glm::normalize(u);
         gaze  = glm::normalize(g);
         right = glm::normalize(glm::cross(gaze, up));
+        gaze  = glm::normalize(glm::cross(up, right));
 
         planePosition = position + imagePlane.Left() * right + imagePlane.Top() * up + imagePlane.DistanceToCamera() * gaze;
     };
