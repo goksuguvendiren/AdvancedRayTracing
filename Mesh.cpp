@@ -81,12 +81,12 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.MaterialID(), index, baseMesh.ShadingMode() == ShadingMode::Smooth};
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.MaterialID(), index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }
 
         mesh.ShadingMode(baseMesh.ShadingMode());
-//        mesh.AssociateV2T();
+        mesh.AssociateV2T();
 
         meshes.push_back(std::move(mesh));
     }
