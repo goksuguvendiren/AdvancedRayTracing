@@ -86,7 +86,6 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
         }
 
         mesh.ShadingMode(baseMesh.ShadingMode());
-        mesh.AssociateV2T();
 
         meshes.push_back(std::move(mesh));
     }
@@ -130,7 +129,6 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             std::string sm = std::string(asd);
             if (sm == "smooth") {
                 msh.ShadingMode(ShadingMode::Smooth);
-                msh.AssociateV2T();
             }
         }
         else {
@@ -174,15 +172,15 @@ void Mesh::InsertVT(Triangle face)
 
 void Mesh::ShadingMode(enum ShadingMode mode)
 {
-//    shmode = mode;
-//    switch(shmode){
-//        case ShadingMode::Smooth:
-//            AssociateV2T();
-//            break;
-//        case ShadingMode::Flat:
-//        default:
-//                break;
-//    }
+    shmode = mode;
+    switch(shmode){
+        case ShadingMode::Smooth:
+            AssociateV2T();
+            break;
+        case ShadingMode::Flat:
+        default:
+                break;
+    }
 }
 
 void Mesh::SetNormal(Vertex& vert)
