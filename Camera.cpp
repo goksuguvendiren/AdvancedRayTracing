@@ -91,6 +91,7 @@ Image Camera::Render() const
 
             if (ultHit)
                 image.at(i, j) = CalculateReflectance(*ultHit);
+//                image.at(i, j) = 255.0f * (ultHit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
         }
