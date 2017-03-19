@@ -16,10 +16,13 @@ Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), cent
 
 boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 {
-    auto eminc = ray.Origin() - center.Data();
+    auto inverseRay = Ray{glm::vec3(inverseTrMatrix * glm::vec4(ray.Origin(), 1)),
+                          glm::vec3(inverseTrMatrix * glm::vec4(ray.Direction(), 0))};
 
-    auto A = glm::dot(ray.Direction(), ray.Direction());
-    auto B = 2.0f * glm::dot(ray.Direction(), eminc);
+    auto eminc = inverseRay.Origin() - center.Data();
+
+    auto A = glm::dot(inverseRay.Direction(), inverseRay.Direction());
+    auto B = 2.0f * glm::dot(inverseRay.Direction(), eminc);
     auto C = glm::dot(eminc, eminc) - radius * radius;
 
     auto delta = B * B - 4 * A * C;
@@ -28,18 +31,23 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
 
-    auto pointOfIntersection = ray.Origin() + param * ray.Direction();
-    auto surfaceNormal = glm::normalize(pointOfIntersection - center.Data());
+    auto modelPoint = inverseRay.Origin() + param * inverseRay.Direction();
+    auto worldPoint = glm::vec3(transformationMatrix * glm::vec4(modelPoint, 1));
 
-    return HitInfo(surfaceNormal, scene.GetMaterial(materialID), param, ray);
+    auto surfaceNormal = glm::normalize(glm::vec3(inverseTranspose * glm::vec4(modelPoint - center.Data(), 0)));
+
+    return HitInfo(surfaceNormal, scene.GetMaterial(materialID), worldPoint, param);
 }
 
 bool Sphere::FastHit(const Ray &ray) const
 {
-    auto eminc = ray.Origin() - center.Data();
+    auto inverseRay = Ray{glm::vec3(inverseTrMatrix * glm::vec4(ray.Origin(), 1)),
+                          glm::vec3(inverseTrMatrix * glm::vec4(ray.Direction(), 0))};
 
-    auto A = glm::dot(ray.Direction(), ray.Direction());
-    auto B = 2.0f * glm::dot(ray.Direction(), eminc);
+    auto eminc = inverseRay.Origin() - center.Data();
+
+    auto A = glm::dot(inverseRay.Direction(), inverseRay.Direction());
+    auto B = 2.0f * glm::dot(inverseRay.Direction(), eminc);
     auto C = glm::dot(eminc, eminc) - radius * radius;
 
     auto delta = B * B - 4 * A * C;
@@ -59,6 +67,19 @@ inline int GetInt(std::istringstream& stream)
     return val;
 }
 
+inline auto GetTransformations(std::istringstream& stream)
+{
+    std::vector<std::string> result;
+
+    while(stream.good()){
+        std::string tr;
+        stream >> tr;
+        result.push_back(tr);
+    }
+
+    return result;
+}
+
 std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
 {
     std::vector<Sphere> spheres;
@@ -72,7 +93,22 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
 
         Vertex center = scene.GetVertex(centerID);
 
-        spheres.push_back({id, radius, center, matID});
+        std::vector<std::string> transformations;
+        if(auto trns = child->FirstChildElement("Transformations")){
+            std::istringstream ss {trns->GetText()};
+            transformations = std::move(GetTransformations(ss));
+        }
+
+        glm::mat4 matrix;
+        for (auto& tr : transformations){
+            auto m = scene.GetTransformation(tr);
+            matrix = m * matrix;
+        }
+
+        Sphere sp {id, radius, center, matID};
+        sp.TransformationMatrix(matrix);
+
+        spheres.push_back(std::move(sp));
     }
 
     return spheres;

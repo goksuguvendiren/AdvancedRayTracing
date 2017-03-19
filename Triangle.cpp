@@ -45,7 +45,7 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 
     glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
 
-    return HitInfo(normal, *material, param, ray);
+    return HitInfo(normal, *material, point, param);
 }
 
 
