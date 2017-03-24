@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 #include "Triangle.h"
-#include "BoundingBox.h"
+#include "Box.h"
 
 enum class ShadingMode
 {
@@ -24,14 +24,15 @@ class Mesh : public Shape
     std::vector<Triangle> faces;
     std::multimap<int, int> vertex_triangle_associtations;
 
-    BoundingBox bbox;
 
 public:
+    BoundingBox bbox;
+
     Mesh(int mid = 1, int matID = 1) : id(mid), materialID(matID), shmode(ShadingMode::Flat) {}
     Mesh(const Mesh& m) = delete;
     Mesh(Mesh&& m) = default;
 
-    void AddFace(Triangle& face)
+    void AddFace(Triangle&& face)
     {
         bbox.Compare(face.PointA().Data());
         bbox.Compare(face.PointB().Data());

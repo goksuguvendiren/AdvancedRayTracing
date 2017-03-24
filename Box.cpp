@@ -2,12 +2,10 @@
 // Created by Göksu Güvendiren on 18/03/2017.
 //
 
-#include "BoundingBox.h"
+#include "Box.h"
 
-boost::optional<HitInfo> BoundingBox::Hit(const Ray &ray) const
+bool BoundingBox::Hit(const Ray &ray) const
 {
-    boost::optional<HitInfo> ultHit;
-
     double tx1 = (minValues.x - ray.Origin().x) / ray.Direction().x;
     double tx2 = (maxValues.x - ray.Origin().x) / ray.Direction().x;
 
@@ -20,9 +18,13 @@ boost::optional<HitInfo> BoundingBox::Hit(const Ray &ray) const
     tmin = std::max(tmin, std::min(ty1, ty2));
     tmax = std::min(tmax, std::max(ty1, ty2));
 
-//    return tmax >= tmin;
+    double tz1 = (minValues.z - ray.Origin().z) / ray.Direction().z;
+    double tz2 = (maxValues.z - ray.Origin().z) / ray.Direction().z;
 
-    return ultHit;
+    tmin = std::max(tmin, std::min(tz1, tz2));
+    tmax = std::min(tmax, std::max(tz1, tz2));
+
+    return tmax >= tmin;
 }
 
 void BoundingBox::Compare(const glm::vec3 &val)

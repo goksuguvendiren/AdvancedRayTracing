@@ -14,7 +14,8 @@ class BoundingBox
     glm::vec3 maxValues;
 
 public:
-    boost::optional<HitInfo> Hit(const Ray &ray) const;
+//    boost::optional<HitInfo> Hit(const Ray &ray) const;
+    bool Hit(const Ray &ray) const;
 
     void Min(glm::vec3 val) { minValues = val; }
     void Max(glm::vec3 val) { maxValues = val; }

@@ -144,10 +144,12 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 {
     boost::optional<HitInfo> ultHit;
-    for (auto& face : faces) {
-        boost::optional<HitInfo> hit;
-        if ((hit = face.Hit(ray)) && ( !ultHit || hit->Parameter() < ultHit->Parameter())){
-            ultHit = *hit;
+    if (bbox.Hit(ray)) {
+        for (auto &face : faces) {
+            boost::optional<HitInfo> hit;
+            if ((hit = face.Hit(ray)) && (!ultHit || hit->Parameter() < ultHit->Parameter())) {
+                ultHit = *hit;
+            }
         }
     }
 
