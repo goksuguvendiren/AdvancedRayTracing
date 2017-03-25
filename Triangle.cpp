@@ -7,6 +7,8 @@
 #include <boost/optional.hpp>
 #include "Triangle.h"
 #include "Mesh.h"
+#include "BoundingVolume.h"
+#include "Box.h"
 
 extern Scene scene;
 
@@ -86,6 +88,10 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : po
     pointA.Normal(surfNormal);
     pointB.Normal(surfNormal);
     pointC.Normal(surfNormal);
+
+    bbox.Compare(pointA.Data());
+    bbox.Compare(pointB.Data());
+    bbox.Compare(pointC.Data());
 }
 
 int Triangle::ID() const
@@ -168,3 +174,30 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
     return tris;
 }
+
+glm::vec3 Triangle::Min() const
+{
+    return bbox.Min();
+}
+
+glm::vec3 Triangle::Max() const
+{
+    return bbox.Max();
+}
+
+glm::vec3 Triangle::Middle() const
+{
+    return bbox.Middle();
+}
+
+//
+//void Triangle::Compare(const glm::vec3 &val)
+//{
+//    minval.x = std::min(minval.x, val.x);
+//    minval.y = std::min(minval.y, val.y);
+//    minval.z = std::min(minval.z, val.z);
+//
+//    maxval.x = std::max(maxval.x, val.x);
+//    maxval.y = std::max(maxval.y, val.y);
+//    maxval.z = std::max(maxval.z, val.z);
+//}

@@ -15,6 +15,8 @@ enum class ShadingMode
     Flat
 };
 
+class BoundingVolume;
+
 class Mesh : public Shape
 {
     int id;
@@ -24,9 +26,9 @@ class Mesh : public Shape
     std::vector<Triangle> faces;
     std::multimap<int, int> vertex_triangle_associtations;
 
+    BoundingVolume volume;
 
 public:
-    BoundingBox bbox;
 
     Mesh(int mid = 1, int matID = 1) : id(mid), materialID(matID), shmode(ShadingMode::Flat) {}
     Mesh(const Mesh& m) = delete;
@@ -34,13 +36,10 @@ public:
 
     void AddFace(Triangle&& face)
     {
-        bbox.Compare(face.PointA().Data());
-        bbox.Compare(face.PointB().Data());
-        bbox.Compare(face.PointC().Data());
-
         faces.push_back(std::move(face));
     }
 
+    void BoundingBox();
     void AssociateV2T();
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
@@ -54,7 +53,13 @@ public:
     int ID() const { return id; }
     const auto& Faces() const { return faces; }
     auto MaterialID() const { return materialID; }
+
+    glm::vec3 Min() const { return volume.BBox().Min(); }
+    glm::vec3 Max() const { return volume.BBox().Max(); }
+
+    glm::vec3 Middle() const { return volume.BBox().Middle(); }
 };
+
 
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem);
 std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem);

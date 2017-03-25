@@ -8,7 +8,7 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Triangle.h"
-#include "Mesh.h"
+#include "BoundingVolume.h"
 #include "LightSource.h"
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
@@ -82,11 +82,9 @@ Image Camera::Render() const
 
             boost::optional<HitInfo> ultHit;
 
-            for (auto shape : scene.Shapes()){
-                boost::optional<HitInfo> hit;
-                if ((hit = shape->Hit(ray)) && (!ultHit || hit->Parameter() < ultHit->Parameter())){
-                    ultHit = *hit;
-                }
+            boost::optional<HitInfo> hit;
+            if ((hit = scene.BoundingBox().Hit(ray))){
+                ultHit = *hit;
             }
 
             if (ultHit)

@@ -135,6 +135,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             msh.ShadingMode(ShadingMode::Flat);
         }
 
+        msh.BoundingBox();
         meshes.push_back(std::move(msh));
     }
 
@@ -144,13 +145,10 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 {
     boost::optional<HitInfo> ultHit;
-    if (bbox.Hit(ray)) {
-        for (auto &face : faces) {
-            boost::optional<HitInfo> hit;
-            if ((hit = face.Hit(ray)) && (!ultHit || hit->Parameter() < ultHit->Parameter())) {
-                ultHit = *hit;
-            }
-        }
+
+    boost::optional<HitInfo> hit;
+    if ((hit = volume.Hit(ray))) {
+        ultHit = *hit;
     }
 
     return ultHit;
@@ -158,9 +156,10 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 
 bool Mesh::FastHit(const Ray &ray) const
 {
-    for (auto& face : faces) {
-        if (face.FastHit(ray)) return true;
-    }
+    if (volume.Hit(ray)) return true;
+//    for (auto& face : faces) {
+//        if (face.FastHit(ray)) return true;
+//    }
 
     return false;
 };
@@ -198,6 +197,11 @@ void Mesh::SetNormal(Vertex& vert)
 
     n /= num;
     vert.Normal(n);
+}
+
+void Mesh::BoundingBox()
+{
+    volume = BoundingVolume(faces, Axis::X, Min(), Max());
 }
 
 void Mesh::AssociateV2T()

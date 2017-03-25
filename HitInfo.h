@@ -27,6 +27,8 @@ public:
             float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m), position(point), param(t)
     {}
 
+    HitInfo() : param(std::numeric_limits<float>::infinity()) {}
+
     const Material& Material() const { return mat; }
     float Parameter() const { return param; }
     glm::vec3 Normal() const { return normal; }

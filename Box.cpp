@@ -3,8 +3,11 @@
 //
 
 #include "Box.h"
+#include "Shape.h"
+#include "Ray.h"
+#include "glm/vec3.hpp"
 
-bool BoundingBox::Hit(const Ray &ray) const
+bool Box::Hit(const Ray &ray) const
 {
     double tx1 = (minValues.x - ray.Origin().x) / ray.Direction().x;
     double tx2 = (maxValues.x - ray.Origin().x) / ray.Direction().x;
@@ -27,13 +30,17 @@ bool BoundingBox::Hit(const Ray &ray) const
     return tmax >= tmin;
 }
 
-void BoundingBox::Compare(const glm::vec3 &val)
+void Box::Compare(const glm::vec3 &val)
 {
-    minValues.x = std::min(minValues.x, val.x);
-    minValues.y = std::min(minValues.y, val.y);
-    minValues.z = std::min(minValues.z, val.z);
+    minValues = glm::min(minValues, val);
+    maxValues = glm::max(maxValues, val);
+}
 
-    maxValues.x = std::max(maxValues.x, val.x);
-    maxValues.y = std::max(maxValues.y, val.y);
-    maxValues.z = std::max(maxValues.z, val.z);
+Box::Box()
+{}
+
+Box::Box(glm::vec3 minval, glm::vec3 maxval)
+{
+    minValues = minval;
+    maxValues = maxval;
 }

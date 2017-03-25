@@ -21,6 +21,9 @@ class Sphere : public Shape
     Vertex center;
     int materialID;
 
+    glm::vec3 maxval;
+    glm::vec3 minval;
+
     glm::mat4 transformationMatrix;
     glm::mat4 inverseTrMatrix;
     glm::mat4 inverseTranspose;
@@ -37,6 +40,11 @@ public:
         inverseTrMatrix = glm::inverse(transformationMatrix);
         inverseTranspose = glm::transpose(inverseTrMatrix);
     }
+
+    glm::vec3 Max() const { return maxval; }
+    glm::vec3 Min() const { return minval; }
+
+    glm::vec3 Middle() const { return center.Data(); }
 };
 
 std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem);

@@ -12,6 +12,7 @@
 
 class Material;
 class Vertex;
+class Box;
 
 class Triangle : public Shape
 {
@@ -23,6 +24,8 @@ class Triangle : public Shape
     const Material* material;
     int id;
     bool smooth;
+
+    Box bbox;
 
 public:
     Triangle() = default;
@@ -44,6 +47,11 @@ public:
     Vertex PointA() const { return pointA; }
     Vertex PointB() const { return pointB; }
     Vertex PointC() const { return pointC; }
+
+    glm::vec3 Min() const;
+    glm::vec3 Max() const;
+
+    glm::vec3 Middle() const;
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);
