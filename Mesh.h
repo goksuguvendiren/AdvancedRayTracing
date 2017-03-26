@@ -20,7 +20,7 @@ class BoundingVolume;
 class Mesh : public Shape
 {
     int id;
-    int materialID;
+    const Material* material;
     ShadingMode shmode;
 
     std::vector<Triangle> faces;
@@ -30,7 +30,7 @@ class Mesh : public Shape
 
 public:
 
-    Mesh(int mid = 1, int matID = 1) : id(mid), materialID(matID), shmode(ShadingMode::Flat) {}
+    Mesh(int mid = 1, const Material* mat = nullptr) : id(mid), material(mat), shmode(ShadingMode::Flat) {}
     Mesh(const Mesh& m) = delete;
     Mesh(Mesh&& m) = default;
 
@@ -52,7 +52,7 @@ public:
 
     int ID() const { return id; }
     const auto& Faces() const { return faces; }
-    auto MaterialID() const { return materialID; }
+    auto Material() const { return material; }
 
     glm::vec3 Min() const { return volume.BBox().Min(); }
     glm::vec3 Max() const { return volume.BBox().Max(); }

@@ -5,13 +5,11 @@
 #include "Box.h"
 #include "Shape.h"
 #include "Ray.h"
-#include "glm/vec3.hpp"
-#include <algorithm>
 
 bool Box::Hit(const Ray &ray) const
 {
-    auto mins = (minValues - ray.Origin()) / ray.Direction();
-    auto maxs = (maxValues - ray.Origin()) / ray.Direction();
+    auto mins = (minValues - ray.Origin()) * ray.InvDirection();
+    auto maxs = (maxValues - ray.Origin()) * ray.InvDirection();
 
     float tx1 = mins.x;
     float tx2 = maxs.x;

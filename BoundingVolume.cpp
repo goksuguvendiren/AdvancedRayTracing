@@ -44,13 +44,6 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
                 return sh1->Middle().x < sh2->Middle().x;
             });
 
-            beginning = sortedShapes.begin();
-            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
-            ending    = sortedShapes.end();
-
-            leftshapes  = std::vector<Shape*>(beginning, middling);
-            rightshapes = std::vector<Shape*>(middling, ending);
-
             nextAxis = Axis::Y;
             break;
 
@@ -58,13 +51,6 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
             std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
                 return sh1->Middle().y < sh2->Middle().y;
             });
-
-            beginning = sortedShapes.begin();
-            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
-            ending    = sortedShapes.end();
-
-            leftshapes  = std::vector<Shape*>(beginning, middling);
-            rightshapes = std::vector<Shape*>(middling, ending);
 
             nextAxis = Axis::Z;
             break;
@@ -74,16 +60,16 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
                 return sh1->Middle().z < sh2->Middle().z;
             });
 
-            beginning = sortedShapes.begin();
-            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
-            ending    = sortedShapes.end();
-
-            leftshapes  = std::vector<Shape*>(beginning, middling);
-            rightshapes = std::vector<Shape*>(middling, ending);
-
             nextAxis = Axis::X;
             break;
     }
+
+    beginning = sortedShapes.begin();
+    middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
+    ending    = sortedShapes.end();
+
+    leftshapes  = std::vector<Shape*>(beginning, middling);
+    rightshapes = std::vector<Shape*>(middling, ending);
 
     assert(shapes.size() == (leftshapes.size() + rightshapes.size()));
 

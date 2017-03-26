@@ -30,7 +30,7 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, const glm::
     return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}},
                     Vertex{y, {ind1.x, ind1.y, ind1.z}},
                     Vertex{z, {ind2.x, ind2.y, ind2.z}},
-                    matID, index, smooth};
+                    &scene.GetMaterial(matID), index, smooth};
 }
 
 inline auto GetTransformations(std::istringstream& stream)
@@ -70,7 +70,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
         auto& baseMesh = scene.Meshes()[baseID - 1];
         assert(baseMesh.ID() == baseID);
 
-        Mesh mesh {id, baseMesh.MaterialID()};
+        Mesh mesh {id, baseMesh.Material()};
         int index = 1;
         for (auto& face : baseMesh.Faces()){
             auto vert0 = matrix * glm::vec4(face.PointA().Data(), 1);
@@ -81,7 +81,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.MaterialID(), index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.Material(), index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }
 
@@ -91,28 +91,6 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
     }
 
     return meshes;
-}
-
-auto minimize(glm::vec3 val, glm::vec3 data)
-{
-    glm::vec3 res;
-
-    res.x = std::min(val.x, data.x);
-    res.y = std::min(val.y, data.y);
-    res.z = std::min(val.z, data.z);
-
-    return res;
-}
-
-auto maximize(glm::vec3 val, glm::vec3 data)
-{
-    glm::vec3 res;
-
-    res.x = std::max(val.x, data.x);
-    res.y = std::max(val.y, data.y);
-    res.z = std::max(val.z, data.z);
-
-    return res;
 }
 
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
@@ -137,7 +115,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             matrix = m * matrix;
         }
 
-        Mesh msh {id, matID};
+        Mesh msh {id, &scene.GetMaterial(matID)};
         std::istringstream stream { child->FirstChildElement("Faces")->GetText() };
 
         boost::optional<Triangle> tr;

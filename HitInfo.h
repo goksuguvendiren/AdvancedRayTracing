@@ -15,18 +15,18 @@ class HitInfo
     glm::vec3 normal;
     glm::vec3 position;
 
-    Material mat;
+    const Material* mat;
 
 public:
     HitInfo(glm::vec3 n,
-            Material m,
+            const Material& m,
             glm::vec3 point,
-            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m), position(point), param(t)
+            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(&m), position(point), param(t)
     {}
 
     HitInfo() : param(std::numeric_limits<float>::infinity()) {}
 
-    const Material& Material() const { return mat; }
+    const Material& Material() const { return *mat; }
     float Parameter() const { return param; }
     glm::vec3 Normal() const { return normal; }
     glm::vec3 Position() const { return position; }

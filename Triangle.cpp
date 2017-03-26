@@ -19,8 +19,11 @@ inline float determinant(const glm::vec3& col1,
 
 }
 
+std::atomic<std::uint64_t> cnt;
+
 boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
+    cnt++;
     glm::vec3 col1 = pointA.Data() - pointB.Data();
     glm::vec3 col2 = pointA.Data() - pointC.Data();
     glm::vec3 col3 = ray.Direction();
@@ -60,10 +63,10 @@ bool Triangle::FastHit(const Ray &ray) const
     return !(alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0);
 }
 
-Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : pointA(a),
+Triangle::Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid, bool sm) : pointA(a),
                                                                               pointB(b),
                                                                               pointC(c),
-                                                                              material(&scene.GetMaterial(mid)),
+                                                                              material(mat),
                                                                               id(tid), smooth(sm)
 
 {
@@ -74,6 +77,8 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : po
     pointB.Normal(surfNormal);
     pointC.Normal(surfNormal);
 
+    bbox.Min(pointA.Data());
+    bbox.Max(pointA.Data());
     bbox.Compare(pointA.Data());
     bbox.Compare(pointB.Data());
     bbox.Compare(pointC.Data());
@@ -148,13 +153,9 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         ind1 = matrix * ind1;
         ind2 = matrix * ind2;
 
-//        return std::make_pair(true, Triangle{Vertex{{ind0.x, ind0.y, ind0.z}},
-//                                             Vertex{{ind1.x, ind1.y, ind1.z}},
-//                                             Vertex{{ind2.x, ind2.y, ind2.z}}});
-
         tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                         Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, &scene.GetMaterial(matID)});
     }
 
     return tris;
@@ -174,15 +175,3 @@ glm::vec3 Triangle::Middle() const
 {
     return bbox.Middle();
 }
-
-//
-//void Triangle::Compare(const glm::vec3 &val)
-//{
-//    minval.x = std::min(minval.x, val.x);
-//    minval.y = std::min(minval.y, val.y);
-//    minval.z = std::min(minval.z, val.z);
-//
-//    maxval.x = std::max(maxval.x, val.x);
-//    maxval.y = std::max(maxval.y, val.y);
-//    maxval.z = std::max(maxval.z, val.z);
-//}

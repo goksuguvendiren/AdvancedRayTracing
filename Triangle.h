@@ -22,6 +22,7 @@ class Triangle : public Shape
 
     glm::vec3 surfNormal;
     const Material* material;
+
     int id;
     bool smooth;
 
@@ -29,7 +30,7 @@ class Triangle : public Shape
 
 public:
     Triangle() = default;
-    Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid = 1, bool sm = false);
+    Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid = 1, bool sm = false);
 
     ~Triangle();
 

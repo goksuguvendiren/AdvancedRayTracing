@@ -6,10 +6,12 @@
 #include <iomanip>
 
 Scene scene;
+extern std::atomic<std::uint64_t> cnt;
 
 int main(int argc, char** argv)
 {
-    std::string sceneName = "bunny_flat";
+    std::string sceneName = "dragon";
+
     if (argc == 2){
         sceneName = argv[1];
     }
@@ -20,10 +22,12 @@ int main(int argc, char** argv)
     std::vector<Image> images;
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
+    cnt.store(0);
     std::cerr << "Started rendering the scene...\n";
     for (auto& cam : scene.Cameras()){
         images.push_back(cam.Render());
     }
+    std::cout << cnt.load() << '\n';
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cerr << "Rendering took "
               << std::chrono::duration_cast<std::chrono::seconds>(end - start).count()
