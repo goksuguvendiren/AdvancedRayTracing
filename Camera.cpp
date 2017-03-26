@@ -21,9 +21,12 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
         Ray ray(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                 direction);
 
-        if (std::any_of(scene.Shapes().begin(), scene.Shapes().end(), [&ray](auto shape) {
-            return shape->FastHit(ray);
-        })) continue;
+        auto shadowhit = scene.BoundingBox().Hit(ray);
+        if (shadowhit) continue;
+//
+//        if (std::any_of(scene.Shapes().begin(), scene.Shapes().end(), [&ray](auto shape) {
+//            return shape->FastHit(ray);
+//        })) continue;
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);

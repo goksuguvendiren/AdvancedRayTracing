@@ -93,6 +93,28 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
     return meshes;
 }
 
+auto minimize(glm::vec3 val, glm::vec3 data)
+{
+    glm::vec3 res;
+
+    res.x = std::min(val.x, data.x);
+    res.y = std::min(val.y, data.y);
+    res.z = std::min(val.z, data.z);
+
+    return res;
+}
+
+auto maximize(glm::vec3 val, glm::vec3 data)
+{
+    glm::vec3 res;
+
+    res.x = std::max(val.x, data.x);
+    res.y = std::max(val.y, data.y);
+    res.z = std::max(val.z, data.z);
+
+    return res;
+}
+
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 {
     std::vector<Mesh> meshes;
@@ -120,7 +142,18 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         boost::optional<Triangle> tr;
         int index = 1;
+        glm::vec3 min = glm::vec3({std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity()});
+        glm::vec3 max = glm::vec3({0, 0, 0});
+
         while((tr = GetFace(stream, matrix, matID, index++, ShadingMode() == ShadingMode::Smooth))){
+            min = minimize(min, tr->PointA().Data());
+            min = minimize(min, tr->PointB().Data());
+            min = minimize(min, tr->PointC().Data());
+
+            max = maximize(min, tr->PointA().Data());
+            max = maximize(min, tr->PointB().Data());
+            max = maximize(min, tr->PointC().Data());
+
             msh.AddFace(std::move(*tr));
         }
 
@@ -135,7 +168,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             msh.ShadingMode(ShadingMode::Flat);
         }
 
-        msh.BoundingBox();
+        msh.BoundingBox(min, max);
         meshes.push_back(std::move(msh));
     }
 
@@ -144,22 +177,12 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
 boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 {
-    boost::optional<HitInfo> ultHit;
-
-    boost::optional<HitInfo> hit;
-    if ((hit = volume.Hit(ray))) {
-        ultHit = *hit;
-    }
-
-    return ultHit;
+    return volume.Hit(ray);
 };
 
 bool Mesh::FastHit(const Ray &ray) const
 {
     if (volume.Hit(ray)) return true;
-//    for (auto& face : faces) {
-//        if (face.FastHit(ray)) return true;
-//    }
 
     return false;
 };
@@ -199,9 +222,9 @@ void Mesh::SetNormal(Vertex& vert)
     vert.Normal(n);
 }
 
-void Mesh::BoundingBox()
+void Mesh::BoundingBox(glm::vec3 min, glm::vec3 max)
 {
-    volume = BoundingVolume(faces, Axis::X, Min(), Max());
+    volume = BoundingVolume(faces, Axis::X, min, max);
 }
 
 void Mesh::AssociateV2T()

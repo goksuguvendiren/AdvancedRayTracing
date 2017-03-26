@@ -43,54 +43,75 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
     box = Box(mins, maxs);
 
     Axis nextAxis;
-    glm::vec3 middle = box.Middle();
+    glm::vec3 middle;
+
+    std::vector<Shape*>::const_iterator beginning;
+    std::vector<Shape*>::const_iterator middling;
+    std::vector<Shape*>::const_iterator ending;
+
+    auto sortedShapes = shapes;
+
+    assert(axis == Axis::X || axis == Axis::Y || axis == Axis::Z);
 
     switch(axis){
         case Axis::X :
-            for (auto& shape : shapes){
-//                mins.x = Compare(shape->Min().x, mins.x, true);
-//                maxs.x = Compare(shape->Max().x, maxs.x, false);
+            middle = glm::vec3(box.Middle().x / 2.0f, box.Middle().y, box.Middle().z);
+            std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
+                return sh1->Middle().x > sh2->Middle().x;
+            });
 
-                if (shape->Middle().x < middle.x) leftshapes.push_back(shape);
-                else rightshapes.push_back(shape);
-            }
+            beginning = sortedShapes.begin();
+            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
+            ending    = sortedShapes.end();
+
+            leftshapes  = std::vector<Shape*>(beginning, middling);
+            rightshapes = std::vector<Shape*>(middling, ending);
+
             nextAxis = Axis::Y;
             break;
 
         case Axis::Y :
-            for (auto& shape : shapes){
-//                mins.y = Compare(shape->Min().y, mins.y, true);
-//                maxs.y = Compare(shape->Max().y, maxs.y, false);
+            middle = glm::vec3(box.Middle().x, box.Middle().y / 2.0f, box.Middle().z);
+            std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
+                return sh1->Middle().y > sh2->Middle().y;
+            });
 
-                if (shape->Middle().y < middle.y) leftshapes.push_back(shape);
-                else rightshapes.push_back(shape);
-            }
+            beginning = sortedShapes.begin();
+            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
+            ending    = sortedShapes.end();
+
+            leftshapes  = std::vector<Shape*>(beginning, middling);
+            rightshapes = std::vector<Shape*>(middling, ending);
+
             nextAxis = Axis::Z;
             break;
 
         case Axis::Z :
-            for (auto& shape : shapes){
-//                mins.z = Compare(shape->Min().z, mins.z, true);
-//                maxs.z = Compare(shape->Max().z, maxs.z, false);
+            middle = glm::vec3(box.Middle().x, box.Middle().y, box.Middle().z / 2.0f);
+            std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
+                return sh1->Middle().z > sh2->Middle().z;
+            });
 
-                if (shape->Middle().z < middle.z) leftshapes.push_back(shape);
-                else rightshapes.push_back(shape);
-            }
+            beginning = sortedShapes.begin();
+            middling  = sortedShapes.begin() + (sortedShapes.size() / 2);
+            ending    = sortedShapes.end();
+
+            leftshapes  = std::vector<Shape*>(beginning, middling);
+            rightshapes = std::vector<Shape*>(middling, ending);
+
             nextAxis = Axis::X;
             break;
     }
 
-    if (leftshapes.size() > 0){
-        left = new BoundingVolume(leftshapes, nextAxis, mins, middle);
-        box.Min(glm::min(box.Min(), left->box.Min()));
-        box.Max(glm::max(box.Max(), left->box.Max()));
-    }
+    assert(shapes.size() == (leftshapes.size() + rightshapes.size()));
 
-    if (rightshapes.size() > 0){
-        right = new BoundingVolume(rightshapes, nextAxis, middle, maxs);
-        box.Min(glm::min(box.Min(), right->box.Min()));
-        box.Max(glm::max(box.Max(), right->box.Max()));
-    }
+    left = new BoundingVolume(leftshapes, nextAxis, mins, middle);
+    box.Min(glm::min(box.Min(), left->box.Min()));
+    box.Max(glm::max(box.Max(), left->box.Max()));
+
+    right = new BoundingVolume(rightshapes, nextAxis, middle, maxs);
+    box.Min(glm::min(box.Min(), right->box.Min()));
+    box.Max(glm::max(box.Max(), right->box.Max()));
 
     return;
 }
