@@ -182,7 +182,7 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 
 bool Mesh::FastHit(const Ray &ray) const
 {
-    return volume.FastHit(ray);
+    return false;
 };
 
 void Mesh::InsertVT(Triangle face)
