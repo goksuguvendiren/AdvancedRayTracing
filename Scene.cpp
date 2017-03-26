@@ -134,7 +134,7 @@ void Scene::CreateScene(std::string filename)
         shapes.push_back(&msh);
     });
 
-    boundingBox = BoundingVolume(shapes, Axis::X, mins, maxs);
+    boundingBox = BoundingVolume(shapes, Axis::X);
 }
 
 glm::mat4 Scene::GetTransformation(std::string str) const

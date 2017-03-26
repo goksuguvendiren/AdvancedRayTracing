@@ -29,11 +29,11 @@ class Triangle : public Shape
 
 public:
     Triangle() = default;
-    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1, bool sm = false);
+    Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid = 1, bool sm = false);
 
     ~Triangle();
 
-    const Material* Material() const;
+    const Material* Mat() const;
     boost::optional<HitInfo> Hit (const Ray& ray) const;
     bool FastHit(const Ray& ray) const;
     int ID() const;

@@ -9,20 +9,7 @@
 #include "glm/glm.hpp"
 #include "Triangle.h"
 
-float Compare(float compared, float val, bool min)
-{
-    float res;
-    if (min){
-        res = std::min(compared, val);
-    }
-    else
-    {
-        res = std::max(compared, val);
-    }
-    return res;
-}
-
-BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm::vec3 mins, glm::vec3 maxs)
+BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
 {
     left  = nullptr;
     right = nullptr;
@@ -40,8 +27,6 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
     std::vector<Shape*> leftshapes; leftshapes.reserve(shapes.size() / 2 + 1);
     std::vector<Shape*> rightshapes; rightshapes.reserve(shapes.size() / 2 + 1);
 
-    box = Box(mins, maxs);
-
     Axis nextAxis;
     glm::vec3 middle;
 
@@ -55,9 +40,8 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
 
     switch(axis){
         case Axis::X :
-            middle = glm::vec3(box.Middle().x / 2.0f, box.Middle().y, box.Middle().z);
             std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
-                return sh1->Middle().x > sh2->Middle().x;
+                return sh1->Middle().x < sh2->Middle().x;
             });
 
             beginning = sortedShapes.begin();
@@ -71,9 +55,8 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
             break;
 
         case Axis::Y :
-            middle = glm::vec3(box.Middle().x, box.Middle().y / 2.0f, box.Middle().z);
             std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
-                return sh1->Middle().y > sh2->Middle().y;
+                return sh1->Middle().y < sh2->Middle().y;
             });
 
             beginning = sortedShapes.begin();
@@ -87,9 +70,8 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
             break;
 
         case Axis::Z :
-            middle = glm::vec3(box.Middle().x, box.Middle().y, box.Middle().z / 2.0f);
             std::sort(sortedShapes.begin(), sortedShapes.end(), [](auto& sh1, auto& sh2){
-                return sh1->Middle().z > sh2->Middle().z;
+                return sh1->Middle().z < sh2->Middle().z;
             });
 
             beginning = sortedShapes.begin();
@@ -105,15 +87,11 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm
 
     assert(shapes.size() == (leftshapes.size() + rightshapes.size()));
 
-    left = new BoundingVolume(leftshapes, nextAxis, mins, middle);
-    box.Min(glm::min(box.Min(), left->box.Min()));
-    box.Max(glm::max(box.Max(), left->box.Max()));
+    left = new BoundingVolume(leftshapes, nextAxis);
+    right = new BoundingVolume(rightshapes, nextAxis);
 
-    right = new BoundingVolume(rightshapes, nextAxis, middle, maxs);
-    box.Min(glm::min(box.Min(), right->box.Min()));
-    box.Max(glm::max(box.Max(), right->box.Max()));
-
-    return;
+    box.Min(glm::min(left->box.Min(), right->box.Min()));
+    box.Max(glm::max(left->box.Max(), right->box.Max()));
 }
 
 auto to_ptrs(const std::vector<Triangle> &triangles)

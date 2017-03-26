@@ -21,12 +21,7 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
         Ray ray(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                 direction);
 
-        auto shadowhit = scene.BoundingBox().Hit(ray);
-        if (shadowhit) continue;
-//
-//        if (std::any_of(scene.Shapes().begin(), scene.Shapes().end(), [&ray](auto shape) {
-//            return shape->FastHit(ray);
-//        })) continue;
+        if (scene.BoundingBox().FastHit(ray)) continue;
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);
@@ -83,16 +78,10 @@ Image Camera::Render() const
             rowPixLocation += oneRight;
             auto ray = Ray(position, rowPixLocation - position);
 
-            boost::optional<HitInfo> ultHit;
-
-            boost::optional<HitInfo> hit;
-            if ((hit = scene.BoundingBox().Hit(ray))){
-                ultHit = *hit;
-            }
-
-            if (ultHit)
-                image.at(i, j) = CalculateReflectance(*ultHit);
-//                image.at(i, j) = 255.0f * (ultHit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
+            boost::optional<HitInfo> hit  = scene.BoundingBox().Hit(ray);
+            if (hit)
+                image.at(i, j) = CalculateReflectance(*hit);
+//                image.at(i, j) = 255.0f * (hit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
         }

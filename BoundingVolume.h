@@ -31,8 +31,9 @@ class BoundingVolume
 public:
     BoundingVolume() : left(nullptr), right(nullptr), shape(nullptr) {};
     const Box& BBox() const { return box; }
-    BoundingVolume(const std::vector<Shape*>& shapes, Axis axis, glm::vec3 mins, glm::vec3 maxs);
-    BoundingVolume(const std::vector<Triangle>& triangles, Axis axis, glm::vec3 mins, glm::vec3 maxs);
+    BoundingVolume(const std::vector<Shape*>& shapes, Axis axis);
+    BoundingVolume(const std::vector<Triangle>& triangles, Axis axis);
 
     boost::optional<HitInfo> Hit (const Ray& ray) const;
+    bool FastHit (const Ray& ray) const;
 };

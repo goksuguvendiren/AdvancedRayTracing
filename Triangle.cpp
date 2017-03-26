@@ -6,6 +6,7 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
+#include "Material.h"
 #include "Mesh.h"
 #include "BoundingVolume.h"
 #include "Box.h"
@@ -24,15 +25,10 @@ inline float determinant(const glm::vec3& col1,
 
 boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
-    glm::vec3 col1(3);
-    glm::vec3 col2(3);
-    glm::vec3 col3(3);
-    glm::vec3 col4(3);
-
-    col1 = pointA.Data() - pointB.Data();
-    col2 = pointA.Data() - pointC.Data();
-    col3 = ray.Direction();
-    col4 = pointA.Data() - ray.Origin();
+    glm::vec3 col1 = pointA.Data() - pointB.Data();
+    glm::vec3 col2 = pointA.Data() - pointC.Data();
+    glm::vec3 col3 = ray.Direction();
+    glm::vec3 col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -53,15 +49,10 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 
 bool Triangle::FastHit(const Ray &ray) const
 {
-    glm::vec3 col1(3);
-    glm::vec3 col2(3);
-    glm::vec3 col3(3);
-    glm::vec3 col4(3);
-
-    col1 = pointA.Data() - pointB.Data();
-    col2 = pointA.Data() - pointC.Data();
-    col3 = ray.Direction();
-    col4 = pointA.Data() - ray.Origin();
+    glm::vec3 col1 = pointA.Data() - pointB.Data();
+    glm::vec3 col2 = pointA.Data() - pointC.Data();
+    glm::vec3 col3 = ray.Direction();
+    glm::vec3 col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -99,7 +90,7 @@ int Triangle::ID() const
     return id;
 }
 
-const Material* Triangle::Material() const
+const Material* Triangle::Mat() const
 {
     return material;
 }
@@ -169,7 +160,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                         Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, &scene.GetMaterial(matID)});
     }
 
     return tris;

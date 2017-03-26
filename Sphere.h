@@ -19,7 +19,7 @@ class Sphere : public Shape
     int id;
     float radius;
     Vertex center;
-    int materialID;
+    const Material* material;
 
     glm::vec3 maxval;
     glm::vec3 minval;

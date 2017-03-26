@@ -182,9 +182,7 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 
 bool Mesh::FastHit(const Ray &ray) const
 {
-    if (volume.Hit(ray)) return true;
-
-    return false;
+    return volume.FastHit(ray);
 };
 
 void Mesh::InsertVT(Triangle face)
@@ -224,7 +222,7 @@ void Mesh::SetNormal(Vertex& vert)
 
 void Mesh::BoundingBox(glm::vec3 min, glm::vec3 max)
 {
-    volume = BoundingVolume(faces, Axis::X, min, max);
+    volume = BoundingVolume(faces, Axis::X);
 }
 
 void Mesh::AssociateV2T()
