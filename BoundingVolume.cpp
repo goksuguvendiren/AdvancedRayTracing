@@ -106,8 +106,8 @@ auto to_ptrs(const std::vector<Triangle> &triangles)
     return shapes;
 }
 
-BoundingVolume::BoundingVolume(const std::vector<Triangle> &triangles, Axis axis, glm::vec3 mins, glm::vec3 maxs) :
-    BoundingVolume(to_ptrs(triangles), axis, mins, maxs)
+BoundingVolume::BoundingVolume(const std::vector<Triangle> &triangles, Axis axis) :
+    BoundingVolume(to_ptrs(triangles), axis)
 {}
 
 boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
@@ -132,3 +132,27 @@ boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
 
     return ultimate;
 }
+//
+//
+//bool BoundingVolume::FastHit (const Ray& ray) const
+//{
+//    if (!box.Hit(ray)) return false;
+//    if (!left && !right) return shape->FastHit(ray);
+//
+//    boost::optional<HitInfo> leftHitInfo  = left->Hit(ray);
+//    boost::optional<HitInfo> rightHitInfo = right->Hit(ray);
+//
+//    if (!leftHitInfo && !rightHitInfo) return false;
+//
+//    HitInfo ultimate;
+//
+//    if (leftHitInfo) {
+//        ultimate = *leftHitInfo;
+//    }
+//    if (rightHitInfo){
+//        if (rightHitInfo->Parameter() < ultimate.Parameter())
+//            ultimate = *rightHitInfo;
+//    }
+//
+//    return ultimate;
+//}

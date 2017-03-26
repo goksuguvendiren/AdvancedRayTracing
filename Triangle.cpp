@@ -160,7 +160,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                         Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, &scene.GetMaterial(matID)});
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
     }
 
     return tris;
