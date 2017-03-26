@@ -6,6 +6,7 @@
 
 #include <boost/optional.hpp>
 #include <iostream>
+#include "glm/vec3.hpp"
 
 class HitInfo;
 class Ray;
@@ -17,4 +18,7 @@ public:
     virtual bool FastHit(const Ray &ray) const = 0;
     virtual int ID() const = 0;
     virtual ~Shape() = default;
+    virtual glm::vec3 Min() const = 0;
+    virtual glm::vec3 Max() const = 0;
+    virtual glm::vec3 Middle() const = 0;
 };

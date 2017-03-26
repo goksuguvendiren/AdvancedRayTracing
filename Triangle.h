@@ -12,6 +12,7 @@
 
 class Material;
 class Vertex;
+class Box;
 
 class Triangle : public Shape
 {
@@ -21,16 +22,19 @@ class Triangle : public Shape
 
     glm::vec3 surfNormal;
     const Material* material;
+
     int id;
     bool smooth;
 
+    Box bbox;
+
 public:
     Triangle() = default;
-    Triangle(Vertex a, Vertex b, Vertex c, int mid = 1, int tid = 1, bool sm = false);
+    Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid = 1, bool sm = false);
 
     ~Triangle();
 
-    const Material* Material() const;
+    const Material* Mat() const;
     boost::optional<HitInfo> Hit (const Ray& ray) const;
     bool FastHit(const Ray& ray) const;
     int ID() const;
@@ -44,6 +48,11 @@ public:
     Vertex PointA() const { return pointA; }
     Vertex PointB() const { return pointB; }
     Vertex PointC() const { return pointC; }
+
+    glm::vec3 Min() const;
+    glm::vec3 Max() const;
+
+    glm::vec3 Middle() const;
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);

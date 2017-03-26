@@ -6,13 +6,12 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
-#include "Mesh.h"
 
 extern Scene scene;
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
-                         const glm::vec3& col3)   // only for a 3x3 matrix !
+                         const glm::vec3& col3)
 {
     return col1.x * (col2.y * col3.z - col2.z * col3.y) -
            col2.x * (col1.y * col3.z - col1.z * col3.y) +
@@ -20,17 +19,15 @@ inline float determinant(const glm::vec3& col1,
 
 }
 
+std::atomic<std::uint64_t> cnt;
+
 boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
-    glm::vec3 col1(3);
-    glm::vec3 col2(3);
-    glm::vec3 col3(3);
-    glm::vec3 col4(3);
-
-    col1 = pointA.Data() - pointB.Data();
-    col2 = pointA.Data() - pointC.Data();
-    col3 = ray.Direction();
-    col4 = pointA.Data() - ray.Origin();
+    cnt++;
+    glm::vec3 col1 = pointA.Data() - pointB.Data();
+    glm::vec3 col2 = pointA.Data() - pointC.Data();
+    glm::vec3 col3 = ray.Direction();
+    glm::vec3 col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -51,15 +48,10 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 
 bool Triangle::FastHit(const Ray &ray) const
 {
-    glm::vec3 col1(3);
-    glm::vec3 col2(3);
-    glm::vec3 col3(3);
-    glm::vec3 col4(3);
-
-    col1 = pointA.Data() - pointB.Data();
-    col2 = pointA.Data() - pointC.Data();
-    col3 = ray.Direction();
-    col4 = pointA.Data() - ray.Origin();
+    glm::vec3 col1 = pointA.Data() - pointB.Data();
+    glm::vec3 col2 = pointA.Data() - pointC.Data();
+    glm::vec3 col3 = ray.Direction();
+    glm::vec3 col4 = pointA.Data() - ray.Origin();
 
     auto detA  = determinant(col1, col2, col3);
 
@@ -68,15 +60,13 @@ bool Triangle::FastHit(const Ray &ray) const
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return false;
-
-    return true;
+    return !(alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0);
 }
 
-Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : pointA(a),
+Triangle::Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid, bool sm) : pointA(a),
                                                                               pointB(b),
                                                                               pointC(c),
-                                                                              material(&scene.GetMaterial(mid)),
+                                                                              material(mat),
                                                                               id(tid), smooth(sm)
 
 {
@@ -86,6 +76,12 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : po
     pointA.Normal(surfNormal);
     pointB.Normal(surfNormal);
     pointC.Normal(surfNormal);
+
+    bbox.Min(pointA.Data());
+    bbox.Max(pointA.Data());
+    bbox.Compare(pointA.Data());
+    bbox.Compare(pointB.Data());
+    bbox.Compare(pointC.Data());
 }
 
 int Triangle::ID() const
@@ -93,7 +89,7 @@ int Triangle::ID() const
     return id;
 }
 
-const Material* Triangle::Material() const
+const Material* Triangle::Mat() const
 {
     return material;
 }
@@ -157,14 +153,25 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         ind1 = matrix * ind1;
         ind2 = matrix * ind2;
 
-//        return std::make_pair(true, Triangle{Vertex{{ind0.x, ind0.y, ind0.z}},
-//                                             Vertex{{ind1.x, ind1.y, ind1.z}},
-//                                             Vertex{{ind2.x, ind2.y, ind2.z}}});
-
         tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                         Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID});
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, &scene.GetMaterial(matID)});
     }
 
     return tris;
+}
+
+glm::vec3 Triangle::Min() const
+{
+    return bbox.Min();
+}
+
+glm::vec3 Triangle::Max() const
+{
+    return bbox.Max();
+}
+
+glm::vec3 Triangle::Middle() const
+{
+    return bbox.Middle();
 }

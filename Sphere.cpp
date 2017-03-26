@@ -11,7 +11,11 @@
 #include "HitInfo.h"
 #include "Scene.h"
 
-Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), center(c), materialID(mid) {}
+Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
+{
+    minval = center.Data() - rd;
+    maxval = center.Data() + rd;
+}
 
 
 boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
@@ -36,7 +40,7 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto surfaceNormal = glm::normalize(glm::vec3(inverseTranspose * glm::vec4(modelPoint - center.Data(), 0)));
 
-    return HitInfo(surfaceNormal, scene.GetMaterial(materialID), worldPoint, param);
+    return HitInfo(surfaceNormal, *material, worldPoint, param);
 }
 
 bool Sphere::FastHit(const Ray &ray) const

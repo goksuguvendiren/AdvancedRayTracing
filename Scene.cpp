@@ -7,6 +7,7 @@
 #include "Triangle.h"
 #include "Transformation.h"
 #include "Mesh.h"
+#include "BoundingVolume.h"
 #include "tinyxml/tinyxml2.h"
 #include <sstream>
 #include <map>
@@ -21,6 +22,12 @@ inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
     ss >> color.b;
 
     return color;
+}
+
+void Compare(const glm::vec3 &val, glm::vec3& minval, glm::vec3& maxval)
+{
+    minval = glm::min(minval, val);
+    maxval = glm::max(maxval, val);
 }
 
 void Scene::CreateScene(std::string filename)
@@ -96,10 +103,38 @@ void Scene::CreateScene(std::string filename)
 
     AddCamera(camera);
 
-    for_each(triangles.begin(), triangles.end(), [this](auto& tri) { shapes.push_back(&tri); });
-    for_each(spheres.begin(), spheres.end(), [this](auto& sph) { shapes.push_back(&sph); });
-    for_each(meshes.begin(), meshes.end(), [this](auto& msh) { shapes.push_back(&msh); });
-    for_each(meshInstances.begin(), meshInstances.end(), [this](auto& msh) { shapes.push_back(&msh); });
+    glm::vec3 mins, maxs;
+
+    for_each(triangles.begin(), triangles.end(), [this, &mins, &maxs](auto& tri) {
+        Compare(tri.Max(), mins, maxs);
+        Compare(tri.Min(), mins, maxs);
+        shapes.push_back(&tri);
+    });
+
+//    for_each(spheres.begin(), spheres.end(), [this, &mins, &maxs](auto& sph) {
+//        Compare(sph.Max(), mins, maxs);
+//        Compare(sph.Min(), mins, maxs);
+//
+//        shapes.push_back(&sph);
+
+        //TODO : put spheres into shapes list !
+//    });
+
+    for_each(meshes.begin(), meshes.end(), [this, &mins, &maxs](auto& msh) {
+        Compare(msh.Max(), mins, maxs);
+        Compare(msh.Min(), mins, maxs);
+
+        shapes.push_back(&msh);
+    });
+
+    for_each(meshInstances.begin(), meshInstances.end(), [this, &mins, &maxs](auto& msh) {
+        Compare(msh.Max(), mins, maxs);
+        Compare(msh.Min(), mins, maxs);
+
+        shapes.push_back(&msh);
+    });
+
+    boundingBox = BoundingVolume(shapes, Axis::X);
 }
 
 glm::mat4 Scene::GetTransformation(std::string str) const
@@ -143,6 +178,10 @@ float Scene::IntersectionTestEpsilon() const
 void Scene::IntersectionTestEpsilon(float ite)
 { intersectionTestEpsilon = ite; }
 
+const BoundingVolume& Scene::BoundingBox()
+{
+    return boundingBox;
+}
 
 void Scene::AddCamera(Camera&& cam) { cameras.push_back(std::move(cam)); }
 void Scene::AddCamera(const Camera& cam) { cameras.push_back(cam); }

@@ -9,12 +9,14 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Vertex.h"
+#include "BoundingVolume.h"
 
 class Triangle;
 class Sphere;
 class Mesh;
 class LightSource;
 class Shape;
+//class BoundingVolume;
 
 class Scene
 {
@@ -35,6 +37,8 @@ class Scene
     std::map<std::string, glm::mat4> transformations;
     std::vector<LightSource> lights;
     std::vector<Camera> cameras;
+
+    BoundingVolume boundingBox;
 
 public:
     Scene(glm::vec3 bg = {0, 0, 0}, glm::vec3 al = {0, 0, 0});
@@ -84,7 +88,7 @@ public:
     const Triangle& GetTriangle(int id);
     Vertex& GetVertex(int id);
 
-
+    const BoundingVolume& BoundingBox();
 
     void CreateScene(std::string filename);
 };
