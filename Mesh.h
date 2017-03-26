@@ -39,7 +39,7 @@ public:
         faces.push_back(std::move(face));
     }
 
-    void BoundingBox(glm::vec3 min, glm::vec3 max);
+    void BoundingBox();
     void AssociateV2T();
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);

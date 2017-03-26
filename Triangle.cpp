@@ -6,16 +6,12 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "BoundingVolume.h"
-#include "Box.h"
 
 extern Scene scene;
 
 inline float determinant(const glm::vec3& col1,
                          const glm::vec3& col2,
-                         const glm::vec3& col3)   // only for a 3x3 matrix !
+                         const glm::vec3& col3)
 {
     return col1.x * (col2.y * col3.z - col2.z * col3.y) -
            col2.x * (col1.y * col3.z - col1.z * col3.y) +
@@ -61,9 +57,7 @@ bool Triangle::FastHit(const Ray &ray) const
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return false;
-
-    return true;
+    return !(alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0);
 }
 
 Triangle::Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid, bool sm) : pointA(a),

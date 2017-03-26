@@ -142,18 +142,8 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         boost::optional<Triangle> tr;
         int index = 1;
-        glm::vec3 min = glm::vec3({std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity()});
-        glm::vec3 max = glm::vec3({0, 0, 0});
 
         while((tr = GetFace(stream, matrix, matID, index++, ShadingMode() == ShadingMode::Smooth))){
-            min = minimize(min, tr->PointA().Data());
-            min = minimize(min, tr->PointB().Data());
-            min = minimize(min, tr->PointC().Data());
-
-            max = maximize(min, tr->PointA().Data());
-            max = maximize(min, tr->PointB().Data());
-            max = maximize(min, tr->PointC().Data());
-
             msh.AddFace(std::move(*tr));
         }
 
@@ -168,7 +158,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             msh.ShadingMode(ShadingMode::Flat);
         }
 
-        msh.BoundingBox(min, max);
+        msh.BoundingBox();
         meshes.push_back(std::move(msh));
     }
 
@@ -220,7 +210,7 @@ void Mesh::SetNormal(Vertex& vert)
     vert.Normal(n);
 }
 
-void Mesh::BoundingBox(glm::vec3 min, glm::vec3 max)
+void Mesh::BoundingBox()
 {
     volume = BoundingVolume(faces, Axis::X);
 }
