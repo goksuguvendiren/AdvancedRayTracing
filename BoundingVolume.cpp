@@ -118,8 +118,8 @@ boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
 
     return ultimate;
 }
-//
-//
+
+
 //bool BoundingVolume::FastHit (const Ray& ray) const
 //{
 //    if (!box.Hit(ray)) return false;
