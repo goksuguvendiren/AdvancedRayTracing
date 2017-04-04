@@ -6,7 +6,7 @@
 #include <iomanip>
 
 Scene scene;
-extern std::atomic<std::uint64_t> cnt;
+//extern std::atomic<std::uint64_t> cnt;
 
 int main(int argc, char** argv)
 {
@@ -27,14 +27,14 @@ int main(int argc, char** argv)
 
     std::vector<Image> images;
 
-    cnt.store(0);
+//    cnt.store(0);
     std::cerr << "Started rendering the scene...\n";
     auto beginRender = std::chrono::steady_clock::now();
 
     for (auto& cam : scene.Cameras()){
         images.push_back(cam.Render());
     }
-    std::cout << cnt.load() << '\n';
+//    std::cout << cnt.load() << '\n';
     std::chrono::steady_clock::time_point endRender = std::chrono::steady_clock::now();
     std::cerr << "Rendering took "
               << std::chrono::duration_cast<std::chrono::milliseconds>(endRender - beginRender).count()

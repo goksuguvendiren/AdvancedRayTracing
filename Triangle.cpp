@@ -18,12 +18,12 @@ inline float determinant(const glm::vec3& col1,
            col3.x * (col1.y * col2.z - col1.z * col2.y);
 
 }
-
-std::atomic<std::uint64_t> cnt;
+//
+//std::atomic<std::uint64_t> cnt;
 
 boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 {
-    cnt++;
+//    cnt++;
     glm::vec3 col1 = pointA.Data() - pointB.Data();
     glm::vec3 col2 = pointA.Data() - pointC.Data();
     glm::vec3 col3 = ray.Direction();
