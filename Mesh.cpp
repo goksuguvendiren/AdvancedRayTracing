@@ -19,9 +19,13 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexO
         return boost::none;
     }
 
-    auto ind0 = glm::vec4(scene.GetVertex(x + vertexOffset).Data(), 1);
-    auto ind1 = glm::vec4(scene.GetVertex(y + vertexOffset).Data(), 1);
-    auto ind2 = glm::vec4(scene.GetVertex(z + vertexOffset).Data(), 1);
+    x += vertexOffset;
+    y += vertexOffset;
+    z += vertexOffset;
+
+    auto ind0 = glm::vec4(scene.GetVertex(x).Data(), 1);
+    auto ind1 = glm::vec4(scene.GetVertex(y).Data(), 1);
+    auto ind2 = glm::vec4(scene.GetVertex(z).Data(), 1);
 
     ind0 = matrix * ind0;
     ind1 = matrix * ind1;

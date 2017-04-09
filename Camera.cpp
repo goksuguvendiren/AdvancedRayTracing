@@ -11,20 +11,46 @@
 #include "BoundingVolume.h"
 #include "LightSource.h"
 
-glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
+glm::vec3 Camera::CalculateMirror(const HitInfo& hit, int recDepth) const
+{
+    auto dir = glm::normalize(2.f * glm::dot(Position() - hit.Position(), hit.Normal()) * hit.Normal() -
+                              Position() - hit.Position());
+
+    Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * dir),
+                      dir);
+
+    boost::optional<HitInfo> refHit = scene.BoundingBox().Hit(reflectionRay);
+
+    glm::vec3 reflectedColor;
+    if (refHit)
+        reflectedColor = hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
+    else
+        reflectedColor = scene.BackgroundColor();
+
+    return reflectedColor;
+}
+
+glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
     // Ambient shading :
     auto ambient = hit.Material().Ambient() * scene.AmbientLight();
 
+    if (hit.Material().IsMirror() && recDepth < scene.MaxRecursionDepth()) {
+        auto reflectedColor = CalculateMirror(hit, recDepth);
+        ambient += reflectedColor;
+    }
+
     for (auto& light : scene.Lights()){
-        auto direction = light.Position() - hit.Position();
+        auto direction = glm::normalize(light.Position() - hit.Position());
         Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
-                direction);
+                      direction);
 
-        Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
-                          (2.f * glm::dot(Position() - hit.Position(), hit.Normal()) * hit.Normal() - (Position() - hit.Position())));
-
-        if (scene.BoundingBox().Hit(shadowRay)) continue;
+        boost::optional<HitInfo> sh;
+        if (sh = scene.BoundingBox().Hit(shadowRay)){
+//            std::cerr << sh->Parameter() << '\n';
+            assert(sh->Parameter() > 0);
+            continue;
+        }
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);
@@ -82,8 +108,9 @@ Image Camera::Render() const
             auto ray = Ray(position, rowPixLocation - position);
 
             boost::optional<HitInfo> hit  = scene.BoundingBox().Hit(ray);
+
             if (hit)
-                image.at(i, j) = CalculateReflectance(*hit);
+                image.at(i, j) = CalculateReflectance(*hit, 0);
 //                image.at(i, j) = 255.0f * (hit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
             else
                 image.at(i, j) = scene.BackgroundColor();
@@ -103,7 +130,7 @@ glm::vec3 Camera::GetPixelLocation(int i, int j) const
                                  (j + 0.5f) * imagePlane.PixelWidth()  * right;
 }
 
-inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
     glm::vec3 color;
 

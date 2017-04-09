@@ -5,7 +5,7 @@
 #include "Material.h"
 #include <sstream>
 
-inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
     glm::vec3 color;
 
@@ -33,16 +33,24 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
         glm::vec3  mirror = {0, 0, 0}, transparency = {0, 0, 0};
         float refIndex = 1;
 
-        if ((tmp = child->FirstChildElement("MirrorReflectance")))
-            mirror = GetElem(tmp);
+        bool ismirror = false;
+        bool istransparent = false;
 
-        if ((tmp = child->FirstChildElement("Transparency")))
+        if ((tmp = child->FirstChildElement("MirrorReflectance"))) {
+            mirror = GetElem(tmp);
+            if (mirror != glm::vec3{0, 0, 0}) ismirror = true;
+        }
+
+        if ((tmp = child->FirstChildElement("Transparency"))) {
             transparency = GetElem(tmp);
+            if (mirror != glm::vec3{0, 0, 0}) istransparent = true;
+        }
 
         if ((tmp = child->FirstChildElement("RefractionIndex")))
             refIndex = tmp->FloatText(1);
 
-        mats.push_back(Material(id, ambient, diffuse, specular, mirror, transparency, refIndex, phongEx));
+        mats.push_back(Material(id, ambient, diffuse, specular, mirror, transparency,
+                                refIndex, phongEx, ismirror, istransparent));
     }
 
     return mats;

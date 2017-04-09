@@ -53,7 +53,9 @@ public:
     glm::vec3 GetPixelLocation(int i, int j) const;
 
 
-    glm::vec3 CalculateReflectance(const HitInfo& hit) const;
+    glm::vec3 CalculateReflectance(const HitInfo& hit, int recDepth) const;
+    glm::vec3 CalculateMirror(const HitInfo& hit, int recDepth) const;
+    glm::vec3 CalculateTransparency(const HitInfo& hit, int recDepth) const;
 };
 
 Camera LoadCamera(tinyxml2::XMLElement *element);
