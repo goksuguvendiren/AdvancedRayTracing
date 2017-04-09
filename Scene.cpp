@@ -56,6 +56,10 @@ void Scene::CreateScene(std::string filename)
         ShadowRayEpsilon(elem->FloatText());
     }
 
+    if (auto elem = docscene->FirstChildElement("MaxRecursionDepth")){
+        MaxRecursionDepth(elem->IntText(1));
+    }
+
     if (auto elem = docscene->FirstChildElement("IntersectionTestEpsilon")){
         IntersectionTestEpsilon(elem->FloatText());
     }
@@ -171,6 +175,12 @@ float Scene::ShadowRayEpsilon() const
 
 void Scene::ShadowRayEpsilon(float sre)
 { shadowRayEpsilon = sre; }
+
+int Scene::MaxRecursionDepth() const
+{ return maxRecDepth; }
+
+void Scene::MaxRecursionDepth(int mrd)
+{ maxRecDepth = mrd; }
 
 float Scene::IntersectionTestEpsilon() const
 { return intersectionTestEpsilon; }

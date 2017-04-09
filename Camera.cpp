@@ -18,10 +18,13 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit) const
 
     for (auto& light : scene.Lights()){
         auto direction = light.Position() - hit.Position();
-        Ray ray(hit.Position() + (scene.ShadowRayEpsilon() * direction),
+        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                 direction);
 
-        if (scene.BoundingBox().Hit(ray)) continue;
+        Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
+                          (2.f * glm::dot(Position() - hit.Position(), hit.Normal()) * hit.Normal() - (Position() - hit.Position())));
+
+        if (scene.BoundingBox().Hit(shadowRay)) continue;
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);

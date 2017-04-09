@@ -5,7 +5,7 @@
 #include <sstream>
 #include "Mesh.h"
 
-inline boost::optional<Triangle> GetFace(std::istringstream& stream, const glm::mat4& matrix, int matID, int index, bool smooth)
+inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexOffset, const glm::mat4& matrix, int matID, int index, bool smooth)
 {
     int x, y, z;
 
@@ -19,9 +19,9 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, const glm::
         return boost::none;
     }
 
-    auto ind0 = glm::vec4(scene.GetVertex(x).Data(), 1);
-    auto ind1 = glm::vec4(scene.GetVertex(y).Data(), 1);
-    auto ind2 = glm::vec4(scene.GetVertex(z).Data(), 1);
+    auto ind0 = glm::vec4(scene.GetVertex(x + vertexOffset).Data(), 1);
+    auto ind1 = glm::vec4(scene.GetVertex(y + vertexOffset).Data(), 1);
+    auto ind2 = glm::vec4(scene.GetVertex(z + vertexOffset).Data(), 1);
 
     ind0 = matrix * ind0;
     ind1 = matrix * ind1;
@@ -116,12 +116,18 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         }
 
         Mesh msh {id, &scene.GetMaterial(matID)};
-        std::istringstream stream { child->FirstChildElement("Faces")->GetText() };
+        auto FaceData = child->FirstChildElement("Faces");
+        std::istringstream stream { FaceData->GetText() };
+        int vertexOffset = 0;
+
+        if (auto vo = FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
+
+        std::cerr << vertexOffset << '\n';
 
         boost::optional<Triangle> tr;
         int index = 1;
 
-        while((tr = GetFace(stream, matrix, matID, index++, ShadingMode() == ShadingMode::Smooth))){
+        while((tr = GetFace(stream, vertexOffset, matrix, matID, index++, (ShadingMode() == ShadingMode::Smooth)))){
             msh.AddFace(std::move(*tr));
         }
 

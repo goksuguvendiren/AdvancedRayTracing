@@ -25,6 +25,8 @@ class Scene
     float shadowRayEpsilon;
     float intersectionTestEpsilon;
 
+    int maxRecDepth;
+
     std::vector<Shape*> shapes;
 
     std::vector<Sphere> spheres;
@@ -58,6 +60,9 @@ public:
 
     float ShadowRayEpsilon() const;
     void ShadowRayEpsilon(float sre);
+
+    int MaxRecursionDepth() const;
+    void MaxRecursionDepth(int mrd);
 
     float IntersectionTestEpsilon() const;
     void IntersectionTestEpsilon(float ite);
