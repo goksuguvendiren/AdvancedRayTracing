@@ -13,17 +13,53 @@
 
 glm::vec3 Camera::CalculateMirror(const HitInfo& hit, int recDepth) const
 {
-    auto dir = glm::normalize(2.f * glm::dot(Position() - hit.Position(), hit.Normal()) * hit.Normal() -
-                              Position() - hit.Position());
+    auto v = glm::normalize(Position() - hit.Position());
+    float costheta = glm::dot(v, hit.Normal());
+    auto dir = glm::normalize(2.f * costheta * hit.Normal() - v);
 
     Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * dir),
                       dir);
 
     boost::optional<HitInfo> refHit = scene.BoundingBox().Hit(reflectionRay);
 
-    glm::vec3 reflectedColor;
+    glm::vec3 reflectedColor = {0, 0, 0};
     if (refHit)
         reflectedColor = hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
+
+    return reflectedColor;
+}
+
+glm::vec3 calculateReflectedRay(glm::vec3 normal, glm::vec3 rayd, float n1, float n2)
+{
+    assert(glm::length(normal) <= 1.01);
+    assert(glm::length(rayd) <= 1.01);
+
+    float cosTheta = glm::dot(-rayd, normal);
+    float delta = 1 - std::pow((n1 / n2) * (1 - (cosTheta * cosTheta)), 2.0f);
+
+    if (delta < 0) return glm::vec3();
+
+    return (rayd + normal * (n1 / n2)) - (normal * (std::sqrt(delta)));
+}
+
+glm::vec3 Camera::CalculateTransparency(const HitInfo &hit, int recDepth) const
+{
+    bool entering = (glm::dot(hit.Normal(), hit.HitRay().Direction()) > 0);
+    glm::vec3 t;
+    if (entering)
+        t = calculateReflectedRay( hit.Normal(), hit.HitRay().Direction(), 1.0f, hit.Material().RefractionIndex());
+    else  //exiting
+        t = calculateReflectedRay(-hit.Normal(), hit.HitRay().Direction(), hit.Material().RefractionIndex(), 1.0f);
+
+    t = glm::normalize(t);
+
+    Ray refractionRay(hit.Position() + (scene.ShadowRayEpsilon() * t), t);
+
+    boost::optional<HitInfo> refHit = scene.BoundingBox().Hit(refractionRay);
+
+    glm::vec3 reflectedColor;
+    if (refHit)
+        reflectedColor = hit.Material().Transparency() * CalculateReflectance(*refHit, recDepth + 1);
     else
         reflectedColor = scene.BackgroundColor();
 
@@ -40,17 +76,18 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         ambient += reflectedColor;
     }
 
+    if (hit.Material().IsTransparent() && recDepth < scene.MaxRecursionDepth()) {
+        auto trColor = CalculateTransparency(hit, recDepth);
+        ambient += trColor;
+    }
+
     for (auto& light : scene.Lights()){
         auto direction = glm::normalize(light.Position() - hit.Position());
         Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                       direction);
 
         boost::optional<HitInfo> sh;
-        if (sh = scene.BoundingBox().Hit(shadowRay)){
-//            std::cerr << sh->Parameter() << '\n';
-            assert(sh->Parameter() > 0);
-            continue;
-        }
+        if (sh = scene.BoundingBox().Hit(shadowRay)) continue;
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);
@@ -107,6 +144,8 @@ Image Camera::Render() const
             rowPixLocation += oneRight;
             auto ray = Ray(position, rowPixLocation - position);
 
+            assert(glm::length(ray.Direction()) <= 1.01);
+
             boost::optional<HitInfo> hit  = scene.BoundingBox().Hit(ray);
 
             if (hit)
@@ -126,8 +165,8 @@ Image Camera::Render() const
 
 glm::vec3 Camera::GetPixelLocation(int i, int j) const
 {
-        return PlanePosition() - (i + 0.5f) * imagePlane.PixelHeight() * up +
-                                 (j + 0.5f) * imagePlane.PixelWidth()  * right;
+    return PlanePosition() - (i + 0.5f) * imagePlane.PixelHeight() * up +
+           (j + 0.5f) * imagePlane.PixelWidth()  * right;
 }
 
 static glm::vec3 GetElem(tinyxml2::XMLElement* element)
