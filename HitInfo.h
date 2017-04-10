@@ -8,21 +8,26 @@
 #include "glm/vec3.hpp"
 #include "Ray.h"
 #include "Material.h"
+#include "Shape.h"
 
 class HitInfo
 {
     float param;
     glm::vec3 normal;
     glm::vec3 position;
+    Ray ray;
 
     const Material* mat;
 
 public:
     HitInfo(glm::vec3 n,
+            const Shape* sh,
             const Material& m,
             glm::vec3 point,
-            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(&m), position(point), param(t)
+            Ray r,
+            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(&m), position(point), ray(r), param(t), shape(sh)
     {}
+    const Shape* shape;
 
     HitInfo() : param(std::numeric_limits<float>::infinity()) {}
 
@@ -30,4 +35,5 @@ public:
     float Parameter() const { return param; }
     glm::vec3 Normal() const { return normal; }
     glm::vec3 Position() const { return position; }
+    Ray HitRay() const { return ray; }
 };

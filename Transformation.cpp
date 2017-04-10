@@ -8,7 +8,7 @@
 #include "Material.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-inline glm::vec3 GetElem(std::istringstream& ss)
+static glm::vec3 GetElem(std::istringstream& ss)
 {
     glm::vec3 color;
     ss >> color.r;
@@ -18,7 +18,7 @@ inline glm::vec3 GetElem(std::istringstream& ss)
     return color;
 }
 
-inline float GetAngle(std::istringstream& ss)
+static float GetAngle(std::istringstream& ss)
 {
     float angle;
     ss >> angle;

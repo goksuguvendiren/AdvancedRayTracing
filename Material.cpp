@@ -5,7 +5,7 @@
 #include "Material.h"
 #include <sstream>
 
-inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
     glm::vec3 color;
 
@@ -24,12 +24,37 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
         int id;
         child->QueryIntAttribute("id", &id);
 
-        auto ambient  = GetElem(child->FirstChildElement("AmbientReflectance"));
-        auto diffuse  = GetElem(child->FirstChildElement("DiffuseReflectance"));
-        auto specular = GetElem(child->FirstChildElement("SpecularReflectance"));
-        float phongEx = child->FirstChildElement("PhongExponent")->FloatText(1);
+        auto  ambient  = GetElem(child->FirstChildElement("AmbientReflectance"));
+        auto  diffuse  = GetElem(child->FirstChildElement("DiffuseReflectance"));
+        auto  specular = GetElem(child->FirstChildElement("SpecularReflectance"));
 
-        mats.push_back(Material(id, ambient, diffuse, specular, phongEx));
+        tinyxml2::XMLElement* tmp;
+        glm::vec3  mirror = {0, 0, 0}, transparency = {0, 0, 0};
+        float refIndex = 1;
+        float phongEx = 0;
+
+        bool ismirror = false;
+        bool istransparent = false;
+
+
+        if (tmp = child->FirstChildElement("PhongExponent"))
+            phongEx  = tmp->FloatText(1);
+
+        if ((tmp = child->FirstChildElement("MirrorReflectance"))) {
+            mirror = GetElem(tmp);
+            if (mirror != glm::vec3{0, 0, 0}) ismirror = true;
+        }
+
+        if ((tmp = child->FirstChildElement("Transparency"))) {
+            transparency = GetElem(tmp);
+            if (transparency != glm::vec3{0, 0, 0}) istransparent = true;
+        }
+
+        if ((tmp = child->FirstChildElement("RefractionIndex")))
+            refIndex = tmp->FloatText(1);
+
+        mats.push_back(Material(id, ambient, diffuse, specular, mirror, transparency,
+                                refIndex, phongEx, ismirror, istransparent));
     }
 
     return mats;

@@ -12,7 +12,7 @@
 #include <sstream>
 #include <map>
 
-inline glm::vec3 GetElem(tinyxml2::XMLElement* element)
+static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
     glm::vec3 color;
 
@@ -54,6 +54,10 @@ void Scene::CreateScene(std::string filename)
 
     if (auto elem = docscene->FirstChildElement("ShadowRayEpsilon")){
         ShadowRayEpsilon(elem->FloatText());
+    }
+
+    if (auto elem = docscene->FirstChildElement("MaxRecursionDepth")){
+        MaxRecursionDepth(elem->IntText(1));
     }
 
     if (auto elem = docscene->FirstChildElement("IntersectionTestEpsilon")){
@@ -115,9 +119,9 @@ void Scene::CreateScene(std::string filename)
 //        Compare(sph.Max(), mins, maxs);
 //        Compare(sph.Min(), mins, maxs);
 //
-//        shapes.push_back(&sph);
-
-        //TODO : put spheres into shapes list !
+////        shapes.push_back(&sph);
+////
+////        TODO : put spheres into shapes list !
 //    });
 
     for_each(meshes.begin(), meshes.end(), [this, &mins, &maxs](auto& msh) {
@@ -171,6 +175,12 @@ float Scene::ShadowRayEpsilon() const
 
 void Scene::ShadowRayEpsilon(float sre)
 { shadowRayEpsilon = sre; }
+
+int Scene::MaxRecursionDepth() const
+{ return maxRecDepth; }
+
+void Scene::MaxRecursionDepth(int mrd)
+{ maxRecDepth = mrd; }
 
 float Scene::IntersectionTestEpsilon() const
 { return intersectionTestEpsilon; }
@@ -232,4 +242,30 @@ const std::vector<LightSource>& Scene::Lights() const
 const std::vector<Material>& Scene::Materials() const
 {
     return materials;
+}
+
+boost::optional<HitInfo> Scene::Hit(const Ray &r)
+{
+    auto bvhHit = BoundingBox().Hit(r);
+
+    boost::optional<HitInfo> sphHit;
+    for (auto& sph : scene.Spheres()){
+        auto tmpHit = sph.Hit(r);
+        if (!sphHit || (sphHit && tmpHit && sphHit->Parameter() > tmpHit->Parameter()))
+        {
+            sphHit = tmpHit;
+        }
+    }
+
+    if (bvhHit && sphHit)
+    {
+        return bvhHit->Parameter() < sphHit->Parameter() ? bvhHit : sphHit;
+    }
+
+    if (!sphHit && !bvhHit)
+    {
+        return boost::none;
+    }
+
+    return sphHit ? sphHit : bvhHit;
 }
