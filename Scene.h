@@ -93,6 +93,8 @@ public:
     const Triangle& GetTriangle(int id);
     Vertex& GetVertex(int id);
 
+    boost::optional<HitInfo> Hit(const Ray& r);
+
     const BoundingVolume& BoundingBox();
 
     void CreateScene(std::string filename);

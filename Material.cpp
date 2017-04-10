@@ -27,14 +27,18 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
         auto  ambient  = GetElem(child->FirstChildElement("AmbientReflectance"));
         auto  diffuse  = GetElem(child->FirstChildElement("DiffuseReflectance"));
         auto  specular = GetElem(child->FirstChildElement("SpecularReflectance"));
-        float phongEx  = child->FirstChildElement("PhongExponent")->FloatText(1);
 
         tinyxml2::XMLElement* tmp;
         glm::vec3  mirror = {0, 0, 0}, transparency = {0, 0, 0};
         float refIndex = 1;
+        float phongEx = 0;
 
         bool ismirror = false;
         bool istransparent = false;
+
+
+        if (tmp = child->FirstChildElement("PhongExponent"))
+            phongEx  = tmp->FloatText(1);
 
         if ((tmp = child->FirstChildElement("MirrorReflectance"))) {
             mirror = GetElem(tmp);
@@ -43,7 +47,7 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
 
         if ((tmp = child->FirstChildElement("Transparency"))) {
             transparency = GetElem(tmp);
-            if (mirror != glm::vec3{0, 0, 0}) istransparent = true;
+            if (transparency != glm::vec3{0, 0, 0}) istransparent = true;
         }
 
         if ((tmp = child->FirstChildElement("RefractionIndex")))

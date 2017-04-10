@@ -27,7 +27,7 @@ class Material
 
 public:
     Material(int i = 0, glm::vec3 a = {0, 0, 0}, glm::vec3 d = {0, 0, 0}, glm::vec3 s = {0, 0, 0},
-             glm::vec3 m = {0, 0, 0}, glm::vec3 t = {0, 0, 0}, float r = 0.0f, float p = 1,
+             glm::vec3 m = {0, 0, 0}, glm::vec3 t = {0, 0, 0}, float r = 1.0f, float p = 1,
              bool ism = false, bool ist = false) : id(i), isMirror(ism), isTransparent(ist),
                                                    diffuse(d), specular(s), ambient(a),
                                                    phongExponent(p), mirrorReflectance(m),

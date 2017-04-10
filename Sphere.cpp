@@ -40,7 +40,12 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto surfaceNormal = glm::normalize(glm::vec3(inverseTranspose * glm::vec4(modelPoint - center.Data(), 0)));
 
-    return HitInfo(surfaceNormal, *material, worldPoint, ray, param);
+    if (param < 0)
+    {
+        return boost::none;
+    }
+
+    return HitInfo(surfaceNormal, this, *material, worldPoint, ray, param);
 }
 
 bool Sphere::FastHit(const Ray &ray) const

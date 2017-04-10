@@ -155,7 +155,12 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
 boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 {
-    return volume.Hit(ray);
+    auto res = volume.Hit(ray);
+    if (res)
+    {
+        res->shape = this;
+    }
+    return res;
 };
 
 bool Mesh::FastHit(const Ray &ray) const

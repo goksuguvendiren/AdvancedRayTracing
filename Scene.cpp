@@ -119,9 +119,9 @@ void Scene::CreateScene(std::string filename)
 //        Compare(sph.Max(), mins, maxs);
 //        Compare(sph.Min(), mins, maxs);
 //
-//        shapes.push_back(&sph);
-
-        //TODO : put spheres into shapes list !
+////        shapes.push_back(&sph);
+////
+////        TODO : put spheres into shapes list !
 //    });
 
     for_each(meshes.begin(), meshes.end(), [this, &mins, &maxs](auto& msh) {
@@ -242,4 +242,30 @@ const std::vector<LightSource>& Scene::Lights() const
 const std::vector<Material>& Scene::Materials() const
 {
     return materials;
+}
+
+boost::optional<HitInfo> Scene::Hit(const Ray &r)
+{
+    auto bvhHit = BoundingBox().Hit(r);
+
+    boost::optional<HitInfo> sphHit;
+    for (auto& sph : scene.Spheres()){
+        auto tmpHit = sph.Hit(r);
+        if (!sphHit || (sphHit && tmpHit && sphHit->Parameter() > tmpHit->Parameter()))
+        {
+            sphHit = tmpHit;
+        }
+    }
+
+    if (bvhHit && sphHit)
+    {
+        return bvhHit->Parameter() < sphHit->Parameter() ? bvhHit : sphHit;
+    }
+
+    if (!sphHit && !bvhHit)
+    {
+        return boost::none;
+    }
+
+    return sphHit ? sphHit : bvhHit;
 }

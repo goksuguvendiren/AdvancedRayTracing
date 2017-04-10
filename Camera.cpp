@@ -13,7 +13,7 @@
 
 glm::vec3 Camera::CalculateMirror(const HitInfo& hit, int recDepth) const
 {
-    auto v = glm::normalize(Position() - hit.Position());
+    auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
     float costheta = glm::dot(v, hit.Normal());
     auto dir = glm::normalize(2.f * costheta * hit.Normal() - v);
 
@@ -24,46 +24,143 @@ glm::vec3 Camera::CalculateMirror(const HitInfo& hit, int recDepth) const
 
     glm::vec3 reflectedColor = {0, 0, 0};
     if (refHit)
-        reflectedColor = hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
+        reflectedColor += hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
 
     return reflectedColor;
-}
-
-glm::vec3 calculateReflectedRay(glm::vec3 normal, glm::vec3 rayd, float n1, float n2)
-{
-    assert(glm::length(normal) <= 1.01);
-    assert(glm::length(rayd) <= 1.01);
-
-    float cosTheta = glm::dot(-rayd, normal);
-    float delta = 1 - std::pow((n1 / n2) * (1 - (cosTheta * cosTheta)), 2.0f);
-
-    if (delta < 0) return glm::vec3();
-
-    return (rayd + normal * (n1 / n2)) - (normal * (std::sqrt(delta)));
 }
 
 glm::vec3 Camera::CalculateTransparency(const HitInfo &hit, int recDepth) const
 {
-    bool entering = (glm::dot(hit.Normal(), hit.HitRay().Direction()) > 0);
+    bool entering = (glm::dot(hit.Normal(), hit.HitRay().Direction()) < 0);
     glm::vec3 t;
-    if (entering)
-        t = calculateReflectedRay( hit.Normal(), hit.HitRay().Direction(), 1.0f, hit.Material().RefractionIndex());
-    else  //exiting
-        t = calculateReflectedRay(-hit.Normal(), hit.HitRay().Direction(), hit.Material().RefractionIndex(), 1.0f);
 
-    t = glm::normalize(t);
+    glm::vec3 normal;
+    float ratio;
+    glm::vec3 refractedColor = {0, 0, 0};
 
-    Ray refractionRay(hit.Position() + (scene.ShadowRayEpsilon() * t), t);
+    if (entering) {
+        normal = hit.Normal();
+        auto n1 = 1.0f;
+        auto n2 = hit.Material().RefractionIndex();
 
-    boost::optional<HitInfo> refHit = scene.BoundingBox().Hit(refractionRay);
+        ratio = n1 / n2;
+        float cost = glm::dot(-hit.HitRay().Direction(), normal);
+        float delta = 1 - std::pow(ratio, 2.0f) * (1 - cost * cost);
 
-    glm::vec3 reflectedColor;
-    if (refHit)
-        reflectedColor = hit.Material().Transparency() * CalculateReflectance(*refHit, recDepth + 1);
+        float c2 = std::sqrt(delta);
+        float c1 = cost;
+
+        t = ratio * hit.HitRay().Direction() + (ratio * c1 - c2) * normal;
+        t = glm::normalize(t);
+
+        //
+        auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
+        float costheta = glm::dot(v, normal);
+        auto reflDir = glm::normalize(2.f * costheta * normal - v);
+
+        Ray reflectingRay(hit.Position() + (scene.ShadowRayEpsilon() * reflDir), reflDir);
+
+        boost::optional<HitInfo> reflectionHit = scene.Hit(reflectingRay);
+
+        glm::vec3 reflectioncolor = {0, 0, 0};
+        if (reflectionHit)
+            reflectioncolor = CalculateReflectance(*reflectionHit, recDepth + 1);
+
+        float r0 = std::pow(((n1 - n2) / (n1 + n2)), 2);
+        float rSchlick = r0 + ((1.0f - r0) * std::pow(1 - costheta, 5.0f));
+
+        reflectioncolor *= rSchlick;
+
+        Ray refractionRay(hit.Position() + (scene.ShadowRayEpsilon() * t), t);
+        boost::optional<HitInfo> refHit = scene.Hit(refractionRay);
+
+        if (refHit) {
+            auto calcColor =  CalculateReflectance(*refHit, recDepth + 1);
+            float r = calcColor.r * (std::exp(std::log(hit.Material().Transparency().r) * refHit->Parameter()));
+            float g = calcColor.g * (std::exp(std::log(hit.Material().Transparency().g) * refHit->Parameter()));
+            float b = calcColor.b * (std::exp(std::log(hit.Material().Transparency().b) * refHit->Parameter()));
+
+            refractedColor += (1 - rSchlick) * glm::vec3{r, g, b};
+        }
+
+        refractedColor += reflectioncolor;
+    }
     else
-        reflectedColor = scene.BackgroundColor();
+    { //exiting
+        normal = -hit.Normal();
 
-    return reflectedColor;
+        float n1 = hit.Material().RefractionIndex();
+        float n2 = 1.0f;
+        ratio = n1 / n2;
+
+        float costheta = glm::dot(-hit.HitRay().Direction(), normal);
+        float delta = 1 - std::pow(ratio, 2.0f) * (1 - costheta * costheta);
+
+        if (delta < 0)
+        {
+            auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
+            float costheta = glm::dot(v, normal);
+            auto dir = glm::normalize(2.f * costheta * normal - v);
+
+            Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * dir),
+                              dir);
+
+            boost::optional<HitInfo> refHit = scene.Hit(reflectionRay);
+
+            glm::vec3 reflectedColor = {0, 0, 0};
+            if (refHit)
+            {
+                reflectedColor += CalculateReflectance(*refHit, recDepth + 1);
+
+                float r = reflectedColor.r * (std::exp(std::log(hit.Material().Transparency().r) * refHit->Parameter()));
+                float g = reflectedColor.g * (std::exp(std::log(hit.Material().Transparency().g) * refHit->Parameter()));
+                float b = reflectedColor.b * (std::exp(std::log(hit.Material().Transparency().b) * refHit->Parameter()));
+
+                reflectedColor = {r, g, b};
+
+            }
+
+            return reflectedColor;
+        }
+
+        float c2 = std::sqrt(delta);
+        float c1 = costheta;
+
+        t = ratio * hit.HitRay().Direction() + (ratio * c1 - c2) * normal;
+        t = glm::normalize(t);
+
+
+        auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
+        float cost = glm::dot(v, normal);
+        auto reflDir = glm::normalize(2.f * cost * normal - v);
+
+        Ray reflectingRay(hit.Position() + (scene.ShadowRayEpsilon() * reflDir), reflDir);
+
+        boost::optional<HitInfo> reflectionHit = scene.Hit(reflectingRay);
+
+        glm::vec3 reflectioncolor = {0, 0, 0};
+        if (reflectionHit)
+            reflectioncolor = CalculateReflectance(*reflectionHit, recDepth + 1);
+
+        float r0 = std::pow(((n1 - n2) / (n1 + n2)), 2);
+        float rSchlick = r0 + ((1.0f - r0) * std::pow(1 - cost, 5.0f));
+
+        reflectioncolor *= rSchlick;
+
+
+        Ray refractionRay(hit.Position() + (scene.ShadowRayEpsilon() * t), t);
+        boost::optional<HitInfo> refHit = scene.Hit(refractionRay);
+
+        if (refHit) {
+            auto calcColor = CalculateReflectance(*refHit, recDepth + 1);
+
+            refractedColor += (1 - rSchlick) * calcColor;
+        }
+
+        refractedColor += reflectioncolor;
+    }
+
+    return refractedColor;
 }
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
@@ -78,7 +175,8 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 
     if (hit.Material().IsTransparent() && recDepth < scene.MaxRecursionDepth()) {
         auto trColor = CalculateTransparency(hit, recDepth);
-        ambient += trColor;
+        if (trColor != glm::vec3{0, 0, 0})
+            ambient += trColor;
     }
 
     for (auto& light : scene.Lights()){
@@ -87,7 +185,11 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
                       direction);
 
         boost::optional<HitInfo> sh;
-        if (sh = scene.BoundingBox().Hit(shadowRay)) continue;
+        if ((sh = scene.Hit(shadowRay))){
+            auto& s_hit = *sh;
+            if (s_hit.Parameter() < glm::length(light.Position() - hit.Position()))
+                continue;
+        }
 
         glm::vec3 pointToLight = light.Position() - hit.Position();
         auto intensity = light.Intensity(pointToLight);
@@ -95,11 +197,11 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         pointToLight = glm::normalize(pointToLight);
 
         // Diffuse shading :
-        auto theta = glm::dot(glm::normalize(hit.Normal()), pointToLight);
+        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), pointToLight));
         ambient += (theta * hit.Material().Diffuse() * intensity);
 
         // Specular shading :
-        auto half = glm::normalize(pointToLight + glm::normalize(Position() - hit.Position()));
+        auto half = glm::normalize(pointToLight + glm::normalize(hit.HitRay().Origin() - hit.Position()));
         ambient  += intensity *
                     hit.Material().Specular() *
                     std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.Material().PhongExp());
@@ -146,11 +248,14 @@ Image Camera::Render() const
 
             assert(glm::length(ray.Direction()) <= 1.01);
 
-            boost::optional<HitInfo> hit  = scene.BoundingBox().Hit(ray);
+            boost::optional<HitInfo> hit  = scene.Hit(ray);
 
-            if (hit)
+            if (hit){
+                auto& h = *hit;
                 image.at(i, j) = CalculateReflectance(*hit, 0);
 //                image.at(i, j) = 255.0f * (hit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
+
+            }
             else
                 image.at(i, j) = scene.BackgroundColor();
         }
