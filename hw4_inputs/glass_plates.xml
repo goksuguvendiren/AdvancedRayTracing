@@ -16,18 +16,18 @@
 
     <Lights>
         <AmbientLight>25 25 25</AmbientLight>
-        <AreaLight id="1">
+        <PointLight id="1">
             <Position>-150 150 50</Position>
             <EdgeVector1>5 0 0</EdgeVector1>
             <EdgeVector2>0 0 -5</EdgeVector2>
             <Intensity>3400000 3400000 3400000</Intensity>
-        </AreaLight>
-        <AreaLight id="2">
+        </PointLight>
+        <PointLight id="2">
             <Position>-150 150 50</Position>
             <EdgeVector1>5 0 0</EdgeVector1>
             <EdgeVector2>0 0 -5</EdgeVector2>
             <Intensity>3400000 3400000 3400000</Intensity>
-        </AreaLight>
+        </PointLight>
     </Lights>
 
     <Materials>

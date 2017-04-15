@@ -37,7 +37,7 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
         bool istransparent = false;
 
 
-        if (tmp = child->FirstChildElement("PhongExponent"))
+        if ((tmp = child->FirstChildElement("PhongExponent")))
             phongEx  = tmp->FloatText(1);
 
         if ((tmp = child->FirstChildElement("MirrorReflectance"))) {
