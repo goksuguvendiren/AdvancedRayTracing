@@ -198,9 +198,11 @@ Camera LoadCamera(tinyxml2::XMLElement *element)
     glm::vec3 gaze = GetElem(element->FirstChildElement("Gaze"));
     glm::vec3 up = GetElem(element->FirstChildElement("Up"));
 
+    int sampleCount = element->FirstChildElement("NumSamples")->IntText(1);
+
     std::string name = element->FirstChildElement("ImageName")->GetText();
 
-    return Camera(plane, id, position, gaze, up, name);
+    return Camera(plane, id, position, gaze, up, name, sampleCount);
 }
 
 

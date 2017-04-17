@@ -25,14 +25,17 @@ class Camera
     ImagePlane imagePlane;
 
     glm::vec3 planePosition;
+    int sampleCount;
 
 public:
     Camera(const ImagePlane& plane = {} , int i = 0, glm::vec3 p = {0, 0, 0},
                                                              glm::vec3 g = {0, 1, 0},
                                                              glm::vec3 u = {0, 0, 1},
-                                                             std::string name = "") : imagePlane(plane),
-                                                                                      position(p), id(i),
-                                                                                      imageName(name)
+                                                             std::string name = "",
+                                                             int numSamp = 1) : imagePlane(plane),
+                                                                                position(p), id(i),
+                                                                                imageName(name),
+                                                                                sampleCount(numSamp)
     {
         up    = glm::normalize(u);
         gaze  = glm::normalize(g);
