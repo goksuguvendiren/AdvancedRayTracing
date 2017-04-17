@@ -3,7 +3,7 @@
 //
 
 #include "Scene.h"
-#include "LightSource.h"
+#include "Lights/Light.h"
 #include "Triangle.h"
 #include "Transformation.h"
 #include "Mesh.h"
@@ -73,7 +73,6 @@ void Scene::CreateScene(std::string filename)
         std::abort();
     }
 
-    std::vector<LightSource> ls;
     if (auto elem = docscene->FirstChildElement("Lights")){
         if (auto al = elem->FirstChildElement("AmbientLight")){
             auto ambient = GetElem(al);
@@ -94,10 +93,6 @@ void Scene::CreateScene(std::string filename)
         transformations  = LoadTransformations(elem);
     }
 
-    std::vector<Triangle> tris;
-    std::vector<Sphere> sphs;
-    std::vector<Mesh> mshs;
-
     if(auto objects = docscene->FirstChildElement("Objects")){
         triangles     = LoadTriangles(objects);
         spheres       = LoadSpheres(objects);
@@ -114,15 +109,6 @@ void Scene::CreateScene(std::string filename)
         Compare(tri.Min(), mins, maxs);
         shapes.push_back(&tri);
     });
-
-//    for_each(spheres.begin(), spheres.end(), [this, &mins, &maxs](auto& sph) {
-//        Compare(sph.Max(), mins, maxs);
-//        Compare(sph.Min(), mins, maxs);
-//
-////        shapes.push_back(&sph);
-////
-////        TODO : put spheres into shapes list !
-//    });
 
     for_each(meshes.begin(), meshes.end(), [this, &mins, &maxs](auto& msh) {
         Compare(msh.Max(), mins, maxs);
@@ -234,7 +220,7 @@ const std::vector<Mesh>& Scene::Meshes() const
     return meshes;
 }
 
-const std::vector<LightSource>& Scene::Lights() const
+const std::vector<std::unique_ptr<Light>>& Scene::Lights() const
 {
     return lights;
 }

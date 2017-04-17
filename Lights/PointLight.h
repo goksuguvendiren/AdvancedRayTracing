@@ -6,8 +6,8 @@
 
 #include <vector>
 #include <cmath>
-#include "glm/vec3.hpp"
-#include "tinyxml/tinyxml2.h"
+#include "../glm/vec3.hpp"
+#include "../tinyxml/tinyxml2.h"
 
 // Point light source
 

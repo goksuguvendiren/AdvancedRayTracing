@@ -8,9 +8,7 @@
 #include "Ray.h"
 #include "Scene.h"
 #include "Triangle.h"
-#include "BoundingVolume.h"
-#include "LightSource.h"
-
+#include "Lights/PointLight.h"
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
@@ -29,19 +27,19 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
     }
 
     for (auto& light : scene.Lights()){
-        auto direction = glm::normalize(light.Position() - hit.Position());
+        auto direction = glm::normalize(light->Position() - hit.Position());
         Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                       direction);
 
         boost::optional<HitInfo> sh;
         if ((sh = scene.Hit(shadowRay))){
             auto& s_hit = *sh;
-            if (s_hit.Parameter() < glm::length(light.Position() - hit.Position()))
+            if (s_hit.Parameter() < glm::length(light->Position() - hit.Position()))
                 continue;
         }
 
-        glm::vec3 pointToLight = light.Position() - hit.Position();
-        auto intensity = light.Intensity(pointToLight);
+        glm::vec3 pointToLight = light->Position() - hit.Position();
+        auto intensity = light->Intensity(hit.Position());
 
         pointToLight = glm::normalize(pointToLight);
 
@@ -122,27 +120,10 @@ Image Camera::Render() const
         rowPixLocation = rowBeginning;
         for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
             rowPixLocation += oneRight;
-
             image.at(i, j) = RenderPixel(rowPixLocation);
-//
-//            auto ray = Ray(position, glm::normalize(rowPixLocation - position));
-//
-//            assert(glm::length(ray.Direction()) <= 1.01);
-//
-//            boost::optional<HitInfo> hit  = scene.Hit(ray);
-//
-//            if (hit){
-//                auto& h = *hit;
-//                image.at(i, j) = CalculateReflectance(*hit, 0);
-////                image.at(i, j) = 255.0f * (hit->Normal() + glm::vec3{1, 1, 1}) / 2.0f; //CalculateReflectance(*ultHit);
-//
-//            }
-//            else
-//                image.at(i, j) = scene.BackgroundColor();
         }
 
         auto progress = i / (float)imagePlane.NY();
-
 
         auto UpdateProgress = [](float progress)
         {
