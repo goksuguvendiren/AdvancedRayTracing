@@ -126,7 +126,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         if (auto vo = FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
 
-        std::cerr << vertexOffset << '\n';
+//        std::cerr << vertexOffset << '\n';
 
         boost::optional<Triangle> tr;
         int index = 1;

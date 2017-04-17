@@ -43,6 +43,7 @@ public:
     };
 
     Image Render() const;
+    glm::vec3 RenderPixel(const glm::vec3& pixelcenter) const;
 
     auto Position() const { return position; }
     auto Up() const { return up; }

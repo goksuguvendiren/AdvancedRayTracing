@@ -10,7 +10,7 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::string sceneName = "horse_and_glass_mug";
+    std::string sceneName = "killeroo_mirror";
 
     if (argc == 2){
         sceneName = argv[1];
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/hw4_inputs/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/4/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/hw4_outputs/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/5/" + sceneName + ".png", im);
     }
 
     return 0;
