@@ -5,10 +5,10 @@
 #pragma once
 
 #include <vector>
-#include "glm/vec3.hpp"
-#include "Material.h"
+#include "../glm/vec3.hpp"
+#include "../Material.h"
 #include "Shape.h"
-#include "Vertex.h"
+#include "../Vertex.h"
 
 class Ray;
 class HitInfo;

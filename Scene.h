@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 #include "Camera.h"
-#include "Sphere.h"
+#include "Shapes/Sphere.h"
 #include "Vertex.h"
 #include "BoundingVolume.h"
 

@@ -4,9 +4,9 @@
 
 #include "Scene.h"
 #include "Lights/Light.h"
-#include "Triangle.h"
+#include "Shapes/Triangle.h"
 #include "Transformation.h"
-#include "Mesh.h"
+#include "Shapes/Mesh.h"
 #include "BoundingVolume.h"
 #include "tinyxml/tinyxml2.h"
 #include <sstream>

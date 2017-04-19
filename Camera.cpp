@@ -7,7 +7,7 @@
 #include "Camera.h"
 #include "Ray.h"
 #include "Scene.h"
-#include "Triangle.h"
+#include "Shapes/Triangle.h"
 #include "Lights/PointLight.h"
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
@@ -61,8 +61,8 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 {
     glm::vec3 pixelColor = {0, 0, 0};
 
-    int sampleCount = 1; // 16
-    int divCount = 1;    // std::sqrt(sampleCount);
+//    int sampleCount = 1; // 16
+    int divCount = 6;    // std::sqrt(sampleCount);
 
     float cellWidth  = imagePlane.PixelWidth()  / float(divCount);
     float cellHeight = imagePlane.PixelHeight() / float(divCount);
@@ -100,10 +100,11 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
     return pixelColor / float(sampleCount);
 }
 
-
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
+
+    std::cerr << "Rendering with " << sampleCount << " samples for pixels." << '\n';
 
     auto oneRight = imagePlane.PixelWidth() * right;
     auto oneDown  = -imagePlane.PixelHeight() * up;

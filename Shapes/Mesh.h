@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 #include "Triangle.h"
-#include "Box.h"
+#include "../Box.h"
 
 enum class ShadingMode
 {

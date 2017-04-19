@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #include "../glm/geometric.hpp"
 #include "../glm/vec3.hpp"
@@ -41,20 +42,10 @@ public:
         auto dir = hitPoint - position;
         float cosAlpha = glm::dot(glm::normalize(dir), glm::normalize(direction));
 
-        if (cosAlpha < 0) return {0, 0, 0};
-
         float alpha = std::acos(cosAlpha) * float(180.f / M_PI);
-        if (alpha > coverageAngle) {
-            return {0, 0, 0};
-        }
+        float a = (alpha - coverageAngle) / (fallOffAngle - coverageAngle);
+        a = std::max(0.f, std::min(a, 1.f));
 
-        auto intens = intensity / lensquared(dir);
-
-        if (alpha > fallOffAngle){
-            float a = (alpha - coverageAngle) / (fallOffAngle - coverageAngle);
-            intens *= float(glm::pow(a, 4));
-        }
-
-        return intens;
+        return (intensity / lensquared(dir)) * float(glm::pow(a, 4));
     }
 };

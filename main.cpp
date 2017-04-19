@@ -10,15 +10,27 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::string sceneName = "killeroo_mirror";
+    std::vector<std::string> sceneNames = {"dragon_spot_light_msaa",
+                                           "dragon_spot_light",
+                                           "glass_plates_area",
+                                           "glass_plates_point",
+                                           "metal_plates_area",
+                                           "spheres_dof"};
+
+//    std::string sceneName = "dragon";
+
+    int index = 1;
 
     if (argc == 2){
-        sceneName = argv[1];
+        index = std::stoi(argv[1]);
     }
+
+    auto sceneName = sceneNames[index];
+
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/4/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/5/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "

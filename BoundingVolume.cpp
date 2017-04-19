@@ -4,10 +4,10 @@
 
 #include "HitInfo.h"
 #include "BoundingVolume.h"
-#include "Shape.h"
+#include "Shapes/Shape.h"
 #include "Box.h"
 #include "glm/glm.hpp"
-#include "Triangle.h"
+#include "Shapes/Triangle.h"
 
 BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
 {
