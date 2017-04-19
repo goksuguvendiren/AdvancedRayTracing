@@ -5,11 +5,11 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
-#include "glm/glm.hpp"
+#include "../glm/glm.hpp"
 #include "Sphere.h"
-#include "Ray.h"
-#include "HitInfo.h"
-#include "Scene.h"
+#include "../Ray.h"
+#include "../HitInfo.h"
+#include "../Scene.h"
 
 Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
 {

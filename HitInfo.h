@@ -8,7 +8,7 @@
 #include "glm/vec3.hpp"
 #include "Ray.h"
 #include "Material.h"
-#include "Shape.h"
+#include "Shapes/Shape.h"
 
 class HitInfo
 {

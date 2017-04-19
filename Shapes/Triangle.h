@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "glm/glm.hpp"
-#include "Ray.h"
-#include "HitInfo.h"
-#include "tinyxml/tinyxml2.h"
-#include "Scene.h"
+#include "../glm/glm.hpp"
+#include "../Ray.h"
+#include "../HitInfo.h"
+#include "../tinyxml/tinyxml2.h"
+#include "../Scene.h"
 
 class Material;
 class Vertex;

@@ -6,7 +6,7 @@
 
 #include <boost/optional.hpp>
 #include <iostream>
-#include "glm/vec3.hpp"
+#include "../glm/vec3.hpp"
 
 class HitInfo;
 class Ray;

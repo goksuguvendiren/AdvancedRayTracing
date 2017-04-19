@@ -3,7 +3,7 @@
 //
 
 #include "Box.h"
-#include "Shape.h"
+#include "Shapes/Shape.h"
 #include "Ray.h"
 
 bool Box::Hit(const Ray &ray) const

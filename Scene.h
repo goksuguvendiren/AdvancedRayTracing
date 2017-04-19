@@ -7,16 +7,15 @@
 #include <vector>
 #include <map>
 #include "Camera.h"
-#include "Sphere.h"
+#include "Shapes/Sphere.h"
 #include "Vertex.h"
 #include "BoundingVolume.h"
 
 class Triangle;
 class Sphere;
 class Mesh;
-class LightSource;
+class Light;
 class Shape;
-//class BoundingVolume;
 
 class Scene
 {
@@ -37,7 +36,7 @@ class Scene
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
     std::map<std::string, glm::mat4> transformations;
-    std::vector<LightSource> lights;
+    std::vector<std::unique_ptr<Light>> lights;
     std::vector<Camera> cameras;
 
     BoundingVolume boundingBox;
@@ -72,7 +71,7 @@ public:
     const std::vector<Triangle>& Triangles() const;
     const std::vector<Material>& Materials() const;
     const std::vector<Mesh>& Meshes() const;
-    const std::vector<LightSource>& Lights() const;
+    const std::vector<std::unique_ptr<Light>>& Lights() const;
 
     void AddCamera(Camera&& cam);
     void AddCamera(const Camera& cam);
