@@ -38,17 +38,17 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
                 continue;
         }
 
-        glm::vec3 pointToLight = light->Position() - hit.Position();
+//        glm::vec3 pointToLight = light->Position() - hit.Position();
         auto intensity = light->Intensity(hit.Position());
 
-        pointToLight = glm::normalize(pointToLight);
+//        pointToLight = glm::normalize(pointToLight);
 
         // Diffuse shading :
-        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), pointToLight));
+        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
         ambient += (theta * hit.Material().Diffuse() * intensity);
 
         // Specular shading :
-        auto half = glm::normalize(pointToLight + glm::normalize(hit.HitRay().Origin() - hit.Position()));
+        auto half = glm::normalize(direction + glm::normalize(hit.HitRay().Origin() - hit.Position()));
         ambient  += intensity *
                     hit.Material().Specular() *
                     std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.Material().PhongExp());

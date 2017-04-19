@@ -8,15 +8,10 @@
 #include <cmath>
 #include "../glm/vec3.hpp"
 #include "../tinyxml/tinyxml2.h"
+#include "Light.h"
 
 // Point light source
-
-inline float lensquared(const glm::vec3& n)
-{
-    return n.r * n.r + n.g * n.g + n.b * n.b;
-}
-
-class LightSource
+class PointLight : public Light
 {
     glm::vec3 position;
     glm::vec3 intensity;
@@ -24,14 +19,20 @@ class LightSource
     int id;
 
 public:
-    LightSource(int lid = 1,
+    PointLight(int lid = 1,
                 glm::vec3 pos = {0, 0, 0},
                 glm::vec3 intens = {0, 0, 0}) : id(lid),
                                                 position(pos),
                                                 intensity(intens) {}
 
-    auto Position()  const { return position; }
-    auto Intensity(const glm::vec3& dist) const { return intensity / lensquared(dist); }
-};
+    glm::vec3 Position() const { return position; }
+    glm::vec3 Intensity(const glm::vec3& hitPoint) const
+    {
+        auto lensquared = [](const glm::vec3& n)
+        {
+            return n.r * n.r + n.g * n.g + n.b * n.b;
+        };
 
-std::vector<LightSource> LoadLights(tinyxml2::XMLElement *elem);
+        return intensity / lensquared(position - hitPoint);
+    }
+};
