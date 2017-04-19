@@ -63,8 +63,8 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 {
     glm::vec3 pixelColor = {0, 0, 0};
 
-    int sampleCount = 1; // 16
-    int divCount = 1;    // std::sqrt(sampleCount);
+//    int sampleCount = 1; // 16
+//    int divCount = 6;    // std::sqrt(sampleCount);
 
     float cellWidth  = imagePlane.PixelWidth()  / float(divCount);
     float cellHeight = imagePlane.PixelHeight() / float(divCount);
