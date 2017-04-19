@@ -38,23 +38,23 @@ public:
             return n.r * n.r + n.g * n.g + n.b * n.b;
         };
 
-        auto dir = glm::normalize(hitPoint - position);
-        float cosAlpha = glm::dot(dir, glm::normalize(direction));
+        auto dir = hitPoint - position;
+        float cosAlpha = glm::dot(glm::normalize(dir), glm::normalize(direction));
+
         if (cosAlpha < 0) return {0, 0, 0};
-        float alpha = std::acos(cosAlpha);
 
-        if (alpha > coverageAngle)
+        float alpha = std::acos(cosAlpha) * float(180.f / M_PI);
+        if (alpha > coverageAngle) {
             return {0, 0, 0};
-
-        else if (alpha > fallOffAngle)
-            return intensity / lensquared(dir);
-
-        else {
-            float cosBeta = glm::cos(coverageAngle);
-            float cosTheta = glm::cos(fallOffAngle - alpha);
-
-            float a = (cosAlpha - cosBeta) / (cosTheta - cosBeta);
-            return (intensity / lensquared(dir)) * float(glm::pow(a, 4));
         }
+
+        auto intens = intensity / lensquared(dir);
+
+        if (alpha > fallOffAngle){
+            float a = (alpha - coverageAngle) / (fallOffAngle - coverageAngle);
+            intens *= float(glm::pow(a, 4));
+        }
+
+        return intens;
     }
 };
