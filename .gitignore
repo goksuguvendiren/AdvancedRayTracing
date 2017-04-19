@@ -2,7 +2,5 @@
 cmake-build-debug
 cmake-build-release
 build
-hw1_outputs
-hw2_outputs
-hw3_outputs
-hw4_outputs
+outputs
+tests
