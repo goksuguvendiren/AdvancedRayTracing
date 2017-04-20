@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
 //    std::string sceneName = "dragon";
 
-    int index = 1;
+    int index = 4;
 
     if (argc == 2){
         index = std::stoi(argv[1]);

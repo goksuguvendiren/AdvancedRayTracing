@@ -26,13 +26,13 @@ public:
                                                 intensity(intens) {}
 
     glm::vec3 Position() const { return position; }
-    glm::vec3 Intensity(const glm::vec3& hitPoint) const
+    glm::vec3 Intensity(const glm::vec3& lightpos, const glm::vec3& hitPoint) const
     {
         auto lensquared = [](const glm::vec3& n)
         {
             return n.r * n.r + n.g * n.g + n.b * n.b;
         };
 
-        return intensity / lensquared(position - hitPoint);
+        return intensity / lensquared(lightpos - hitPoint);
     }
 };

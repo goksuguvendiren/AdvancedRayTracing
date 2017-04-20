@@ -4,12 +4,29 @@
 
 #include "AreaLight.h"
 
-glm::vec3 AreaLight::Position() const
-{
+std::mt19937 seed;
 
+float generateRandomFloat()
+{
+    std::uniform_real_distribution<float> asd(0, 1);
+    return asd(seed);
 }
 
-glm::vec3 AreaLight::Intensity(const glm::vec3 &hitPoint) const
-{
 
+glm::vec3 AreaLight::Position() const
+{
+    auto up    = generateRandomFloat();
+    auto right = generateRandomFloat();
+
+    return position + up * edgeVec1 + right * edgeVec2;
+}
+
+glm::vec3 AreaLight::Intensity(const glm::vec3& lightpos, const glm::vec3& hitPoint) const
+{
+    auto lensquared = [](const glm::vec3& n)
+    {
+        return n.r * n.r + n.g * n.g + n.b * n.b;
+    };
+
+    return intensity / lensquared(lightpos - hitPoint);
 }

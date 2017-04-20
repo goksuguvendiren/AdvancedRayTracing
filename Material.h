@@ -19,6 +19,7 @@ class Material
 
     float refractionIndex;
     float phongExponent;
+    float roughness;
 
     bool isMirror;
     bool isTransparent;
@@ -26,12 +27,13 @@ class Material
     int id;
 
 public:
-    Material(int i = 0, glm::vec3 a = {0, 0, 0}, glm::vec3 d = {0, 0, 0}, glm::vec3 s = {0, 0, 0},
-             glm::vec3 m = {0, 0, 0}, glm::vec3 t = {0, 0, 0}, float r = 1.0f, float p = 1,
+    Material(int i, glm::vec3 a, glm::vec3 d, glm::vec3 s,
+             glm::vec3 m, glm::vec3 t, float r = 1.0f, float p = 1, float rough = 0.f,
              bool ism = false, bool ist = false) : id(i), isMirror(ism), isTransparent(ist),
                                                    diffuse(d), specular(s), ambient(a),
-                                                   phongExponent(p), mirrorReflectance(m),
-                                                   transparency(t), refractionIndex(r){}
+                                                   phongExponent(p), roughness(rough),
+                                                   mirrorReflectance(m), transparency(t),
+                                                   refractionIndex(r){}
 
     glm::vec3 Diffuse() const { return diffuse; }
     glm::vec3 Specular() const { return specular; }
@@ -43,6 +45,7 @@ public:
     bool IsTransparent() const { return isTransparent; }
 
     float PhongExp() const { return phongExponent; }
+    float Roughness() const { return roughness; }
     float RefractionIndex() const { return refractionIndex; }
 };
 

@@ -60,4 +60,4 @@ public:
 
 ImagePlane ReadImagePlane();
 
-ImagePlane CreatePlane(tinyxml2::XMLElement* element);
+ImagePlane CreatePlane(tinyxml2::XMLElement* element, int focalDistance);

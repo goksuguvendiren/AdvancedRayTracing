@@ -18,7 +18,7 @@ public:
     Ray(glm::vec3 o, glm::vec3 d) : origin(o), direction(d)
     {
 //        direction = glm::normalize(d);
-        assert(glm::length(direction) < 1.001f && glm::length(direction) > 0.99f);
+//        assert(glm::length(direction) < 1.001f && glm::length(direction) > 0.99f);
         invdirection = glm::vec3(1.0f, 1.f, 1.f) / direction;
     };
 
