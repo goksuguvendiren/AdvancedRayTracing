@@ -7,6 +7,7 @@
 #include "SpotLight.h"
 #include <sstream>
 #include <iostream>
+#include "AreaLight.h"
 
 static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
@@ -50,6 +51,19 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
             auto fallAng  = child->FirstChildElement("FalloffAngle")->FloatText();
 
             lights.push_back(std::make_unique<SpotLight>(id, position, intensity, direction, coverAng, fallAng));
+        }
+        else if (child->Name() == std::string("AreaLight")){
+            std::cerr << "hi area" << '\n';
+
+            int id;
+            child->QueryIntAttribute("id", &id);
+
+            auto position  = GetElem(child->FirstChildElement("Position"));
+            auto intensity = GetElem(child->FirstChildElement("Intensity"));
+            auto edgeVec1 = GetElem(child->FirstChildElement("EdgeVector1"));
+            auto edgeVec2 = GetElem(child->FirstChildElement("EdgeVector2"));
+
+            lights.push_back(std::make_unique<AreaLight>(position, edgeVec1, edgeVec2, intensity, id));
         }
     }
 

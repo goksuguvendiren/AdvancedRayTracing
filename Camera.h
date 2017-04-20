@@ -12,6 +12,8 @@
 class Image;
 class HitInfo;
 
+extern std::vector<int> samples;
+
 class Camera
 {
     int id;
@@ -26,21 +28,35 @@ class Camera
 
     glm::vec3 planePosition;
     int sampleCount;
+    int divCount;
+
+    int focalDistance;
+    float apertureSize;
+
+    glm::vec3 GetCameraPosition() const;
 
 public:
     Camera(const ImagePlane& plane = {} , int i = 0, glm::vec3 p = {0, 0, 0},
-                                                             glm::vec3 g = {0, 1, 0},
-                                                             glm::vec3 u = {0, 0, 1},
-                                                             std::string name = "",
-                                                             int numSamp = 1) : imagePlane(plane),
-                                                                                position(p), id(i),
-                                                                                imageName(name),
-                                                                                sampleCount(numSamp)
+           glm::vec3 g = {0, 1, 0},
+           glm::vec3 u = {0, 0, 1},
+           std::string name = "",
+           int numSamp = 1,
+           int fd = 1, float as = 0) : imagePlane(plane),
+                                       position(p), id(i),
+                                       imageName(name),
+                                       sampleCount(numSamp),
+                                       divCount(std::floor(std::sqrt(numSamp))),
+                                       focalDistance(fd), apertureSize(as)
     {
         up    = glm::normalize(u);
         gaze  = glm::normalize(g);
         right = glm::normalize(glm::cross(gaze, up));
         up    = glm::normalize(glm::cross(right, gaze));
+
+        samples.resize(sampleCount, 0);
+        for (int i = 0; i < sampleCount; i++){
+            samples[i] = i;
+        }
 
         planePosition = position + imagePlane.Left() * right + imagePlane.Top() * up + imagePlane.DistanceToCamera() * gaze;
     };

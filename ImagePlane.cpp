@@ -13,7 +13,7 @@ ImagePlane ReadImagePlane()
 }
 
 
-ImagePlane CreatePlane(tinyxml2::XMLElement* element)
+ImagePlane CreatePlane(tinyxml2::XMLElement* element, int focalDistance)
 {
     float distance = element->FirstChildElement("NearDistance")->FloatText();
     auto planeInfo = element->FirstChildElement("NearPlane")->GetText();
@@ -44,5 +44,10 @@ ImagePlane CreatePlane(tinyxml2::XMLElement* element)
         return arr;
     })();
 
-    return ImagePlane(distance, lrbt[0], lrbt[1], lrbt[2], lrbt[3], n[0], n[1]);
+    return ImagePlane(distance * focalDistance,
+            lrbt[0] * focalDistance,
+            lrbt[1] * focalDistance,
+            lrbt[2] * focalDistance,
+            lrbt[3] * focalDistance,
+            n[0], n[1]);
 }

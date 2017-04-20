@@ -9,6 +9,11 @@
 #include "Scene.h"
 #include "Shapes/Triangle.h"
 #include "Lights/PointLight.h"
+#include <random>
+#include <functional>
+
+std::vector<int> samples;
+std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
@@ -27,21 +32,19 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
     }
 
     for (auto& light : scene.Lights()){
-        auto direction = glm::normalize(light->Position() - hit.Position());
+        auto lightPos = light->Position();
+        auto direction = glm::normalize(lightPos - hit.Position());
         Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
                       direction);
 
         boost::optional<HitInfo> sh;
         if ((sh = scene.Hit(shadowRay))){
             auto& s_hit = *sh;
-            if (s_hit.Parameter() < glm::length(light->Position() - hit.Position()))
+            if (s_hit.Parameter() < glm::length(lightPos - hit.Position()))
                 continue;
         }
 
-//        glm::vec3 pointToLight = light->Position() - hit.Position();
-        auto intensity = light->Intensity(hit.Position());
-
-//        pointToLight = glm::normalize(pointToLight);
+        auto intensity = light->Intensity(lightPos, hit.Position());
 
         // Diffuse shading :
         auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
@@ -57,12 +60,46 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
     return ambient;
 }
 
+glm::vec3 Camera::GetCameraPosition() const
+{
+    if (apertureSize == 0)
+    {
+        return position;
+    }
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(samples.begin(), samples.end(), g);
+
+    auto index = samples.back();
+    samples.pop_back();
+
+    int indH = index / divCount;
+    int indW = index % divCount;
+
+    float cellWidth  = apertureSize / float(divCount);
+    float cellHeight = apertureSize / float(divCount);
+
+    auto oneRight = cellWidth * right;
+    auto oneDown  = -cellHeight * up;
+
+    // For sampling in the camera, we now think of our camera not as a pinhole, but a lens.
+    // Assume a lens with the same dimensions of a single pixel in the imageplane.
+    // Number of samples are the same in camera, pixel and arealight.
+
+    auto camLocation = position - ((imagePlane.PixelWidth() / 2.f) * right);
+    camLocation -= ((imagePlane.PixelHeight() / 2.f) * up);
+    camLocation += cellWidth / 2.f;
+    camLocation += cellHeight / 2.f;
+
+    return camLocation + (float(indW) * oneRight + float(indH) * oneDown);
+}
+
 glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 {
     glm::vec3 pixelColor = {0, 0, 0};
 
-//    int sampleCount = 1; // 16
-    int divCount = 6;    // std::sqrt(sampleCount);
+    samples = grsamples;
 
     float cellWidth  = imagePlane.PixelWidth()  / float(divCount);
     float cellHeight = imagePlane.PixelHeight() / float(divCount);
@@ -71,19 +108,19 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
     auto oneDown  = -cellHeight * up;
 
     // label the first pixel, by taking the center of the pixel to the top left
-    glm::vec3 firstPixel = pixelcenter - ((imagePlane.PixelWidth() / 2.f) * right);
-    firstPixel -= ((imagePlane.PixelHeight() / 2.f) * up);
+    glm::vec3 pixelBeginning = pixelcenter - ((imagePlane.PixelWidth() / 2.f) * right);
+    pixelBeginning -= ((imagePlane.PixelHeight() / 2.f) * up);
     // then add half a cell size to locate the center of the cell.
-    firstPixel += cellWidth / 2.f;
-    firstPixel += cellHeight / 2.f;
+    pixelBeginning += cellWidth / 2.f;
+    pixelBeginning += cellHeight / 2.f;
 
     for (int i = 0; i < sampleCount; i++) {
         //calculate pixel location
         int indH = i / divCount;
         int indW = i % divCount;
 
-        glm::vec3 pixelLocation = firstPixel + (float(indW) * oneRight + float(indH) * oneDown);
-        glm::vec3 cameraLocation = position;
+        glm::vec3 pixelLocation = pixelBeginning + (float(indW) * oneRight + float(indH) * oneDown);
+        glm::vec3 cameraLocation = GetCameraPosition();
 
         auto ray = Ray(cameraLocation, glm::normalize(pixelLocation - cameraLocation));
 
@@ -103,6 +140,8 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 Image Camera::Render() const
 {
     Image image(imagePlane.NX(), imagePlane.NY());
+
+    grsamples = samples;
 
     std::cerr << "Rendering with " << sampleCount << " samples for pixels." << '\n';
 
@@ -174,36 +213,102 @@ Camera LoadCamera(tinyxml2::XMLElement *element)
         std::abort();
     }
 
-    ImagePlane plane = CreatePlane(element);
-
     glm::vec3 position = GetElem(element->FirstChildElement("Position"));
     glm::vec3 gaze = GetElem(element->FirstChildElement("Gaze"));
     glm::vec3 up = GetElem(element->FirstChildElement("Up"));
 
     int sampleCount = element->FirstChildElement("NumSamples")->IntText(1);
 
+    int focalDistance = 1;
+    tinyxml2::XMLElement* elem;
+    if ((elem = element->FirstChildElement("FocusDistance"))){
+        focalDistance = elem->IntText(1);
+    }
+
+    float apertureSize = 0;
+    if ((elem = element->FirstChildElement("ApertureSize"))){
+        apertureSize = elem->FloatText(0);
+    }
+
+    ImagePlane plane = CreatePlane(element, focalDistance);
+
     std::string name = element->FirstChildElement("ImageName")->GetText();
 
-    return Camera(plane, id, position, gaze, up, name, sampleCount);
+    return Camera(plane, id, position, gaze, up, name, sampleCount, focalDistance, apertureSize);
 }
+
+auto getT(const glm::vec3& v)
+{
+    auto vec = glm::abs(v);
+    if (vec.x < vec.y && vec.x < vec.z){
+        return glm::normalize(glm::vec3{1, v.y, v.z});
+    }
+    if (vec.y < vec.x && vec.y < vec.z){
+        return glm::normalize(glm::vec3{v.x, 1, v.z});
+    }
+
+    return glm::normalize(glm::vec3{v.x, v.y, 1});
+}
+
+std::mt19937 mirrorseed;
 
 
 glm::vec3 Camera::CalculateMirror(const HitInfo& hit, int recDepth) const
 {
-    auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
-    float costheta = glm::dot(v, hit.Normal());
-    auto dir = glm::normalize(2.f * costheta * hit.Normal() - v);
+    if (hit.Material().Roughness() < 0.0001)
+    {
+        auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
+        float costheta = glm::dot(v, hit.Normal());
+        auto dir = glm::normalize(2.f * costheta * hit.Normal() - v);
 
-    Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * dir),
-                      dir);
+        Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * dir),
+                          dir);
 
-    boost::optional<HitInfo> refHit = scene.BoundingBox().Hit(reflectionRay);
+        boost::optional<HitInfo> refHit = scene.Hit(reflectionRay);
 
-    glm::vec3 reflectedColor = {0, 0, 0};
-    if (refHit)
-        reflectedColor += hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
+        glm::vec3 reflectedColor = {0, 0, 0};
+        if (refHit)
+            reflectedColor += hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
 
-    return reflectedColor;
+        return reflectedColor;
+    }
+    else
+    {
+        auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
+        float costheta = glm::dot(v, hit.Normal());
+        auto dir = glm::normalize(2.f * costheta * hit.Normal() - v);
+
+        glm::vec3 t = glm::normalize(getT(dir));
+
+//        assert(glm::dot(dir, t) < 0.001 && glm::dot(dir, t) > 0.99);
+
+        auto m = glm::normalize(glm::cross(dir, t));
+//        std::cerr << glm::dot(dir, m) << '\n';
+
+        auto u = glm::normalize(glm::cross(m, dir));
+//        std::cerr << glm::dot(dir, u) << '\n';
+
+        auto generateRandomFloat = []()
+        {
+            std::uniform_real_distribution<float> asd(0, 1);
+            return asd(mirrorseed) - 0.5f;
+        };
+
+        m = hit.Material().Roughness() * generateRandomFloat() * m;
+        u = hit.Material().Roughness() * generateRandomFloat() * u;
+
+        auto newdir = glm::normalize(dir + m + u);
+
+        Ray reflectionRay(hit.Position() + (scene.ShadowRayEpsilon() * newdir), newdir);
+
+        boost::optional<HitInfo> refHit = scene.Hit(reflectionRay);
+
+        glm::vec3 reflectedColor = {0, 0, 0};
+        if (refHit)
+            reflectedColor += hit.Material().Mirror() * CalculateReflectance(*refHit, recDepth + 1);
+
+        return reflectedColor;
+    }
 }
 
 glm::vec3 Camera::CalculateTransparency(const HitInfo &hit, int recDepth) const

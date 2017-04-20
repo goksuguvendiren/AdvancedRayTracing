@@ -50,11 +50,16 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
             if (transparency != glm::vec3{0, 0, 0}) istransparent = true;
         }
 
+        float roughness = 0;
+        if ((tmp = child->FirstChildElement("Roughness"))) {
+            roughness = tmp->FloatText(0);
+        }
+
         if ((tmp = child->FirstChildElement("RefractionIndex")))
             refIndex = tmp->FloatText(1);
 
         mats.push_back(Material(id, ambient, diffuse, specular, mirror, transparency,
-                                refIndex, phongEx, ismirror, istransparent));
+                                refIndex, phongEx, roughness, ismirror, istransparent));
     }
 
     return mats;

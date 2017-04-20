@@ -13,7 +13,7 @@ class Light
 {
 public:
     virtual glm::vec3 Position() const = 0;
-    virtual glm::vec3 Intensity(const glm::vec3& hitPoint) const = 0;
+    virtual glm::vec3 Intensity(const glm::vec3& lightpos, const glm::vec3& hitPoint) const = 0;
 };
 
 std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem);
