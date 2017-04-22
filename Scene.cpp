@@ -11,6 +11,7 @@
 #include "tinyxml/tinyxml2.h"
 #include <sstream>
 #include <map>
+#include "Texture.hpp"
 
 static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
@@ -91,6 +92,11 @@ void Scene::CreateScene(std::string filename)
 
     if (auto elem = docscene->FirstChildElement("Transformations")){
         transformations  = LoadTransformations(elem);
+    }
+
+    if (auto elem = docscene->FirstChildElement("Textures"))
+    {
+        textures = LoadTextures(elem);
     }
 
     if(auto objects = docscene->FirstChildElement("Objects")){
@@ -195,10 +201,10 @@ void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
 void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
 const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
+const Texture&  Scene::GetTexture(int id)  { return textures[id - 1]; }
 const Triangle& Scene::GetTriangle(int id) { return triangles[id - 1]; }
+
 Vertex& Scene::GetVertex(int id) { return vertices[id - 1]; }
-
-
 
 const std::vector<Camera> & Scene::Cameras() const
 {

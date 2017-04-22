@@ -58,6 +58,8 @@ public:
     glm::vec3 Max() const { return volume.BBox().Max(); }
 
     glm::vec3 Middle() const { return volume.BBox().Middle(); }
+
+    glm::vec2 GetTexCoords(glm::vec3 pos) const;
 };
 
 

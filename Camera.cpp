@@ -17,6 +17,12 @@ std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
+    if (hit.Texture() && hit.Texture()->DecalMode() == DecalMode::Replace_All)
+    {
+        glm::vec2 texCoords = hit.Shape()->GetTexCoords(hit.Position());
+        return hit.Texture()->GetColor(texCoords);
+    }
+
     // Ambient shading :
     auto ambient = hit.Material().Ambient() * scene.AmbientLight();
 
@@ -46,9 +52,17 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 
         auto intensity = light->Intensity(lightPos, hit.Position());
 
+        auto diffuse_color = hit.Material().Diffuse();
+        if(hit.Texture())
+        {
+            glm::vec2 texCoords = hit.Shape()->GetTexCoords(hit.Position());
+            glm::vec3 tex_color = hit.Texture()->GetColor(texCoords);
+            diffuse_color = hit.Texture()->BlendColor(diffuse_color, tex_color);
+        }
+
         // Diffuse shading :
         auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
-        ambient += (theta * hit.Material().Diffuse() * intensity);
+        ambient += (theta * diffuse_color * intensity);
 
         // Specular shading :
         auto half = glm::normalize(direction + glm::normalize(hit.HitRay().Origin() - hit.Position()));

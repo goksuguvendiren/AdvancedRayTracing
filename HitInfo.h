@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include "Material.h"
 #include "Shapes/Shape.h"
+#include "Texture.hpp"
 
 class HitInfo
 {
@@ -18,22 +19,29 @@ class HitInfo
     Ray ray;
 
     const Material* mat;
+    const Texture*  tex;
 
 public:
     HitInfo(glm::vec3 n,
             const Shape* sh,
-            const Material& m,
+            const Material* m,
+            const Texture* textr,
             glm::vec3 point,
             Ray r,
-            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(&m), position(point), ray(r), param(t), shape(sh)
+            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m), position(point), ray(r), param(t), shape(sh), tex(textr)
     {}
+
     const Shape* shape;
 
     HitInfo() : param(std::numeric_limits<float>::infinity()) {}
 
     const Material& Material() const { return *mat; }
+    const Texture* Texture() const { return tex; }
+    const Shape* Shape() const { return shape; }
+    Ray HitRay() const { return ray; }
+
     float Parameter() const { return param; }
+
     glm::vec3 Normal() const { return normal; }
     glm::vec3 Position() const { return position; }
-    Ray HitRay() const { return ray; }
 };

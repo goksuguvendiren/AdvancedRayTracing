@@ -11,7 +11,8 @@ set(SOURCE_FILES main.cpp Camera.cpp Camera.h ImagePlane.cpp ImagePlane.h Color.
         Ray.h Scene.cpp Scene.h Image.h Shapes/Triangle.cpp Shapes/Triangle.h HitInfo.h Material.cpp
         Material.h tinyxml/tinyxml2.cpp tinyxml/tinyxml2.h Vertex.cpp Vertex.h Shapes/Mesh.cpp Shapes/Mesh.h
         Lights/PointLight.h Shapes/Shape.h Transformation.cpp Transformation.h Box.cpp Box.h BoundingVolume.cpp
-        BoundingVolume.h Lights/Light.h Lights/Light.cpp Lights/SpotLight.h Lights/AreaLight.cpp Lights/AreaLight.h)
+        BoundingVolume.h Lights/Light.h Lights/Light.cpp Lights/SpotLight.h Lights/AreaLight.cpp Lights/AreaLight.h
+        Texture.cpp Texture.hpp)
 
 add_executable(RayTracer ${SOURCE_FILES})
 

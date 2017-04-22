@@ -53,6 +53,8 @@ public:
     glm::vec3 Max() const;
 
     glm::vec3 Middle() const;
+
+    glm::vec2 GetTexCoords(glm::vec3 pos) const;
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);

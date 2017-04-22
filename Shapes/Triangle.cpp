@@ -42,7 +42,7 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 
     glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
 
-    return HitInfo(normal, this, *material, point, ray, param);
+    return HitInfo(normal, this, material, nullptr, point, ray, param);
 }
 
 
@@ -174,4 +174,9 @@ glm::vec3 Triangle::Max() const
 glm::vec3 Triangle::Middle() const
 {
     return bbox.Middle();
+}
+
+glm::vec2 Triangle::GetTexCoords(glm::vec3 pos) const
+{
+    return glm::vec2();
 }

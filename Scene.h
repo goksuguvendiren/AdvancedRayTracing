@@ -16,9 +16,12 @@ class Sphere;
 class Mesh;
 class Light;
 class Shape;
+class Texture;
 
 class Scene
 {
+    std::string path;
+
     glm::vec3 backgroundColor;
     glm::vec3 ambientLight;
     float shadowRayEpsilon;
@@ -38,6 +41,7 @@ class Scene
     std::map<std::string, glm::mat4> transformations;
     std::vector<std::unique_ptr<Light>> lights;
     std::vector<Camera> cameras;
+    std::vector<Texture> textures;
 
     BoundingVolume boundingBox;
 
@@ -46,6 +50,9 @@ public:
     ~Scene();
     Scene(const Scene& s) = delete;
     Scene& operator=(const Scene&) = delete;
+
+    void SetPath(const std::string& p) { path = p; }
+    std::string GetPath() const { return path; }
 
     const std::vector<Shape*>& Shapes() const;
 
@@ -89,6 +96,7 @@ public:
     void AddVertex(const Vertex& vert);
 
     const Material& GetMaterial(int id);
+    const Texture&  GetTexture(int id);
     const Triangle& GetTriangle(int id);
     Vertex& GetVertex(int id);
 

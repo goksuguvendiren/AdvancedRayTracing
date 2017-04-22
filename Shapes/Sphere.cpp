@@ -11,12 +11,17 @@
 #include "../HitInfo.h"
 #include "../Scene.h"
 
-Sphere::Sphere(int sid, float rd, Vertex c, int mid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
+Sphere::Sphere(int sid, float rd, Vertex c, int mid, int tid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
 {
-    minval = center.Data() - rd;
-    maxval = center.Data() + rd;
-}
+    minval = center.Data()-rd;
+    maxval = center.Data()+rd;
 
+    texture = nullptr;
+    if (tid!=-1) {
+        texture = &scene.GetTexture(tid);
+        assert(texture->ID()==tid);
+    }
+}
 
 boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 {
@@ -45,7 +50,7 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
         return boost::none;
     }
 
-    return HitInfo(surfaceNormal, this, *material, worldPoint, ray, param);
+    return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, param);
 }
 
 bool Sphere::FastHit(const Ray &ray) const
@@ -103,22 +108,41 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
         Vertex center = scene.GetVertex(centerID);
 
         std::vector<std::string> transformations;
-        if(auto trns = child->FirstChildElement("Transformations")){
+        if(auto trns = child->FirstChildElement("Transformations"))
+        {
             std::istringstream ss {trns->GetText()};
             transformations = std::move(GetTransformations(ss));
         }
 
         glm::mat4 matrix;
-        for (auto& tr : transformations){
+        for (auto& tr : transformations)
+        {
             auto m = scene.GetTransformation(tr);
             matrix = m * matrix;
         }
 
-        Sphere sp {id, radius, center, matID};
+        int tid = -1;
+        if (auto tex = child->FirstChildElement("Texture"))
+        {
+            tid = tex->IntText(-1);
+        }
+
+        Sphere sp {id, radius, center, matID, tid};
         sp.TransformationMatrix(matrix);
 
         spheres.push_back(std::move(sp));
     }
 
     return spheres;
+}
+
+glm::vec2 Sphere::GetTexCoords(glm::vec3 pos) const
+{
+    pos = glm::vec3(inverseTrMatrix * glm::vec4(pos, 0.f));
+    pos = pos - center.Data();
+
+    auto theta = acos(pos.y / radius);
+    auto phi   = atan2(pos.z, pos.x);
+
+    return {(2 * M_PI - phi) / (2 * M_PI), float(theta) / (M_PI)};
 }

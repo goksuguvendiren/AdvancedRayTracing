@@ -220,3 +220,8 @@ void Mesh::AssociateV2T()
         SetNormal(face.PointC());
     }
 }
+
+glm::vec2 Mesh::GetTexCoords(glm::vec3 pos) const
+{
+    return glm::vec2();
+}
