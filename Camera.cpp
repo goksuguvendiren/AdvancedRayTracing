@@ -17,6 +17,16 @@ std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
+//    if (hit.shape->ID() != 1)
+//    {
+//        std::cerr << 1 << '\n';
+//    }
+    if (hit.Texture() && hit.Texture()->DecalMode() == DecalMode::Replace_All)
+    {
+        glm::vec2 texCoords = hit.GetUV();
+        return hit.Texture()->GetColor(texCoords) * 255.f;
+    }
+
     // Ambient shading :
     auto ambient = hit.Material().Ambient() * scene.AmbientLight();
 
@@ -46,9 +56,17 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 
         auto intensity = light->Intensity(lightPos, hit.Position());
 
+        auto diffuse_color = hit.Material().Diffuse();
+        if(hit.Texture())
+        {
+            glm::vec2 texCoords = hit.GetUV();
+            glm::vec3 tex_color = hit.Texture()->GetColor(texCoords);
+            diffuse_color = hit.Texture()->BlendColor(diffuse_color, tex_color);
+        }
+
         // Diffuse shading :
         auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
-        ambient += (theta * hit.Material().Diffuse() * intensity);
+        ambient += (theta * diffuse_color * intensity);
 
         // Specular shading :
         auto half = glm::normalize(direction + glm::normalize(hit.HitRay().Origin() - hit.Position()));
@@ -83,8 +101,7 @@ glm::vec3 Camera::GetCameraPosition() const
     auto oneRight = cellWidth * right;
     auto oneDown  = -cellHeight * up;
 
-    // For sampling in the camera, we now think of our camera not as a pinhole, but a lens.
-    // Assume a lens with the same dimensions of a single pixel in the imageplane.
+    // For sampling in the camera, we now think of our camera not as a pinhole, but a camera with a lens.
     // Number of samples are the same in camera, pixel and arealight.
 
     auto camLocation = position - ((imagePlane.PixelWidth() / 2.f) * right);
@@ -126,10 +143,12 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 
         boost::optional<HitInfo> hit  = scene.Hit(ray);
 
-        if (hit){
+        if (hit)
+        {
             pixelColor += CalculateReflectance(*hit, 0);
         }
-        else {
+        else
+        {
             pixelColor += scene.BackgroundColor();
         }
     }

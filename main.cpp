@@ -10,16 +10,18 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::vector<std::string> sceneNames = {"dragon_spot_light_msaa",
-                                           "dragon_spot_light",
-                                           "glass_plates_area",
-                                           "glass_plates_point",
-                                           "metal_plates_area",
-                                           "spheres_dof"};
+    std::vector<std::string> sceneNames = {"ellipsoids_texture",
+                                           "killeroo_diffuse_specular_texture",
+                                           "perlin_types",
+                                           "simple_texture",
+                                           "skybox",
+                                           "sphere_texture_blend_bilinear",
+                                           "sphere_texture_replace_bilinear",
+                                           "sphere_texture_replace_nearest"};
 
 //    std::string sceneName = "dragon";
 
-    int index = 4;
+    int index = 6;
 
     if (argc == 2){
         index = std::stoi(argv[1]);
@@ -30,7 +32,8 @@ int main(int argc, char** argv)
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/5/" + sceneName + ".xml");
+    scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracing/inputs/6/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
@@ -64,7 +67,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/5/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracing/outputs/6/" + sceneName + ".png", im);
     }
 
     return 0;

@@ -21,6 +21,7 @@ class Mesh : public Shape
 {
     int id;
     const Material* material;
+    const Texture*  texture;
     ShadingMode shmode;
 
     std::vector<Triangle> faces;
@@ -52,12 +53,16 @@ public:
 
     int ID() const { return id; }
     const auto& Faces() const { return faces; }
+
     auto Material() const { return material; }
+    auto Texture()  const { return texture; }
 
     glm::vec3 Min() const { return volume.BBox().Min(); }
     glm::vec3 Max() const { return volume.BBox().Max(); }
 
     glm::vec3 Middle() const { return volume.BBox().Middle(); }
+
+    glm::vec2 GetTexCoords(glm::vec3 pos) const;
 };
 
 

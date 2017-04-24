@@ -9,6 +9,7 @@
 #include "../Material.h"
 #include "Shape.h"
 #include "../Vertex.h"
+#include "../Texture.hpp"
 
 class Ray;
 class HitInfo;
@@ -20,6 +21,7 @@ class Sphere : public Shape
     float radius;
     Vertex center;
     const Material* material;
+    const Texture* texture;
 
     glm::vec3 maxval;
     glm::vec3 minval;
@@ -29,7 +31,7 @@ class Sphere : public Shape
     glm::mat4 inverseTranspose;
 
 public:
-    Sphere(int sid = 1, float rd = 1.0f, Vertex c = Vertex{1, glm::vec3{1.0f, 0.0f, 0.0f}}, int mid = 1);
+    Sphere(int sid, float rd, Vertex c, int mid, int tid);
     boost::optional<HitInfo> Hit(const Ray &inverseRay) const;
     bool FastHit (const Ray &ray) const;
     int ID() const { return id; }
@@ -45,6 +47,9 @@ public:
     glm::vec3 Min() const { return minval; }
 
     glm::vec3 Middle() const { return center.Data(); }
+
+    glm::vec2 GetTexCoords(glm::vec3 pos) const;
+
 };
 
 std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem);

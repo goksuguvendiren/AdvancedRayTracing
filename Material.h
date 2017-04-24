@@ -47,6 +47,8 @@ public:
     float PhongExp() const { return phongExponent; }
     float Roughness() const { return roughness; }
     float RefractionIndex() const { return refractionIndex; }
+
+    auto ID() const { return id; }
 };
 
 std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);
