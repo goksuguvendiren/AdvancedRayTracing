@@ -16,7 +16,7 @@ Interpolation GetInterpolation(const std::string& text)
     case 'n':
         return Interpolation::Nearest;
     default:
-        return Interpolation::Nearest;
+        return Interpolation::None;
     }
 }
 
@@ -33,8 +33,12 @@ Appearance GetAppearance(const std::string& text)
     {
     case 'r':
         return Appearance::Repeat;
+    case 'v':
+        return Appearance::Vein;
+    case 'p':
+        return Appearance::Patch;
     default:
-        return Appearance::Repeat;
+        return Appearance::None;
     }
 }
 
@@ -46,9 +50,21 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
         int id;
         child->QueryIntAttribute("id", &id);
 
-        std::string name     = std::string(child->FirstChildElement("ImageName")->GetText());
-        Interpolation interp = GetInterpolation(std::string(child->FirstChildElement("Interpolation")->GetText()));
-        DecalMode dm         = GetDecalMode(std::string(child->FirstChildElement("DecalMode")->GetText()));
+        std::string name = std::string(child->FirstChildElement("ImageName")->GetText());
+
+        if (name == "perlin") name = "textures/earth.jpg";
+
+        DecalMode dm = DecalMode::Replace_KD;
+        if (auto elem = child->FirstChildElement("DecalMode"))
+        {
+            dm = GetDecalMode(std::string(elem->GetText()));
+        }
+
+        Interpolation interp = Interpolation::Nearest;
+        if (auto elem = child->FirstChildElement("Interpolation"))
+        {
+            interp = GetInterpolation(std::string(elem->GetText()));
+        }
 
         Appearance appr = Appearance::Patch;
         if (auto elem = child->FirstChildElement("Appearance"))
@@ -70,6 +86,9 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
 
 glm::vec3 Texture::GetColor(glm::vec2 texCoords) const
 {
+    texCoords.x = texCoords.x - int(std::floor(texCoords.x));
+    texCoords.y = texCoords.y - int(std::floor(texCoords.y));
+
     float i = texCoords.y * image.rows;
     float j = texCoords.x * image.cols;
 
@@ -110,10 +129,13 @@ glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
         return texcolor;
 
     case DecalMode::Blend_KD:
-        return ((texcolor / (float)normalizer) + diffuse) / 2.f;
+        return (texcolor + diffuse) / 2.f;
 
     case DecalMode::Replace_All:
         assert(false);
+        return {0, 0, 0};
+
+    default:
         return {0, 0, 0};
     }
 }

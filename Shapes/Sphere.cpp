@@ -50,7 +50,9 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
         return boost::none;
     }
 
-    return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, param);
+    auto uv = GetTexCoords(worldPoint);
+
+    return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, uv, param);
 }
 
 bool Sphere::FastHit(const Ray &ray) const
@@ -138,7 +140,7 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
 
 glm::vec2 Sphere::GetTexCoords(glm::vec3 pos) const
 {
-    pos = glm::vec3(inverseTrMatrix * glm::vec4(pos, 0.f));
+    pos = glm::vec3(inverseTrMatrix * glm::vec4(pos, 1.f));
     pos = pos - center.Data();
 
     auto theta = acos(pos.y / radius);

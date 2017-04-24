@@ -21,6 +21,8 @@ class HitInfo
     const Material* mat;
     const Texture*  tex;
 
+    glm::vec2 uv;
+
 public:
     HitInfo(glm::vec3 n,
             const Shape* sh,
@@ -28,7 +30,11 @@ public:
             const Texture* textr,
             glm::vec3 point,
             Ray r,
-            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m), position(point), ray(r), param(t), shape(sh), tex(textr)
+            glm::vec2 _uv = {0, 0},
+            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m),
+                                                                position(point), uv(_uv),
+                                                                ray(r), param(t),
+                                                                shape(sh), tex(textr)
     {}
 
     const Shape* shape;
@@ -44,4 +50,6 @@ public:
 
     glm::vec3 Normal() const { return normal; }
     glm::vec3 Position() const { return position; }
+
+    glm::vec2 GetUV() const { return uv; }
 };

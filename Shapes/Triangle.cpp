@@ -41,8 +41,9 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
     auto point = ray.Origin() + param * ray.Direction();
 
     glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
+    glm::vec2 uv = GetTexCoords(point, beta, gamma);
 
-    return HitInfo(normal, this, material, nullptr, point, ray, param);
+    return HitInfo(normal, this, material, texture, point, ray, uv, param);
 }
 
 
@@ -63,11 +64,13 @@ bool Triangle::FastHit(const Ray &ray) const
     return !(alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0);
 }
 
-Triangle::Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid, bool sm) : pointA(a),
-                                                                              pointB(b),
-                                                                              pointC(c),
-                                                                              material(mat),
-                                                                              id(tid), smooth(sm)
+Triangle::Triangle(Vertex a, Vertex b, Vertex c,
+                   int mid, int tid, int trid, bool sm) : pointA(a),
+                                                          pointB(b),
+                                                          pointC(c),
+                                                          material(&scene.GetMaterial(mid)),
+                                                          texture(&scene.GetTexture(tid)),
+                                                          id(trid), smooth(sm)
 
 {
     surfNormal = glm::normalize(glm::cross(pointB.Data() - pointA.Data(),
@@ -82,6 +85,12 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c, const Material* mat, int tid, b
     bbox.Compare(pointA.Data());
     bbox.Compare(pointB.Data());
     bbox.Compare(pointC.Data());
+
+    texture = nullptr;
+    if (tid!=-1) {
+        texture = &scene.GetTexture(tid);
+        assert(texture->ID()==tid);
+    }
 }
 
 int Triangle::ID() const
@@ -127,6 +136,12 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         child->QueryIntAttribute("id", &id);
         int matID = child->FirstChildElement("Material")->IntText(0);
 
+        int texID = -1;
+        if (auto texelem = child->FirstChildElement("Texture"))
+        {
+            texID = texelem->IntText(-1);
+        }
+
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
             std::istringstream ss {trns->GetText()};
@@ -155,7 +170,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
 
         tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                         Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, &scene.GetMaterial(matID)});
+                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID, texID, id});
     }
 
     return tris;
@@ -176,7 +191,10 @@ glm::vec3 Triangle::Middle() const
     return bbox.Middle();
 }
 
-glm::vec2 Triangle::GetTexCoords(glm::vec3 pos) const
+glm::vec2 Triangle::GetTexCoords(glm::vec3 pos, float beta, float gamma) const
 {
-    return glm::vec2();
+    auto a_uv = pointA.GetUV();
+    auto b_uv = pointB.GetUV();
+    auto c_uv = pointC.GetUV();
+    return a_uv + beta * (b_uv - a_uv) + gamma * (c_uv - a_uv);
 }

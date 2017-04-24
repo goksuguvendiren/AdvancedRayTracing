@@ -16,21 +16,24 @@
 enum class Interpolation
 {
     Bilinear,
-    Nearest
+    Nearest,
+    None
 };
 
 enum class DecalMode
 {
     Replace_KD,
     Blend_KD,
-    Replace_All
+    Replace_All,
+    None
 };
 
 enum class Appearance
 {
     Repeat,
     Patch,
-    Vein
+    Vein,
+    None
 };
 
 class Texture
@@ -45,6 +48,7 @@ class Texture
 
     int normalizer;
     int id;
+
 public:
     Texture(const std::string& source, Interpolation inter, DecalMode dm, Appearance app, int nor, int i) : imageSource(source),
                                                                                                             interpolation(inter),
@@ -52,9 +56,6 @@ public:
                                                                                                             normalizer(nor), id(i)
     {
         image = cv::imread(imageSource, CV_LOAD_IMAGE_COLOR);
-
-//        cv::imshow("asd", image);
-//        cv::waitKey(0);
         assert(image.data);
         assert(image.rows != 0 && image.cols != 0);
     }

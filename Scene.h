@@ -38,6 +38,8 @@ class Scene
 
     std::vector<Material> materials;
     std::vector<Vertex> vertices;
+    std::vector<glm::vec2> texCoords;
+
     std::map<std::string, glm::mat4> transformations;
     std::vector<std::unique_ptr<Light>> lights;
     std::vector<Camera> cameras;
@@ -99,6 +101,7 @@ public:
     const Texture&  GetTexture(int id);
     const Triangle& GetTriangle(int id);
     Vertex& GetVertex(int id);
+    glm::vec2 Get_UV(int id) const;
 
     boost::optional<HitInfo> Hit(const Ray& r);
 

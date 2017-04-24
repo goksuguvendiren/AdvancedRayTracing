@@ -17,10 +17,14 @@ std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
+//    if (hit.shape->ID() != 1)
+//    {
+//        std::cerr << 1 << '\n';
+//    }
     if (hit.Texture() && hit.Texture()->DecalMode() == DecalMode::Replace_All)
     {
-        glm::vec2 texCoords = hit.Shape()->GetTexCoords(hit.Position());
-        return hit.Texture()->GetColor(texCoords);
+        glm::vec2 texCoords = hit.GetUV();
+        return hit.Texture()->GetColor(texCoords) * 255.f;
     }
 
     // Ambient shading :
@@ -55,7 +59,7 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         auto diffuse_color = hit.Material().Diffuse();
         if(hit.Texture())
         {
-            glm::vec2 texCoords = hit.Shape()->GetTexCoords(hit.Position());
+            glm::vec2 texCoords = hit.GetUV();
             glm::vec3 tex_color = hit.Texture()->GetColor(texCoords);
             diffuse_color = hit.Texture()->BlendColor(diffuse_color, tex_color);
         }
@@ -97,8 +101,7 @@ glm::vec3 Camera::GetCameraPosition() const
     auto oneRight = cellWidth * right;
     auto oneDown  = -cellHeight * up;
 
-    // For sampling in the camera, we now think of our camera not as a pinhole, but a lens.
-    // Assume a lens with the same dimensions of a single pixel in the imageplane.
+    // For sampling in the camera, we now think of our camera not as a pinhole, but a camera with a lens.
     // Number of samples are the same in camera, pixel and arealight.
 
     auto camLocation = position - ((imagePlane.PixelWidth() / 2.f) * right);
@@ -140,10 +143,12 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 
         boost::optional<HitInfo> hit  = scene.Hit(ray);
 
-        if (hit){
+        if (hit)
+        {
             pixelColor += CalculateReflectance(*hit, 0);
         }
-        else {
+        else
+        {
             pixelColor += scene.BackgroundColor();
         }
     }

@@ -5,7 +5,8 @@
 #include <sstream>
 #include "Mesh.h"
 
-inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexOffset, const glm::mat4& matrix, int matID, int index, bool smooth)
+inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexOffset, int texCoordsOffset,
+                                         const glm::mat4& matrix, int matID, int index, bool smooth, int texID)
 {
     int x, y, z;
 
@@ -19,6 +20,10 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexO
         return boost::none;
     }
 
+    int a = x;
+    int b = y;
+    int c = z;
+
     x += vertexOffset;
     y += vertexOffset;
     z += vertexOffset;
@@ -31,10 +36,20 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexO
     ind1 = matrix * ind1;
     ind2 = matrix * ind2;
 
-    return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}},
-                    Vertex{y, {ind1.x, ind1.y, ind1.z}},
-                    Vertex{z, {ind2.x, ind2.y, ind2.z}},
-                    &scene.GetMaterial(matID), index, smooth};
+    if (texID != -1)
+    {
+        return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}, {0, 0, 0}, scene.Get_UV(a + texCoordsOffset)},
+                        Vertex{y, {ind1.x, ind1.y, ind1.z}, {0, 0, 0}, scene.Get_UV(b + texCoordsOffset)},
+                        Vertex{z, {ind2.x, ind2.y, ind2.z}, {0, 0, 0}, scene.Get_UV(c + texCoordsOffset)},
+                        matID, texID, index, smooth};
+    }
+    else
+    {
+        return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}},
+                        Vertex{y, {ind1.x, ind1.y, ind1.z}},
+                        Vertex{z, {ind2.x, ind2.y, ind2.z}},
+                        matID, texID, index, smooth};
+    }
 }
 
 inline auto GetTransformations(std::istringstream& stream)
@@ -50,53 +65,6 @@ inline auto GetTransformations(std::istringstream& stream)
     return result;
 }
 
-std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
-{
-    std::vector<Mesh> meshes;
-    for (auto child = elem->FirstChildElement("MeshInstance"); child != nullptr; child = child->NextSiblingElement("MeshInstance")){
-        int id;
-        child->QueryIntAttribute("id", &id);
-        int baseID;
-        child->QueryIntAttribute("baseMeshId", &baseID);
-
-        std::vector<std::string> transformations;
-        if(auto trns = child->FirstChildElement("Transformations")){
-            std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
-        }
-
-        glm::mat4 matrix;
-        for (auto& tr : transformations){
-            auto m = scene.GetTransformation(tr);
-            matrix = m * matrix;
-        }
-
-        auto& baseMesh = scene.Meshes()[baseID - 1];
-        assert(baseMesh.ID() == baseID);
-
-        Mesh mesh {id, baseMesh.Material()};
-        int index = 1;
-        for (auto& face : baseMesh.Faces()){
-            auto vert0 = matrix * glm::vec4(face.PointA().Data(), 1);
-            auto vert1 = matrix * glm::vec4(face.PointB().Data(), 1);
-            auto vert2 = matrix * glm::vec4(face.PointC().Data(), 1);
-
-            auto vertex0 = Vertex{face.PointA().ID(), {vert0.x, vert0.y, vert0.z}};
-            auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
-            auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
-
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.Material(), index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
-            mesh.AddFace(std::move(tri));
-        }
-
-        mesh.ShadingMode(baseMesh.ShadingMode());
-
-        meshes.push_back(std::move(mesh));
-    }
-
-    return meshes;
-}
-
 std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 {
     std::vector<Mesh> meshes;
@@ -106,6 +74,10 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         child->QueryIntAttribute("id", &id);
 
         int matID = child->FirstChildElement("Material")->IntText(0);
+        int texID = -1;
+        if (auto sth = child->FirstChildElement("Texture")){
+            texID = sth->IntText(0);
+        }
 
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
@@ -123,15 +95,22 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         auto FaceData = child->FirstChildElement("Faces");
         std::istringstream stream { FaceData->GetText() };
         int vertexOffset = 0;
+        int texCoordOffset = 0;
 
         if (auto vo = FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
-
-//        std::cerr << vertexOffset << '\n';
+        if (auto to = FaceData->QueryIntAttribute("textureOffset", &texCoordOffset));
 
         boost::optional<Triangle> tr;
         int index = 1;
 
-        while((tr = GetFace(stream, vertexOffset, matrix, matID, index++, (ShadingMode() == ShadingMode::Smooth)))){
+        if (id != 1)
+        {
+            int x = 5;
+        }
+
+        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++,
+                (ShadingMode() == ShadingMode::Smooth), texID))){
+            auto tri = *tr;
             msh.AddFace(std::move(*tr));
         }
 
@@ -224,4 +203,52 @@ void Mesh::AssociateV2T()
 glm::vec2 Mesh::GetTexCoords(glm::vec3 pos) const
 {
     return glm::vec2();
+}
+
+std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
+{
+    std::vector<Mesh> meshes;
+    for (auto child = elem->FirstChildElement("MeshInstance"); child != nullptr; child = child->NextSiblingElement("MeshInstance")){
+        int id;
+        child->QueryIntAttribute("id", &id);
+        int baseID;
+        child->QueryIntAttribute("baseMeshId", &baseID);
+
+        std::vector<std::string> transformations;
+        if(auto trns = child->FirstChildElement("Transformations")){
+            std::istringstream ss {trns->GetText()};
+            transformations = std::move(GetTransformations(ss));
+        }
+
+        glm::mat4 matrix;
+        for (auto& tr : transformations){
+            auto m = scene.GetTransformation(tr);
+            matrix = m * matrix;
+        }
+
+        auto& baseMesh = scene.Meshes()[baseID - 1];
+        assert(baseMesh.ID() == baseID);
+
+        Mesh mesh {id, baseMesh.Material()};
+        int index = 1;
+        for (auto& face : baseMesh.Faces()){
+            auto vert0 = matrix * glm::vec4(face.PointA().Data(), 1);
+            auto vert1 = matrix * glm::vec4(face.PointB().Data(), 1);
+            auto vert2 = matrix * glm::vec4(face.PointC().Data(), 1);
+
+            auto vertex0 = Vertex{face.PointA().ID(), {vert0.x, vert0.y, vert0.z}};
+            auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
+            auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
+
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.Material()->ID(), mesh.Texture()->ID(),
+                                index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
+            mesh.AddFace(std::move(tri));
+        }
+
+        mesh.ShadingMode(baseMesh.ShadingMode());
+
+        meshes.push_back(std::move(mesh));
+    }
+
+    return meshes;
 }
