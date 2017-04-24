@@ -32,14 +32,19 @@ public:
 
     glm::vec3 Position() const { return position; }
 
-    glm::vec3 Intensity(const glm::vec3& lightpos, const glm::vec3& hitPoint) const
+    glm::vec3 Direction(const glm::vec3& hitpos) const
+    {
+        return position - hitpos;
+    }
+
+    glm::vec3 Intensity(const glm::vec3& lightPos_hitPos) const
     {
         auto lensquared = [](const glm::vec3& n)
         {
             return n.r * n.r + n.g * n.g + n.b * n.b;
         };
 
-        auto dir = hitPoint - lightpos;
+        auto dir = -lightPos_hitPos;
         float cosAlpha = glm::dot(glm::normalize(dir), glm::normalize(direction));
 
         float alpha = std::acos(cosAlpha) * float(180.f / M_PI);

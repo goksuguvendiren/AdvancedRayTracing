@@ -27,5 +27,6 @@ public:
                                                                                               intensity(intens),
                                                                                               id(i) {}
     glm::vec3 Position() const;
-    glm::vec3 Intensity(const glm::vec3& lightpos, const glm::vec3& hitPoint) const;
+    glm::vec3 Intensity(const glm::vec3& lightPos_hitPos) const;
+    glm::vec3 Direction(const glm::vec3& hitpos) const;
 };
