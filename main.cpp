@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     auto start = std::chrono::steady_clock::now();
 
     scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer");
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracing/inputs/6/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/6/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracing/outputs/6/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/6/" + sceneName + ".png", im);
     }
 
     return 0;
