@@ -18,11 +18,6 @@ std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
-    if (hit.Shape()->ID() == 3)
-    {
-        int id = 1;
-    }
-
     if (hit.Texture() && hit.Texture()->DecalMode() == DecalMode::Replace_All)
     {
         glm::vec2 texCoords = hit.GetUV();
@@ -58,19 +53,13 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         auto intensity = light->Intensity(direction);
 
         auto diffuse_color = hit.Material().Diffuse();
+        if (hit.Shape()->ID() == 1){
+            int i = 0;
+        }
         if(hit.Texture())
         {
             if (hit.Texture()->IsPerlin()) {
                 auto noise = hit.Texture()->Perlin().Sample(hit.Position());
-
-                if (hit.Texture()->Perlin().Type()==Noise_Appeareance::Patch) {
-                    int p = 1;
-                }
-                else
-                {
-                    int v = 1;
-                }
-
                 diffuse_color = hit.Texture()->BlendColor(diffuse_color, {noise, noise, noise});
             }
             else {
@@ -81,11 +70,11 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         }
 
         // Diffuse shading :
-        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
+        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), glm::normalize(direction)));
         ambient += (theta * diffuse_color * intensity);
 
         // Specular shading :
-        auto half = glm::normalize(direction + glm::normalize(hit.HitRay().Origin() - hit.Position()));
+        auto half = glm::normalize(glm::normalize(direction) + glm::normalize(hit.HitRay().Origin() - hit.Position()));
         ambient  += intensity *
                     hit.Material().Specular() *
                     std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.Material().PhongExp());

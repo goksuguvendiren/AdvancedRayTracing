@@ -17,11 +17,10 @@ int main(int argc, char** argv)
                                            "skybox",
                                            "sphere_texture_blend_bilinear",
                                            "sphere_texture_replace_bilinear",
-                                           "sphere_texture_replace_nearest"};
+                                           "sphere_texture_replace_nearest"
+    };
 
-//    std::string sceneName = "dragon";
-
-    int index = 6;
+    int index = 2;
 
     if (argc == 2){
         index = std::stoi(argv[1]);
@@ -32,12 +31,12 @@ int main(int argc, char** argv)
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
-    scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer");
+    scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer/");
     scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/6/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(loaded - start).count()
+              <<  std::chrono::duration_cast<std::chrono::milliseconds>(loaded - start).count()
               << "ms.\n";
 
     std::vector<Image> images;
@@ -51,9 +50,13 @@ int main(int argc, char** argv)
     }
 //    std::cout << cnt.load() << '\n';
     std::chrono::steady_clock::time_point endRender = std::chrono::steady_clock::now();
+
+    unsigned int time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endRender - beginRender).count();
     std::cerr << "Rendering took "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(endRender - beginRender).count()
+              << time_elapsed
               << "ms.\n";
+
+    std::cerr << time_elapsed << '\n';
 
     for (const auto& image : images){
         cv::Mat im = cv::Mat(image.Height(), image.Width(), CV_32FC3);
@@ -67,7 +70,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/6/" + sceneName + ".png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/6/" + sceneName + "_" + std::to_string(time_elapsed) + "ms.png", im);
     }
 
     return 0;

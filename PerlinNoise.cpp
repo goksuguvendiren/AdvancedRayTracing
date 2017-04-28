@@ -51,9 +51,11 @@ float PerlinNoise::Sample(const glm::vec3& point_) const
 {
     auto point = point_ * scalingFactor;
 
-    int x = int(std::floor(point.x));
-    int y = int(std::floor(point.y));
-    int z = int(std::floor(point.z));
+    auto floor = [](float val) { return int(val / int(1)); };
+
+    int x = (std::floor(point.x));
+    int y = (std::floor(point.y));
+    int z = (std::floor(point.z));
 
     float result = 0;
     for (int i = x; i <= x + 1; i++)

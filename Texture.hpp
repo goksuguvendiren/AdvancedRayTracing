@@ -60,7 +60,7 @@ class Texture
 
 public:
     Texture(const std::string& source, Interpolation inter, DecalMode dm, Appearance app,
-            Type typ, int nor, int i) : imageSource(source),
+            Type typ, float nor, int i) : imageSource(source),
                                         interpolation(inter),
                                         mode(dm), appr(app),
                                         type(typ), scale(nor),
