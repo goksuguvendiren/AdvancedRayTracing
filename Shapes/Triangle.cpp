@@ -168,9 +168,20 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         ind1 = matrix * ind1;
         ind2 = matrix * ind2;
 
-        tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
-                        Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                        Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID, texID, id});
+        if (texID != -1 && !scene.GetTexture(texID).IsPerlin())
+        {
+            tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}, {0, 0, 0}, scene.Get_UV(id0)},
+                            Vertex{id1, {ind1.x, ind1.y, ind1.z}, {0, 0, 0}, scene.Get_UV(id1)},
+                            Vertex{id2, {ind2.x, ind2.y, ind2.z}, {0, 0, 0}, scene.Get_UV(id2)},
+                            matID, texID, id});
+        }
+        else
+        {
+            tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
+                            Vertex{id1, {ind1.x, ind1.y, ind1.z}},
+                            Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID, texID, id});
+        }
+
     }
 
     return tris;
