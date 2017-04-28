@@ -36,7 +36,7 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexO
     ind1 = matrix * ind1;
     ind2 = matrix * ind2;
 
-    if (texID != -1)
+    if (texID != -1 && !scene.GetTexture(texID).IsPerlin())
     {
         return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}, {0, 0, 0}, scene.Get_UV(a + texCoordsOffset)},
                         Vertex{y, {ind1.x, ind1.y, ind1.z}, {0, 0, 0}, scene.Get_UV(b + texCoordsOffset)},

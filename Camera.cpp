@@ -11,16 +11,13 @@
 #include "Lights/PointLight.h"
 #include <random>
 #include <functional>
+#include "PerlinNoise.hpp"
 
 std::vector<int> samples;
 std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
-//    if (hit.shape->ID() != 1)
-//    {
-//        std::cerr << 1 << '\n';
-//    }
     if (hit.Texture() && hit.Texture()->DecalMode() == DecalMode::Replace_All)
     {
         glm::vec2 texCoords = hit.GetUV();
@@ -42,34 +39,42 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
     }
 
     for (auto& light : scene.Lights()){
-        auto lightPos = light->Position();
-        auto direction = glm::normalize(lightPos - hit.Position());
-        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * direction),
-                      direction);
+        auto direction = light->Direction(hit.Position());
+        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * glm::normalize(direction)),
+                      glm::normalize(direction));
 
         boost::optional<HitInfo> sh;
         if ((sh = scene.Hit(shadowRay))){
             auto& s_hit = *sh;
-            if (s_hit.Parameter() < glm::length(lightPos - hit.Position()))
+            if (s_hit.Parameter() < glm::length(direction))
                 continue;
         }
 
-        auto intensity = light->Intensity(lightPos, hit.Position());
+        auto intensity = light->Intensity(direction);
 
         auto diffuse_color = hit.Material().Diffuse();
+        if (hit.Shape()->ID() == 1){
+            int i = 0;
+        }
         if(hit.Texture())
         {
-            glm::vec2 texCoords = hit.GetUV();
-            glm::vec3 tex_color = hit.Texture()->GetColor(texCoords);
-            diffuse_color = hit.Texture()->BlendColor(diffuse_color, tex_color);
+            if (hit.Texture()->IsPerlin()) {
+                auto noise = hit.Texture()->Perlin().Sample(hit.Position());
+                diffuse_color = hit.Texture()->BlendColor(diffuse_color, {noise, noise, noise});
+            }
+            else {
+                glm::vec2 texCoords = hit.GetUV();
+                glm::vec3 tex_color = hit.Texture()->GetColor(texCoords);
+                diffuse_color = hit.Texture()->BlendColor(diffuse_color, tex_color);
+            }
         }
 
         // Diffuse shading :
-        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), direction));
+        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), glm::normalize(direction)));
         ambient += (theta * diffuse_color * intensity);
 
         // Specular shading :
-        auto half = glm::normalize(direction + glm::normalize(hit.HitRay().Origin() - hit.Position()));
+        auto half = glm::normalize(glm::normalize(direction) + glm::normalize(hit.HitRay().Origin() - hit.Position()));
         ambient  += intensity *
                     hit.Material().Specular() *
                     std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.Material().PhongExp());

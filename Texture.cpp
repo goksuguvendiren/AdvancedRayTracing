@@ -52,7 +52,8 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
 
         std::string name = std::string(child->FirstChildElement("ImageName")->GetText());
 
-        if (name == "perlin") name = "textures/earth.jpg";
+        auto type = Type::Texture;
+        if (name == "perlin") type = Type::Perlin;
 
         DecalMode dm = DecalMode::Replace_KD;
         if (auto elem = child->FirstChildElement("DecalMode"))
@@ -66,19 +67,27 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
             interp = GetInterpolation(std::string(elem->GetText()));
         }
 
-        Appearance appr = Appearance::Patch;
+        Appearance appr = Appearance::None;
         if (auto elem = child->FirstChildElement("Appearance"))
         {
             appr = GetAppearance(std::string(elem->GetText()));
         }
 
-        int normalizer = 255;
-        if (auto elem = child->FirstChildElement("Normalizer"))
+        float scale = 255;
+        if (type == Type::Perlin)
         {
-            normalizer = elem->IntText(255);
+            if (auto elem = child->FirstChildElement("ScalingFactor"))
+            {
+                scale = elem->FloatText(1.f);
+            }
         }
 
-        texs.push_back(Texture(scene.GetPath() + name, interp, dm, appr, normalizer, id));
+        if (auto elem = child->FirstChildElement("Normalizer"))
+        {
+            scale = elem->FloatText(255);
+        }
+
+        texs.push_back(Texture(scene.GetPath() + name, interp, dm, appr, type, scale, id));
     }
 
     return texs;

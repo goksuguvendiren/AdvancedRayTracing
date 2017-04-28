@@ -40,15 +40,20 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
 
+    if (param < 0)
+    {
+//        return boost::none;
+        param = (- B + std::sqrt(delta)) / (2.0f * A);
+
+        if (param < 0)
+            return boost::none;
+    }
+
     auto modelPoint = inverseRay.Origin() + param * inverseRay.Direction();
     auto worldPoint = glm::vec3(transformationMatrix * glm::vec4(modelPoint, 1));
 
     auto surfaceNormal = glm::normalize(glm::vec3(inverseTranspose * glm::vec4(modelPoint - center.Data(), 0)));
 
-    if (param < 0)
-    {
-        return boost::none;
-    }
 
     auto uv = GetTexCoords(worldPoint);
 

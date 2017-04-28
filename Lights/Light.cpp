@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iostream>
 #include "AreaLight.h"
+#include "DirectionalLight.hpp"
 
 static glm::vec3 GetElem(tinyxml2::XMLElement* element)
 {
@@ -64,6 +65,17 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
             auto edgeVec2 = GetElem(child->FirstChildElement("EdgeVector2"));
 
             lights.push_back(std::make_unique<AreaLight>(position, edgeVec1, edgeVec2, intensity, id));
+        }
+        else if (child->Name() == std::string("DirectionalLight")){
+            std::cerr << "hi directional" << '\n';
+
+            int id;
+            child->QueryIntAttribute("id", &id);
+
+            auto direction  = GetElem(child->FirstChildElement("Direction"));
+            auto radiance = GetElem(child->FirstChildElement("Radiance"));
+
+            lights.push_back(std::make_unique<DirectionalLight>(direction, radiance, id));
         }
     }
 
