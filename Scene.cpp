@@ -244,6 +244,32 @@ const std::vector<Material>& Scene::Materials() const
     return materials;
 }
 
+boost::optional<float> Scene::ShadowHit(const Ray& ray)
+{
+    auto bvhHit = BoundingBox().ShadowHit(ray);
+    
+    boost::optional<float> sphHit;
+    for (auto& sph : scene.Spheres()){
+        auto tmpHit = sph.ShadowHit(ray);
+        if (!sphHit || (tmpHit && *sphHit > *tmpHit))
+        {
+            sphHit = tmpHit;
+        }
+    }
+    
+    if (bvhHit && sphHit)
+    {
+        return *bvhHit < *sphHit ? bvhHit : sphHit;
+    }
+    
+    if (!sphHit && !bvhHit)
+    {
+        return boost::none;
+    }
+    
+    return sphHit ? sphHit : bvhHit;
+}
+
 boost::optional<HitInfo> Scene::Hit(const Ray &r)
 {
     auto bvhHit = BoundingBox().Hit(r);
@@ -251,7 +277,7 @@ boost::optional<HitInfo> Scene::Hit(const Ray &r)
     boost::optional<HitInfo> sphHit;
     for (auto& sph : scene.Spheres()){
         auto tmpHit = sph.Hit(r);
-        if (!sphHit || (sphHit && tmpHit && sphHit->Parameter() > tmpHit->Parameter()))
+        if (!sphHit || (tmpHit && sphHit->Parameter() > tmpHit->Parameter()))
         {
             sphHit = tmpHit;
         }

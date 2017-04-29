@@ -137,9 +137,9 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
     return res;
 };
 
-bool Mesh::FastHit(const Ray &ray) const
+boost::optional<float> Mesh::ShadowHit(const Ray& ray) const
 {
-    return false;
+    return volume.ShadowHit(ray);
 };
 
 void Mesh::InsertVT(Triangle face)

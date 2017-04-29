@@ -45,10 +45,15 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 
         boost::optional<HitInfo> sh;
         if ((sh = scene.Hit(shadowRay))){
-            auto& s_hit = *sh;
-            if (s_hit.Parameter() < glm::length(direction))
+            if (sh->Parameter() < glm::length(direction))
                 continue;
         }
+        
+//        boost::optional<float> sh;
+//        if ((sh = scene.ShadowHit(shadowRay))){
+//            if (*sh < glm::length(direction))
+//                continue;
+//        }
 
         auto intensity = light->Intensity(direction);
 

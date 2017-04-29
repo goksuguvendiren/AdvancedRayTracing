@@ -49,7 +49,7 @@ public:
     enum ShadingMode ShadingMode() const { return shmode; }
 
     boost::optional<HitInfo> Hit(const Ray &ray) const;
-    bool FastHit(const Ray &ray) const;
+    boost::optional<float>   ShadowHit(const Ray& ray) const;
 
     int ID() const { return id; }
     const auto& Faces() const { return faces; }

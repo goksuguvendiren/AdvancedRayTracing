@@ -15,11 +15,10 @@ class Shape
 {
 public:
     virtual boost::optional<HitInfo> Hit(const Ray &ray) const = 0;
-    virtual bool FastHit(const Ray &ray) const = 0;
+    virtual boost::optional<float>   ShadowHit(const Ray& ray) const = 0;
     virtual int ID() const = 0;
     virtual ~Shape() = default;
     virtual glm::vec3 Min() const = 0;
     virtual glm::vec3 Max() const = 0;
     virtual glm::vec3 Middle() const = 0;
-//    virtual glm::vec2 GetTexCoords(glm::vec3 pos) const = 0;
 };

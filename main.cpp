@@ -2,44 +2,33 @@
 
 #include "Camera.h"
 #include "Scene.h"
+#include <boost/filesystem/path.hpp>
+#include "boost/filesystem/operations.hpp"
 #include <opencv2/highgui/highgui.hpp>
 #include <iomanip>
 
 Scene scene;
-//extern std::atomic<std::uint64_t> cnt;
+
+std::string GetFileName(int set, int index);
 
 int main(int argc, char** argv)
 {
-    std::vector<std::string> sceneNames6 = {"ellipsoids_texture",
-                                            "killeroo_diffuse_specular_texture",
-                                            "perlin_types",
-                                            "simple_texture",
-                                            "skybox",
-                                            "sphere_texture_blend_bilinear",
-                                            "sphere_texture_replace_bilinear",
-                                            "sphere_texture_replace_nearest"
-    };
-    
-    
-    std::vector<std::string> sceneNames7 = {"bump_mapping_basic",
-                                            "sphere_bump_nobump",
-                                            "killeroo_bump_walls",
-                                            "bump_mapping_transformed"
-    };
+    int inputset = 7;
+    int index = 0;
 
-    int index = 1;
-
-    if (argc == 2){
-        index = std::stoi(argv[1]);
+    if (argc == 3){
+        inputset = std::stoi(argv[1]);
+        index = std::stoi(argv[2]);
+        std::cerr << "hello " <<'\n';
     }
-
-    auto sceneName = sceneNames7[index];
+    
+    auto sceneName = GetFileName(inputset, index);
 
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
     scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer/");
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/7/" + sceneName + ".xml");
+    scene.CreateScene(sceneName);
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
@@ -76,9 +65,59 @@ int main(int argc, char** argv)
                 im.at<cv::Vec3f>(i, j)[2] = image.at(i, j).r;
             }
         }
-
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/7/" + sceneName + "_" + std::to_string(time_elapsed) + "ms.png", im);
+        
+        std::string name = "/Users/goksu/Documents/AdvancedRayTracer/outputs/" + std::to_string(inputset) + "/" + std::to_string(index) + "_" + std::to_string(time_elapsed) + "ms.png";
+        std::cerr << name << '\n';
+        cv::imwrite(name, im);
     }
 
     return 0;
 }
+
+std::string GetFileName(int set, int index)
+{
+    std::string full_path = "/Users/goksu/Documents/AdvancedRayTracer/inputs/" + std::to_string(set) + "/";
+    if (!boost::filesystem::exists(full_path))
+    {
+        std::cerr << "Could not open " << full_path << '\n';
+        abort();
+    }
+        
+    if (!boost::filesystem::is_directory(full_path))
+    {
+        std::cerr << full_path << " should be a directory.\n";
+        abort();
+    }
+        
+    std::vector<std::string> files;
+    boost::filesystem::directory_iterator directory_iterator;
+    for (boost::filesystem::directory_iterator it(full_path); it != directory_iterator; it++)
+    {
+        try
+        {
+            if ( boost::filesystem::is_directory( it->status() ) )
+            {
+                std::cout << it->path().filename() << " [directory]\n";
+            }
+            else if ( boost::filesystem::is_regular_file( it->status() ) )
+            {
+                std::string filename = it->path().filename().string<std::string>();
+                files.push_back(full_path + filename);
+                //                std::cout << it->path().filename() << "\n";
+            }
+            else
+            {
+                std::cout << it->path().filename() << " [other]\n";
+            }
+        }
+        catch ( const std::exception & ex )
+        {
+            std::cerr << "Problem reading files" << '\n';
+            abort();
+        }
+    }
+
+    return files[index];
+}
+        
+

@@ -35,5 +35,5 @@ public:
     BoundingVolume(const std::vector<Triangle>& triangles, Axis axis);
 
     boost::optional<HitInfo> Hit (const Ray& ray) const;
-    bool FastHit (const Ray& ray) const;
+    boost::optional<float>   ShadowHit(const Ray &ray) const;
 };
