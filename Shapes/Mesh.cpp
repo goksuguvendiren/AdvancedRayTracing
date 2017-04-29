@@ -224,7 +224,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
         auto& baseMesh = scene.Meshes()[baseID - 1];
         assert(baseMesh.ID() == baseID);
 
-        Mesh mesh {id, baseMesh.Material()};
+        Mesh mesh {id, baseMesh.GetMaterial()};
         int index = 1;
         for (auto& face : baseMesh.Faces()){
             auto vert0 = matrix * glm::vec4(face.PointA().Data(), 1);
@@ -235,7 +235,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.Material()->ID(), mesh.Texture()->ID(),
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.GetMaterial()->ID(), mesh.GetTexture()->ID(),
                                 index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }

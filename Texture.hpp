@@ -75,7 +75,7 @@ public:
         }
     }
 
-    auto DecalMode() const { return mode; }
+    auto GetDecalMode() const { return mode; }
     bool IsPerlin() const { return type == Type::Perlin; }
     const PerlinNoise& Perlin() const { return pn; }
     float Scale() const { return scale; }

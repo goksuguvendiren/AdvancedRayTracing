@@ -18,7 +18,7 @@ std::vector<int> grsamples;
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
-    if (hit.GetTexture() && hit.GetTexture()->DecalMode() == DecalMode::Replace_All)
+    if (hit.GetTexture() && hit.GetTexture()->GetDecalMode() == DecalMode::Replace_All)
     {
         glm::vec2 texCoords = hit.GetUV();
         return hit.GetTexture()->GetColor(texCoords) * 255.f;

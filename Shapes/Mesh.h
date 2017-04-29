@@ -54,8 +54,8 @@ public:
     int ID() const { return id; }
     const auto& Faces() const { return faces; }
 
-    auto Material() const { return material; }
-    auto Texture()  const { return texture; }
+    auto GetMaterial() const { return material; }
+    auto GetTexture()  const { return texture; }
 
     glm::vec3 Min() const { return volume.BBox().Min(); }
     glm::vec3 Max() const { return volume.BBox().Max(); }
