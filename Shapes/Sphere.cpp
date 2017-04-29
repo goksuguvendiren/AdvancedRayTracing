@@ -37,7 +37,7 @@ boost::optional<float> Sphere::ShadowHit(const Ray& ray) const
     
     auto delta = B * B - 4 * A * C;
     
-    if (delta < scene.IntersectionTestEpsilon()) return false;
+    if (delta < scene.IntersectionTestEpsilon()) return boost::none;
     
     auto param = (- B - std::sqrt(delta)) / (2.0f * A);
     
@@ -46,10 +46,10 @@ boost::optional<float> Sphere::ShadowHit(const Ray& ray) const
         param = (- B + std::sqrt(delta)) / (2.0f * A);
         
         if (param < 0)
-            return false;
+            return boost::none;
     }
     
-    return true;
+    return param;
 }
 
 boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const

@@ -108,12 +108,13 @@ boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
 
     HitInfo ultimate;
 
-    if (leftHitInfo) {
+    if (leftHitInfo)
+    {
         ultimate = *leftHitInfo;
     }
-    if (rightHitInfo){
-        if (rightHitInfo->Parameter() < ultimate.Parameter())
-            ultimate = *rightHitInfo;
+    if (rightHitInfo && rightHitInfo->Parameter() < ultimate.Parameter())
+    {
+        ultimate = *rightHitInfo;
     }
 
     return ultimate;
@@ -134,9 +135,9 @@ boost::optional<float> BoundingVolume::ShadowHit(const Ray &ray) const
     if (leftHitInfo) {
         ultimate = *leftHitInfo;
     }
-    if (rightHitInfo){
-        if (*rightHitInfo < ultimate)
-            ultimate = *rightHitInfo;
+    if (rightHitInfo && *rightHitInfo < ultimate)
+    {
+        ultimate = *rightHitInfo;
     }
     
     return ultimate;

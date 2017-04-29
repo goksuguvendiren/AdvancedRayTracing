@@ -43,17 +43,17 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * glm::normalize(direction)),
                       glm::normalize(direction));
 
-        boost::optional<HitInfo> sh;
-        if ((sh = scene.Hit(shadowRay))){
-            if (sh->Parameter() < glm::length(direction))
-                continue;
-        }
-        
-//        boost::optional<float> sh;
-//        if ((sh = scene.ShadowHit(shadowRay))){
-//            if (*sh < glm::length(direction))
+//        boost::optional<HitInfo> sh;
+//        if ((sh = scene.Hit(shadowRay))){
+//            if (sh->Parameter() < glm::length(direction))
 //                continue;
 //        }
+        
+        boost::optional<float> sh;
+        if ((sh = scene.ShadowHit(shadowRay))){
+            if (*sh < glm::length(direction))
+                continue;
+        }
 
         auto intensity = light->Intensity(direction);
 
@@ -436,7 +436,6 @@ glm::vec3 Camera::CalculateTransparency(const HitInfo &hit, int recDepth) const
 
         t = ratio * hit.HitRay().Direction() + (ratio * c1 - c2) * normal;
         t = glm::normalize(t);
-
 
         auto v = glm::normalize(hit.HitRay().Origin() - hit.Position());
         float cost = glm::dot(v, normal);
