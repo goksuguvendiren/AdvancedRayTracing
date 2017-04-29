@@ -53,4 +53,7 @@ public:
 
         return (intensity / lensquared(dir)) * float(glm::pow(a, 4));
     }
+    
+    
+    int ID() const { return id; }
 };

@@ -49,6 +49,10 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
     {
         int id;
         child->QueryIntAttribute("id", &id);
+        bool isBump = false;
+        if (child->QueryBoolAttribute("bumpmap", &isBump));
+        
+        std::cerr << "Is bump ? " << isBump << '\n';
 
         std::string name = std::string(child->FirstChildElement("ImageName")->GetText());
 
@@ -87,7 +91,7 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
             scale = elem->FloatText(255);
         }
 
-        texs.push_back(Texture(scene.GetPath() + name, interp, dm, appr, type, scale, id));
+        texs.push_back(Texture(scene.GetPath() + name, interp, dm, appr, type, scale, id, isBump));
     }
 
     return texs;
@@ -127,6 +131,8 @@ glm::vec3 Texture::GetColor(glm::vec2 texCoords) const
         return {image.at<cv::Vec3b>(i, j)[2] / 255.f,
                 image.at<cv::Vec3b>(i, j)[1] / 255.f,
                 image.at<cv::Vec3b>(i, j)[0] / 255.f};
+    case Interpolation::None:
+            assert(false);
     }
 }
 
@@ -148,3 +154,45 @@ glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
         return {0, 0, 0};
     }
 }
+
+glm::vec2 Texture::GetImageGradients(const glm::vec2& uv) const
+{
+//    std::cerr << image.type() << '\n';
+//    std::cerr << CV_8UC1 << '\n';
+//    assert(image.type() == CV_8UC1);
+    auto uvx = uv.x - int(std::floor(uv.x));
+    auto uvy = uv.y - int(std::floor(uv.y));
+
+    float i = uvy * image.rows;
+    float j = uvx * image.cols;
+    
+    auto accPixelChannels = [](const cv::Vec<unsigned char, 3>& pixel)
+    {
+        return (pixel[0] + pixel[1] + pixel[2]);
+    };
+    
+    float dd_du = accPixelChannels(image.at<cv::Vec3b>(i + 1, j) - image.at<cv::Vec3b>(i, j));
+    float dd_dv = accPixelChannels(image.at<cv::Vec3b>(i, j + 1) - image.at<cv::Vec3b>(i, j));
+    
+    return glm::vec2{dd_du, dd_dv};
+}
+
+glm::vec3 Texture::CalculateBumpNormal(const glm::vec3& dp_du, const glm::vec3& dp_dv, const glm::vec3& surfaceNormal, const glm::vec2& uv) const
+{
+    glm::vec2 image_gradients = GetImageGradients(uv);
+    
+    glm::vec3 dq_du = dp_du + image_gradients.x * surfaceNormal;
+    glm::vec3 dq_dv = dp_dv + image_gradients.y * surfaceNormal;
+    
+    return glm::cross(dq_du, dq_dv);
+}
+
+
+
+
+
+
+
+
+
+

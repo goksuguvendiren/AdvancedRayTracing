@@ -39,4 +39,6 @@ public:
 
         return intensity / lensquared(lightpos_hitPoint);
     }
+    
+    int ID() const { return id; }
 };

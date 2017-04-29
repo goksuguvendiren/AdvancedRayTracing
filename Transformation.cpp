@@ -30,7 +30,7 @@ std::map<std::string, glm::mat4> LoadTransformations(tinyxml2::XMLElement *elem)
 {
     std::map<std::string, glm::mat4> trs;
 
-    auto translations = std::move(LoadTranslations(elem));
+    auto translations = LoadTranslations(elem);
     for (auto translation : translations){
         trs.insert(translation);
     }

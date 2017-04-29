@@ -82,7 +82,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
             std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
+            transformations = GetTransformations(ss);
         }
 
         glm::mat4 matrix;
@@ -97,16 +97,11 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         int vertexOffset = 0;
         int texCoordOffset = 0;
 
-        if (auto vo = FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
-        if (auto to = FaceData->QueryIntAttribute("textureOffset", &texCoordOffset));
+        if (FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
+        if (FaceData->QueryIntAttribute("textureOffset", &texCoordOffset));
 
         boost::optional<Triangle> tr;
         int index = 1;
-
-        if (id != 1)
-        {
-            int x = 5;
-        }
 
         while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++,
                 (ShadingMode() == ShadingMode::Smooth), texID))){
@@ -217,7 +212,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
             std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
+            transformations = GetTransformations(ss);
         }
 
         glm::mat4 matrix;

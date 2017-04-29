@@ -145,7 +145,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
             std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
+            transformations = GetTransformations(ss);
         }
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};

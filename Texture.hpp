@@ -57,14 +57,16 @@ class Texture
 
     float scale;
     int id;
+    
+    bool is_bump;
 
 public:
     Texture(const std::string& source, Interpolation inter, DecalMode dm, Appearance app,
-            Type typ, float nor, int i) : imageSource(source),
-                                        interpolation(inter),
-                                        mode(dm), appr(app),
-                                        type(typ), scale(nor),
-                                        id(i), pn(nor, app == Appearance::Patch ? Noise_Appeareance::Patch : Noise_Appeareance::Vein)
+            Type typ, float nor, int i, bool bump) : imageSource(source),
+                                                     interpolation(inter),
+                                                     mode(dm), appr(app),
+                                                     type(typ), pn(nor, app == Appearance::Patch ? Noise_Appeareance::Patch : Noise_Appeareance::Vein),
+                                                     scale(nor), id(i), is_bump(bump)
     {
         if (type!=Type::Perlin) {
             image = cv::imread(imageSource, CV_LOAD_IMAGE_COLOR);
@@ -80,6 +82,10 @@ public:
     int ID() const { return id; }
     glm::vec3 GetColor(glm::vec2 texCoords) const;
     glm::vec3 BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const;
+    
+    bool IsBump() const { return is_bump; }
+    glm::vec3 CalculateBumpNormal(const glm::vec3& dp_du, const glm::vec3& dp_dv, const glm::vec3& surfaceNormal, const glm::vec2& uv) const;
+    glm::vec2 GetImageGradients(const glm::vec2& uv) const;
 };
 
 std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem);
