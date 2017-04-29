@@ -43,7 +43,7 @@ public:
 
     const Material& Material() const { return *mat; }
     const Texture* Texture() const { return tex; }
-    const Shape* Shape() const { return shape; }
+    const Shape* GetShape() const { return shape; }
     Ray HitRay() const { return ray; }
 
     float Parameter() const { return param; }
