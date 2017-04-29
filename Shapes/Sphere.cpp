@@ -54,7 +54,7 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
     
     auto uv = GetTexCoords(worldPoint);
     
-    if (texture->IsBump())
+    if (texture && texture->IsBump())
     {
         std::pair<glm::vec3, glm::vec3> gradientVectors = this->GradientVectors(uv, modelPoint - center.Data());
         surfaceNormal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, surfaceNormal, uv));

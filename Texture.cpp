@@ -157,9 +157,6 @@ glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
 
 glm::vec2 Texture::GetImageGradients(const glm::vec2& uv) const
 {
-//    std::cerr << image.type() << '\n';
-//    std::cerr << CV_8UC1 << '\n';
-//    assert(image.type() == CV_8UC1);
     auto uvx = uv.x - int(std::floor(uv.x));
     auto uvy = uv.y - int(std::floor(uv.y));
 
@@ -186,9 +183,6 @@ glm::vec3 Texture::CalculateBumpNormal(const glm::vec3& dp_du, const glm::vec3& 
     
     return glm::cross(dq_du, dq_dv);
 }
-
-
-
 
 
 

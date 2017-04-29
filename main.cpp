@@ -27,7 +27,7 @@ int main(int argc, char** argv)
                                             "bump_mapping_transformed"
     };
 
-    int index = 0;
+    int index = 1;
 
     if (argc == 2){
         index = std::stoi(argv[1]);

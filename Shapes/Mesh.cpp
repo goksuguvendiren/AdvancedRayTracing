@@ -132,7 +132,7 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
     auto res = volume.Hit(ray);
     if (res)
     {
-        res->shape = this;
+        res->SetShape(this);
     }
     return res;
 };
