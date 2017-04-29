@@ -41,8 +41,8 @@ public:
 
     HitInfo() : param(std::numeric_limits<float>::infinity()) {}
 
-    const Material& Material() const { return *mat; }
-    const Texture* Texture() const { return tex; }
+    const Material& GetMaterial() const { return *mat; }
+    const Texture* GetTexture() const { return tex; }
     const Shape* GetShape() const { return shape; }
     void SetShape(const Shape* sh) { shape = sh; }
     Ray HitRay() const { return ray; }

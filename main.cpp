@@ -6,6 +6,8 @@
 #include "boost/filesystem/operations.hpp"
 #include <opencv2/highgui/highgui.hpp>
 #include <iomanip>
+#include <chrono>
+#include <string>
 
 Scene scene;
 
@@ -13,8 +15,8 @@ std::string GetFileName(int set, int index);
 
 int main(int argc, char** argv)
 {
-    int inputset = 7;
-    int index = 0;
+    int inputset = 4;
+    int index = 2;
 
     if (argc == 3){
         inputset = std::stoi(argv[1]);
