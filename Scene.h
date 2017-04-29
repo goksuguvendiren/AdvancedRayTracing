@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 #include "Camera.h"
 #include "Shapes/Sphere.h"
 #include "Vertex.h"
