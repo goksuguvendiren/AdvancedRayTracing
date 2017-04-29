@@ -102,23 +102,22 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         boost::optional<Triangle> tr;
         int index = 1;
-
-        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++,
-                (ShadingMode() == ShadingMode::Smooth), texID))){
-            auto tri = *tr;
-            msh.AddFace(std::move(*tr));
-        }
-
+        
+        ShadingMode mode = ShadingMode::Flat;
         const char* asd = child->Attribute("shadingMode");
         if (asd != nullptr){
             std::string sm = std::string(asd);
             if (sm == "smooth") {
-                msh.ShadingMode(ShadingMode::Smooth);
+                mode = ShadingMode::Smooth;
             }
         }
-        else {
-            msh.ShadingMode(ShadingMode::Flat);
+        
+        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++, (mode == ShadingMode::Smooth), texID))){
+            auto tri = *tr;
+            msh.AddFace(std::move(*tr));
         }
+
+        msh.SetShadingMode(mode);
 
         msh.BoundingBox();
         meshes.push_back(std::move(msh));
@@ -149,7 +148,7 @@ void Mesh::InsertVT(Triangle face)
     vertex_triangle_associtations.insert(std::make_pair(face.PointC().ID(), face.ID()));
 }
 
-void Mesh::ShadingMode(enum ShadingMode mode)
+void Mesh::SetShadingMode(enum ShadingMode mode)
 {
     shmode = mode;
     switch(shmode){
@@ -236,11 +235,11 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
             auto tri = Triangle{vertex0, vertex1, vertex2, mesh.GetMaterial()->ID(), mesh.GetTexture()->ID(),
-                                index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
+                                index++, baseMesh.GetShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }
 
-        mesh.ShadingMode(baseMesh.ShadingMode());
+        mesh.SetShadingMode(baseMesh.GetShadingMode());
 
         meshes.push_back(std::move(mesh));
     }

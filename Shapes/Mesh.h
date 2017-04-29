@@ -45,8 +45,8 @@ public:
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
 
-    void ShadingMode(enum ShadingMode mode);
-    enum ShadingMode ShadingMode() const { return shmode; }
+    void SetShadingMode(enum ShadingMode mode);
+    enum ShadingMode GetShadingMode() const { return shmode; }
 
     boost::optional<HitInfo> Hit(const Ray &ray) const;
     boost::optional<float>   ShadowHit(const Ray& ray) const;

@@ -15,7 +15,7 @@ std::string GetFileName(int set, int index);
 
 int main(int argc, char** argv)
 {
-    int inputset = 4;
+    int inputset = 2;
     int index = 2;
 
     if (argc == 3){
