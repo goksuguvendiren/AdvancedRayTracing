@@ -33,7 +33,7 @@ class Sphere : public Shape
 public:
     Sphere(int sid, float rd, Vertex c, int mid, int tid);
     boost::optional<HitInfo> Hit(const Ray &inverseRay) const;
-    bool FastHit (const Ray &ray) const;
+    boost::optional<float>   ShadowHit(const Ray& ray) const;
     int ID() const { return id; }
 
     void TransformationMatrix(const glm::mat4& mat)

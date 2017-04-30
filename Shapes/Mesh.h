@@ -45,17 +45,17 @@ public:
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
 
-    void ShadingMode(enum ShadingMode mode);
-    enum ShadingMode ShadingMode() const { return shmode; }
+    void SetShadingMode(enum ShadingMode mode);
+    enum ShadingMode GetShadingMode() const { return shmode; }
 
     boost::optional<HitInfo> Hit(const Ray &ray) const;
-    bool FastHit(const Ray &ray) const;
+    boost::optional<float>   ShadowHit(const Ray& ray) const;
 
     int ID() const { return id; }
     const auto& Faces() const { return faces; }
 
-    auto Material() const { return material; }
-    auto Texture()  const { return texture; }
+    auto GetMaterial() const { return material; }
+    auto GetTexture()  const { return texture; }
 
     glm::vec3 Min() const { return volume.BBox().Min(); }
     glm::vec3 Max() const { return volume.BBox().Max(); }

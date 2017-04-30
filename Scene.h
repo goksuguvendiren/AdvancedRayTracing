@@ -105,7 +105,8 @@ public:
     glm::vec2 Get_UV(int id) const;
 
     boost::optional<HitInfo> Hit(const Ray& r);
-
+    boost::optional<float>   ShadowHit(const Ray& ray);
+    
     const BoundingVolume& BoundingBox();
 
     void CreateScene(std::string filename);

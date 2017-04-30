@@ -37,7 +37,7 @@ public:
 
     const Material* Mat() const;
     boost::optional<HitInfo> Hit (const Ray& ray) const;
-    bool FastHit(const Ray& ray) const;
+    boost::optional<float>   ShadowHit(const Ray& ray) const;
     int ID() const;
 
     auto Normal() const { return surfNormal; }

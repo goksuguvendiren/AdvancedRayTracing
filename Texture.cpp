@@ -51,8 +51,6 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
         child->QueryIntAttribute("id", &id);
         bool isBump = false;
         if (child->QueryBoolAttribute("bumpmap", &isBump));
-        
-        std::cerr << "Is bump ? " << isBump << '\n';
 
         std::string name = std::string(child->FirstChildElement("ImageName")->GetText());
 

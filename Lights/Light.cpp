@@ -28,8 +28,8 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
 
     for (auto child = elem->FirstChildElement(); child != nullptr; child = child->NextSiblingElement())
     {
-        if (child->Name() == std::string("PointLight")){
-            std::cerr << "hi point" << '\n';
+        if (child->Name() == std::string("PointLight"))
+        {
             int id;
             child->QueryIntAttribute("id", &id);
 
@@ -38,7 +38,8 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
 
             lights.push_back(std::make_unique<PointLight>(id, position, intensity));
         }
-        else if (child->Name() == std::string("SpotLight")){
+        else if (child->Name() == std::string("SpotLight"))
+        {
             std::cerr << "hi spot" << '\n';
 
             int id;
@@ -53,8 +54,8 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
 
             lights.push_back(std::make_unique<SpotLight>(id, position, intensity, direction, coverAng, fallAng));
         }
-        else if (child->Name() == std::string("AreaLight")){
-            std::cerr << "hi area" << '\n';
+        else if (child->Name() == std::string("AreaLight"))
+        {
 
             int id;
             child->QueryIntAttribute("id", &id);
@@ -66,9 +67,8 @@ std::vector<std::unique_ptr<Light>> LoadLights(tinyxml2::XMLElement *elem)
 
             lights.push_back(std::make_unique<AreaLight>(position, edgeVec1, edgeVec2, intensity, id));
         }
-        else if (child->Name() == std::string("DirectionalLight")){
-            std::cerr << "hi directional" << '\n';
-
+        else if (child->Name() == std::string("DirectionalLight"))
+        {
             int id;
             child->QueryIntAttribute("id", &id);
 

@@ -67,7 +67,7 @@ std::pair<glm::vec3, glm::vec3> Triangle::GradientVectors(glm::vec3 normal) cons
     glm::vec3 dp_du = u3_u1 * p2_p1 + v3_v1 * p3_p1;
     glm::vec3 dp_dv = u2_u1 * p2_p1 + v2_v1 * p3_p1;
     
-    auto bumpNormal = glm::normalize(glm::cross(dp_du, dp_dv));
+//    auto bumpNormal = glm::normalize(glm::cross(dp_du, dp_dv));
     
 //    std::cerr << bumpNormal.x << ", " << bumpNormal.y << ", " << bumpNormal.z << '\n';
 //    std::cerr << normal.x << ", " << normal.y << ", " << normal.z << '\n';
@@ -75,21 +75,23 @@ std::pair<glm::vec3, glm::vec3> Triangle::GradientVectors(glm::vec3 normal) cons
     return std::make_pair(dp_du, dp_dv);
 }
 
-bool Triangle::FastHit(const Ray &ray) const
+boost::optional<float> Triangle::ShadowHit(const Ray& ray) const
 {
     glm::vec3 col1 = pointA.Data() - pointB.Data();
     glm::vec3 col2 = pointA.Data() - pointC.Data();
     glm::vec3 col3 = ray.Direction();
     glm::vec3 col4 = pointA.Data() - ray.Origin();
-
+    
     auto detA  = determinant(col1, col2, col3);
-
+    
     auto beta  = determinant(col4, col2, col3) / detA;
     auto gamma = determinant(col1, col4, col3) / detA;
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
-
-    return !(alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0);
+    
+    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return boost::none;
+    
+    return param;
 }
 
 Triangle::Triangle(Vertex a, Vertex b, Vertex c,

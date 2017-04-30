@@ -102,23 +102,22 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         boost::optional<Triangle> tr;
         int index = 1;
-
-        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++,
-                (ShadingMode() == ShadingMode::Smooth), texID))){
-            auto tri = *tr;
-            msh.AddFace(std::move(*tr));
-        }
-
+        
+        ShadingMode mode = ShadingMode::Flat;
         const char* asd = child->Attribute("shadingMode");
         if (asd != nullptr){
             std::string sm = std::string(asd);
             if (sm == "smooth") {
-                msh.ShadingMode(ShadingMode::Smooth);
+                mode = ShadingMode::Smooth;
             }
         }
-        else {
-            msh.ShadingMode(ShadingMode::Flat);
+        
+        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++, (mode == ShadingMode::Smooth), texID))){
+            auto tri = *tr;
+            msh.AddFace(std::move(*tr));
         }
+
+        msh.SetShadingMode(mode);
 
         msh.BoundingBox();
         meshes.push_back(std::move(msh));
@@ -137,9 +136,9 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
     return res;
 };
 
-bool Mesh::FastHit(const Ray &ray) const
+boost::optional<float> Mesh::ShadowHit(const Ray& ray) const
 {
-    return false;
+    return volume.ShadowHit(ray);
 };
 
 void Mesh::InsertVT(Triangle face)
@@ -149,7 +148,7 @@ void Mesh::InsertVT(Triangle face)
     vertex_triangle_associtations.insert(std::make_pair(face.PointC().ID(), face.ID()));
 }
 
-void Mesh::ShadingMode(enum ShadingMode mode)
+void Mesh::SetShadingMode(enum ShadingMode mode)
 {
     shmode = mode;
     switch(shmode){
@@ -224,7 +223,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
         auto& baseMesh = scene.Meshes()[baseID - 1];
         assert(baseMesh.ID() == baseID);
 
-        Mesh mesh {id, baseMesh.Material()};
+        Mesh mesh {id, baseMesh.GetMaterial()};
         int index = 1;
         for (auto& face : baseMesh.Faces()){
             auto vert0 = matrix * glm::vec4(face.PointA().Data(), 1);
@@ -235,12 +234,12 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.Material()->ID(), mesh.Texture()->ID(),
-                                index++, baseMesh.ShadingMode() == ShadingMode::Smooth};
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.GetMaterial()->ID(), mesh.GetTexture()->ID(),
+                                index++, baseMesh.GetShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }
 
-        mesh.ShadingMode(baseMesh.ShadingMode());
+        mesh.SetShadingMode(baseMesh.GetShadingMode());
 
         meshes.push_back(std::move(mesh));
     }

@@ -23,6 +23,35 @@ Sphere::Sphere(int sid, float rd, Vertex c, int mid, int tid) : id(sid), radius(
     }
 }
 
+
+boost::optional<float> Sphere::ShadowHit(const Ray& ray) const
+{
+    auto inverseRay = Ray{glm::vec3(inverseTrMatrix * glm::vec4(ray.Origin(), 1)),
+                      glm::vec3(inverseTrMatrix * glm::vec4(ray.Direction(), 0))};
+    
+    auto eminc = inverseRay.Origin() - center.Data();
+    
+    auto A = glm::dot(inverseRay.Direction(), inverseRay.Direction());
+    auto B = 2.0f * glm::dot(inverseRay.Direction(), eminc);
+    auto C = glm::dot(eminc, eminc) - radius * radius;
+    
+    auto delta = B * B - 4 * A * C;
+    
+    if (delta < scene.IntersectionTestEpsilon()) return boost::none;
+    
+    auto param = (- B - std::sqrt(delta)) / (2.0f * A);
+    
+    if (param < 0)
+    {
+        param = (- B + std::sqrt(delta)) / (2.0f * A);
+        
+        if (param < 0)
+            return boost::none;
+    }
+    
+    return param;
+}
+
 boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 {
     auto inverseRay = Ray{glm::vec3(inverseTrMatrix * glm::vec4(ray.Origin(), 1)),
@@ -72,26 +101,6 @@ std::pair<glm::vec3, glm::vec3> Sphere::GradientVectors(const glm::vec2& uv, con
     glm::vec3 dp_dv = { localCoord.y * M_PI * cos(phi), -radius * M_PI * sin(theta) , localCoord.y * M_PI * sin(phi)};
     
     return std::make_pair(dp_du, dp_dv);
-}
-
-bool Sphere::FastHit(const Ray &ray) const
-{
-    auto inverseRay = Ray{glm::vec3(inverseTrMatrix * glm::vec4(ray.Origin(), 1)),
-                          glm::vec3(inverseTrMatrix * glm::vec4(ray.Direction(), 0))};
-
-    auto eminc = inverseRay.Origin() - center.Data();
-
-    auto A = glm::dot(inverseRay.Direction(), inverseRay.Direction());
-    auto B = 2.0f * glm::dot(inverseRay.Direction(), eminc);
-    auto C = glm::dot(eminc, eminc) - radius * radius;
-
-    auto delta = B * B - 4 * A * C;
-
-    if (delta < scene.IntersectionTestEpsilon()) return false;
-
-    if (- B - std::sqrt(delta) < 0) return false;
-
-    return true;
 }
 
 inline int GetInt(std::istringstream& stream)

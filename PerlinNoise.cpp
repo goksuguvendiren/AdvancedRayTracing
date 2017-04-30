@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <random>
+#include <algorithm>
 #include <iostream>
 #include "PerlinNoise.hpp"
 #include "glm/common.hpp"

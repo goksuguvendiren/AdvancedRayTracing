@@ -108,37 +108,37 @@ boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
 
     HitInfo ultimate;
 
-    if (leftHitInfo) {
+    if (leftHitInfo)
+    {
         ultimate = *leftHitInfo;
     }
-    if (rightHitInfo){
-        if (rightHitInfo->Parameter() < ultimate.Parameter())
-            ultimate = *rightHitInfo;
+    if (rightHitInfo && rightHitInfo->Parameter() < ultimate.Parameter())
+    {
+        ultimate = *rightHitInfo;
     }
 
     return ultimate;
 }
 
-
-//bool BoundingVolume::FastHit (const Ray& ray) const
-//{
-//    if (!box.Hit(ray)) return false;
-//    if (!left && !right) return shape->FastHit(ray);
-//
-//    boost::optional<HitInfo> leftHitInfo  = left->Hit(ray);
-//    boost::optional<HitInfo> rightHitInfo = right->Hit(ray);
-//
-//    if (!leftHitInfo && !rightHitInfo) return false;
-//
-//    HitInfo ultimate;
-//
-//    if (leftHitInfo) {
-//        ultimate = *leftHitInfo;
-//    }
-//    if (rightHitInfo){
-//        if (rightHitInfo->Parameter() < ultimate.Parameter())
-//            ultimate = *rightHitInfo;
-//    }
-//
-//    return ultimate;
-//}
+boost::optional<float> BoundingVolume::ShadowHit(const Ray &ray) const
+{
+    if (!box.Hit(ray)) return boost::none;
+    if (!left && !right) return shape->ShadowHit(ray);
+    
+    boost::optional<float> leftHitInfo  = left->ShadowHit(ray);
+    boost::optional<float> rightHitInfo = right->ShadowHit(ray);
+    
+    if (!leftHitInfo && !rightHitInfo) return boost::none;
+    
+    float ultimate;
+    
+    if (leftHitInfo) {
+        ultimate = *leftHitInfo;
+    }
+    if (rightHitInfo && *rightHitInfo < ultimate)
+    {
+        ultimate = *rightHitInfo;
+    }
+    
+    return ultimate;
+}
