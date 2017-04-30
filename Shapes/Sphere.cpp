@@ -42,22 +42,36 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
 
     if (param < 0)
     {
-//        return boost::none;
         param = (- B + std::sqrt(delta)) / (2.0f * A);
 
         if (param < 0)
             return boost::none;
     }
 
-    auto modelPoint = inverseRay.Origin() + param * inverseRay.Direction();
-    auto worldPoint = glm::vec3(transformationMatrix * glm::vec4(modelPoint, 1));
-
+    auto modelPoint    = inverseRay.Origin() + param * inverseRay.Direction();
     auto surfaceNormal = glm::normalize(glm::vec3(inverseTranspose * glm::vec4(modelPoint - center.Data(), 0)));
-
-
+    auto worldPoint    = glm::vec3(transformationMatrix * glm::vec4(modelPoint, 1));
+    
     auto uv = GetTexCoords(worldPoint);
+    
+    if (texture && texture->IsBump())
+    {
+        std::pair<glm::vec3, glm::vec3> gradientVectors = this->GradientVectors(uv, modelPoint - center.Data());
+        surfaceNormal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, surfaceNormal, uv));
+    }
 
     return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, uv, param);
+}
+
+std::pair<glm::vec3, glm::vec3> Sphere::GradientVectors(const glm::vec2& uv, const glm::vec3& localCoord) const
+{
+    float theta = M_PI * uv.y;
+    float phi   = M_PI * 2 * (1 - uv.x);
+    
+    glm::vec3 dp_du = {-localCoord.z * M_PI * 2, 0, localCoord.x * 2 * M_PI};
+    glm::vec3 dp_dv = { localCoord.y * M_PI * cos(phi), -radius * M_PI * sin(theta) , localCoord.y * M_PI * sin(phi)};
+    
+    return std::make_pair(dp_du, dp_dv);
 }
 
 bool Sphere::FastHit(const Ray &ray) const
@@ -118,7 +132,7 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
         if(auto trns = child->FirstChildElement("Transformations"))
         {
             std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
+            transformations = GetTransformations(ss);
         }
 
         glm::mat4 matrix;
@@ -145,11 +159,14 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
 
 glm::vec2 Sphere::GetTexCoords(glm::vec3 pos) const
 {
+    //TODO : You can get rid of this matrix multiplication!
+    
     pos = glm::vec3(inverseTrMatrix * glm::vec4(pos, 1.f));
     pos = pos - center.Data();
 
-    auto theta = acos(pos.y / radius);
-    auto phi   = atan2(pos.z, pos.x);
+    auto theta = acos(pos.y / radius);   // You get v from theta
+    auto phi   = atan2(pos.z, pos.x);    // and u from phi
 
+    // u, v coordinates
     return {(2 * M_PI - phi) / (2 * M_PI), float(theta) / (M_PI)};
 }

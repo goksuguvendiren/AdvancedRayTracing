@@ -53,9 +53,6 @@ glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
         auto intensity = light->Intensity(direction);
 
         auto diffuse_color = hit.Material().Diffuse();
-        if (hit.Shape()->ID() == 1){
-            int i = 0;
-        }
         if(hit.Texture())
         {
             if (hit.Texture()->IsPerlin()) {

@@ -42,10 +42,38 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
 
     glm::vec3 normal = glm::normalize(alpha * pointA.Normal() + beta * pointB.Normal() + gamma * pointC.Normal());
     glm::vec2 uv = GetTexCoords(point, beta, gamma);
+    
+    if (texture && texture->IsBump())
+    {
+        std::pair<glm::vec3, glm::vec3> gradientVectors = this->GradientVectors(normal);
+        normal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, normal, uv));
+    }
 
     return HitInfo(normal, this, material, texture, point, ray, uv, param);
 }
 
+std::pair<glm::vec3, glm::vec3> Triangle::GradientVectors(glm::vec3 normal) const
+{
+    // u1 = pointA, u2 = pointB, u3 = pointC
+    float u2_u1 = pointB.GetUV().x - pointA.GetUV().x;
+    float v2_v1 = pointB.GetUV().y - pointA.GetUV().y;
+    
+    float u3_u1 = pointC.GetUV().x - pointA.GetUV().x;
+    float v3_v1 = pointC.GetUV().y - pointA.GetUV().y;
+    
+    glm::vec3 p2_p1 = pointB.Data() - pointA.Data();
+    glm::vec3 p3_p1 = pointC.Data() - pointA.Data();
+    
+    glm::vec3 dp_du = u3_u1 * p2_p1 + v3_v1 * p3_p1;
+    glm::vec3 dp_dv = u2_u1 * p2_p1 + v2_v1 * p3_p1;
+    
+    auto bumpNormal = glm::normalize(glm::cross(dp_du, dp_dv));
+    
+//    std::cerr << bumpNormal.x << ", " << bumpNormal.y << ", " << bumpNormal.z << '\n';
+//    std::cerr << normal.x << ", " << normal.y << ", " << normal.z << '\n';
+    
+    return std::make_pair(dp_du, dp_dv);
+}
 
 bool Triangle::FastHit(const Ray &ray) const
 {
@@ -145,7 +173,7 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
         std::vector<std::string> transformations;
         if(auto trns = child->FirstChildElement("Transformations")){
             std::istringstream ss {trns->GetText()};
-            transformations = std::move(GetTransformations(ss));
+            transformations = GetTransformations(ss);
         }
 
         std::istringstream stream {child->FirstChildElement("Indices")->GetText()};

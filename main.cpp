@@ -10,29 +10,36 @@ Scene scene;
 
 int main(int argc, char** argv)
 {
-    std::vector<std::string> sceneNames = {"ellipsoids_texture",
-                                           "killeroo_diffuse_specular_texture",
-                                           "perlin_types",
-                                           "simple_texture",
-                                           "skybox",
-                                           "sphere_texture_blend_bilinear",
-                                           "sphere_texture_replace_bilinear",
-                                           "sphere_texture_replace_nearest"
+    std::vector<std::string> sceneNames6 = {"ellipsoids_texture",
+                                            "killeroo_diffuse_specular_texture",
+                                            "perlin_types",
+                                            "simple_texture",
+                                            "skybox",
+                                            "sphere_texture_blend_bilinear",
+                                            "sphere_texture_replace_bilinear",
+                                            "sphere_texture_replace_nearest"
+    };
+    
+    
+    std::vector<std::string> sceneNames7 = {"bump_mapping_basic",
+                                            "sphere_bump_nobump",
+                                            "killeroo_bump_walls",
+                                            "bump_mapping_transformed"
     };
 
-    int index = 2;
+    int index = 1;
 
     if (argc == 2){
         index = std::stoi(argv[1]);
     }
 
-    auto sceneName = sceneNames[index];
+    auto sceneName = sceneNames7[index];
 
     std::cerr << "Started loading the scene " << sceneName << "...\n";
     auto start = std::chrono::steady_clock::now();
 
     scene.SetPath("/Users/goksu/Documents/AdvancedRayTracer/");
-    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/6/" + sceneName + ".xml");
+    scene.CreateScene("/Users/goksu/Documents/AdvancedRayTracer/inputs/7/" + sceneName + ".xml");
 
     auto loaded = std::chrono::steady_clock::now();
     std::cerr << "Loading took "
@@ -70,7 +77,7 @@ int main(int argc, char** argv)
             }
         }
 
-        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/6/" + sceneName + "_" + std::to_string(time_elapsed) + "ms.png", im);
+        cv::imwrite("/Users/goksu/Documents/AdvancedRayTracer/outputs/7/" + sceneName + "_" + std::to_string(time_elapsed) + "ms.png", im);
     }
 
     return 0;

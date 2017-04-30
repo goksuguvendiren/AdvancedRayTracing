@@ -53,9 +53,9 @@ float PerlinNoise::Sample(const glm::vec3& point_) const
 
     auto floor = [](float val) { return int(val / int(1)); };
 
-    int x = (std::floor(point.x));
-    int y = (std::floor(point.y));
-    int z = (std::floor(point.z));
+    int x = floor(point.x);
+    int y = floor(point.y);
+    int z = floor(point.z);
 
     float result = 0;
     for (int i = x; i <= x + 1; i++)
@@ -72,7 +72,6 @@ float PerlinNoise::Sample(const glm::vec3& point_) const
     if (app == Noise_Appeareance::Vein)
         return std::abs(result);
 
-//    std::cerr << "Perlin noise type : Patch\n";
     return (result + 1.f) / 2.f;
 }
 
