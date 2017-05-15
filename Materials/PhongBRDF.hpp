@@ -13,11 +13,12 @@ class HitInfo;
 
 class Phong : public BRDF
 {
-    int id;
+    int   id;
     float exponent;
+    bool  normalized;
     
 public:
-    Phong(int pid, float exp) : id(pid), exponent(exp) {}
+    Phong(int pid, float exp, bool norm) : id(pid), exponent(exp), normalized(norm) {}
     int ID() const { return id; }
     glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light, const ClassicMaterial& material) const;
 };

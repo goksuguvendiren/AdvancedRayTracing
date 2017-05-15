@@ -13,11 +13,12 @@ class ClassicMaterial;
 
 class BlinnPhong : public BRDF
 {
-    int id;
+    int   id;
     float exponent;
+    bool  normalized;
     
 public:
-    BlinnPhong(int pid, float exp) : id(pid), exponent(exp) {}
+    BlinnPhong(int pid, float exp, bool norm) : id(pid), exponent(exp), normalized(norm) {}
     int ID() const { return id; }
     glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light, const ClassicMaterial& material) const;
 };

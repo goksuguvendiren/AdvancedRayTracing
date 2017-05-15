@@ -20,8 +20,16 @@ glm::vec3 BlinnPhongModified::ComputeReflectance(const HitInfo& hit, const Light
     float alpha   = std::max(0.f, glm::dot(half, hit.Normal()));
     float theta_i = glm::dot(hit.Normal(), w_i);
     
-    glm::vec3 color = material.Diffuse() / glm::pi<float>();
-    color += (material.Specular() * std::pow(alpha, exponent));
+    glm::vec3 diff_term = material.Diffuse() / glm::pi<float>();
+    glm::vec3 spec_term = (material.Specular() * std::pow(alpha, exponent));
+    
+    if (normalized)
+    {
+        spec_term *= (exponent + 8.f) / 8.f;
+        spec_term /= glm::pi<float>();
+    }
+    
+    glm::vec3 color = diff_term + spec_term;
     
     return color * theta_i;
 }

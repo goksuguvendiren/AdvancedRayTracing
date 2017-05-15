@@ -16,8 +16,11 @@ std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
             int id;
             child->QueryIntAttribute("id", &id);
             
+            bool normalized = false;
+            if (child->QueryBoolAttribute("normalized", &normalized));
+            
             auto exponent = child->FirstChildElement("Exponent")->FloatText(0.f);
-            mats.push_back(std::make_unique<Phong>(id, exponent));
+            mats.push_back(std::make_unique<Phong>(id, exponent, normalized));
         }
     }
     
@@ -28,8 +31,11 @@ std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
             int id;
             child->QueryIntAttribute("id", &id);
             
+            bool normalized = false;
+            if (child->QueryBoolAttribute("normalized", &normalized));
+
             auto exponent = child->FirstChildElement("Exponent")->FloatText(0.f);
-            mats.push_back(std::make_unique<BlinnPhong>(id, exponent));
+            mats.push_back(std::make_unique<BlinnPhong>(id, exponent, normalized));
         }
     }
     
@@ -40,8 +46,11 @@ std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
             int id;
             child->QueryIntAttribute("id", &id);
             
+            bool normalized = false;
+            if (child->QueryBoolAttribute("normalized", &normalized));
+
             auto exponent = child->FirstChildElement("Exponent")->FloatText(0.f);
-            mats.push_back(std::make_unique<PhongModified>(id, exponent));
+            mats.push_back(std::make_unique<PhongModified>(id, exponent, normalized));
         }
     }
     for (auto child = elem->FirstChildElement(); child != nullptr; child = child->NextSiblingElement())
@@ -51,8 +60,11 @@ std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
             int id;
             child->QueryIntAttribute("id", &id);
             
+            bool normalized = false;
+            if (child->QueryBoolAttribute("normalized", &normalized));
+
             auto exponent = child->FirstChildElement("Exponent")->FloatText(0.f);
-            mats.push_back(std::make_unique<BlinnPhongModified>(id, exponent));
+            mats.push_back(std::make_unique<BlinnPhongModified>(id, exponent, normalized));
         }
     }
     
