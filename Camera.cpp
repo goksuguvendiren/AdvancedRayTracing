@@ -169,12 +169,7 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 
         if (hit)
         {
-//            auto refl = CalculateReflectance(*hit, 0);
-            auto matrefl = CalculateMaterialReflectances(*hit, 0);
-            
-//            std::cerr << refl.x << ", " << refl.y << ", " << refl.z << " - " << matrefl.x << ", " << matrefl.y << ", " << matrefl.z << '\n';
-            
-            pixelColor += matrefl;
+            pixelColor += CalculateMaterialReflectances(*hit, 0);
         }
         else
         {
@@ -209,11 +204,11 @@ Image Camera::Render() const
         for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
             rowPixLocation += oneRight;
             
-            if (i == 127 && j == 378)
-            {
-                int x = 0;
-            }
-            
+//            if (i == 127 && j == 378)
+//            {
+//                int x = 0;
+//            }
+//            
             image.at(i, j) = RenderPixel(rowPixLocation);
         }
 

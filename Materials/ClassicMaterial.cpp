@@ -10,11 +10,19 @@
 glm::vec3 ClassicMaterial::ComputeReflectance(const HitInfo& hit, const Light& light) const
 {
     auto direction = light.Direction(hit.Position());
+    
     if (!brdf_material)
     {
         auto intensity = light.Intensity(direction);
     
         glm::vec3 color = diffuse;
+        
+        if(hit.GetTexture())
+        {
+            glm::vec2 texCoords = hit.GetUV();
+            glm::vec3 tex_color = hit.GetTexture()->GetColor(texCoords);
+            color = hit.GetTexture()->BlendColor(color, tex_color);
+        }
     
         // Diffuse shading :
         auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), glm::normalize(direction)));

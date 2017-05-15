@@ -4,6 +4,7 @@
 #include "BlinnPhongBRDF.hpp"
 #include "PhongBRDF_Mdf.hpp"
 #include "BlinnPhongBRDF_Mdf.hpp"
+#include "TorranceSparrow.hpp"
 
 std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
 {
@@ -67,6 +68,21 @@ std::vector<std::unique_ptr<BRDF>> LoadBRDFs(tinyxml2::XMLElement *elem)
             mats.push_back(std::make_unique<BlinnPhongModified>(id, exponent, normalized));
         }
     }
+    for (auto child = elem->FirstChildElement(); child != nullptr; child = child->NextSiblingElement())
+    {
+        if (child->Name() == std::string("TorranceSparrow"))
+        {
+            int id;
+            child->QueryIntAttribute("id", &id);
+            
+            bool normalized = false;
+            if (child->QueryBoolAttribute("normalized", &normalized));
+            
+            auto exponent = child->FirstChildElement("Exponent")->FloatText(0.f);
+            mats.push_back(std::make_unique<TorranceSparrow>(id, exponent, normalized));
+        }
+    }
+
     
     return mats;
 }
