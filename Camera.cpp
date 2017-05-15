@@ -13,8 +13,31 @@
 #include <functional>
 #include "PerlinNoise.hpp"
 
+#include "Materials/ClassicMaterial.hpp"
+
 std::vector<int> samples;
 std::vector<int> grsamples;
+
+glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth) const
+{
+    glm::vec3 color = hit.GetClassicMaterial().Ambient() * scene.AmbientLight();
+    
+    for (auto& light : scene.Lights()){
+        auto direction = light->Direction(hit.Position());
+        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * glm::normalize(direction)),
+                      glm::normalize(direction));
+        
+        boost::optional<float> sh;
+        if ((sh = scene.ShadowHit(shadowRay))){
+            if (*sh < glm::length(direction))
+                continue;
+        }
+        
+        color += hit.GetClassicMaterial().ComputeReflectance(hit, *light);
+    }
+    
+    return color;
+}
 
 glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
 {
@@ -146,7 +169,12 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
 
         if (hit)
         {
-            pixelColor += CalculateReflectance(*hit, 0);
+//            auto refl = CalculateReflectance(*hit, 0);
+            auto matrefl = CalculateMaterialReflectances(*hit, 0);
+            
+//            std::cerr << refl.x << ", " << refl.y << ", " << refl.z << " - " << matrefl.x << ", " << matrefl.y << ", " << matrefl.z << '\n';
+            
+            pixelColor += matrefl;
         }
         else
         {
@@ -180,6 +208,12 @@ Image Camera::Render() const
         rowPixLocation = rowBeginning;
         for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
             rowPixLocation += oneRight;
+            
+            if (i == 127 && j == 378)
+            {
+                int x = 0;
+            }
+            
             image.at(i, j) = RenderPixel(rowPixLocation);
         }
 

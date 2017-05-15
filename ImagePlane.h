@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "Image.h"
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "tinyxml/tinyxml2.h"
 
 // ImagePlane does not contain any information about the values of pixels.
@@ -29,7 +29,7 @@ class ImagePlane
 public:
     ImagePlane() {}
     ImagePlane(float dist, float l, float r, float b, float t, unsigned int nx, unsigned int ny) : distance_to_camera(dist),
-                                                                                                   left(l), right(r),
+                                                                                                   right(r), left(l), 
                                                                                                    top(t), bottom(b),
                                                                                                    n_x(nx), n_y(ny)
     {

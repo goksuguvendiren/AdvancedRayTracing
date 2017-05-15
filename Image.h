@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "Color.h"
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 
 class Image
 {

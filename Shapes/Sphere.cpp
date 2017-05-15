@@ -5,14 +5,18 @@
 #include <cmath>
 #include <sstream>
 #include <iostream>
-#include "../glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "Sphere.h"
 #include "../Ray.h"
 #include "../HitInfo.h"
 #include "../Scene.h"
+#include "../Materials/ClassicMaterial.hpp"
 
 Sphere::Sphere(int sid, float rd, Vertex c, int mid, int tid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
 {
+    // TODO: Clean up this code !!!
+    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
+                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
     minval = center.Data()-rd;
     maxval = center.Data()+rd;
 
@@ -89,7 +93,7 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
         surfaceNormal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, surfaceNormal, uv));
     }
 
-    return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, uv, param);
+    return HitInfo(surfaceNormal, this, material, classic_material, texture, worldPoint, ray, uv, param);
 }
 
 std::pair<glm::vec3, glm::vec3> Sphere::GradientVectors(const glm::vec2& uv, const glm::vec3& localCoord) const

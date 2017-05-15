@@ -5,7 +5,7 @@
 #pragma once
 
 #include <map>
-#include "glm/detail/type_mat.hpp"
+#include <glm/detail/type_mat.hpp>
 #include "tinyxml/tinyxml2.h"
 
 enum class Transformations

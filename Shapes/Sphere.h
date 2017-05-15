@@ -5,8 +5,9 @@
 #pragma once
 
 #include <vector>
-#include "../glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "../Material.h"
+//#include "../Materials/ClassicMaterial.hpp"
 #include "Shape.h"
 #include "../Vertex.h"
 #include "../Texture.hpp"
@@ -14,6 +15,7 @@
 class Ray;
 class HitInfo;
 class Vertex;
+class ClassicMaterial;
 
 class Sphere : public Shape
 {
@@ -21,6 +23,7 @@ class Sphere : public Shape
     float radius;
     Vertex center;
     const Material* material;
+    const ClassicMaterial* classic_material;
     const Texture* texture;
 
     glm::vec3 maxval;

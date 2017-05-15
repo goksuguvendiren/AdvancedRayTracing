@@ -23,6 +23,9 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
     for (auto child = elem->FirstChildElement("Material"); child != NULL; child = child->NextSiblingElement()){
         int id;
         child->QueryIntAttribute("id", &id);
+        
+        int brdf_id = -1;
+        if (child->QueryIntAttribute("BRDF", &brdf_id));
 
         auto  ambient  = GetElem(child->FirstChildElement("AmbientReflectance"));
         auto  diffuse  = GetElem(child->FirstChildElement("DiffuseReflectance"));
@@ -59,7 +62,7 @@ std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem)
             refIndex = tmp->FloatText(1);
 
         mats.push_back(Material(id, ambient, diffuse, specular, mirror, transparency,
-                                refIndex, phongEx, roughness, ismirror, istransparent));
+                                refIndex, phongEx, roughness, ismirror, istransparent, brdf_id));
     }
 
     return mats;

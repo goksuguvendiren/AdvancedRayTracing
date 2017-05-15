@@ -6,7 +6,7 @@
 #include "BoundingVolume.h"
 #include "Shapes/Shape.h"
 #include "Box.h"
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "Shapes/Triangle.h"
 
 BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
@@ -14,8 +14,6 @@ BoundingVolume::BoundingVolume(const std::vector<Shape*>& shapes, Axis axis)
     left  = nullptr;
     right = nullptr;
     shape = nullptr;
-
-    assert(shapes.size() > 0);
 
     if (shapes.size() == 1){
         shape = shapes[0];

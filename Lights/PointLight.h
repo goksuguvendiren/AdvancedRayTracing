@@ -6,17 +6,17 @@
 
 #include <vector>
 #include <cmath>
-#include "../glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "../tinyxml/tinyxml2.h"
 #include "Light.h"
 
 // Point light source
 class PointLight : public Light
 {
+    int id;
     glm::vec3 position;
     glm::vec3 intensity;
 
-    int id;
 
 public:
     PointLight(int lid = 1,

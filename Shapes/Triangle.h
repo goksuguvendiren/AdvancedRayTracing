@@ -4,11 +4,12 @@
 
 #pragma once
 
-#include "../glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "../Ray.h"
 #include "../HitInfo.h"
 #include "../tinyxml/tinyxml2.h"
 #include "../Scene.h"
+#include "../Materials/ClassicMaterial.hpp"
 
 class Material;
 class Vertex;
@@ -22,6 +23,7 @@ class Triangle : public Shape
 
     glm::vec3 surfNormal;
     const Material* material;
+    const ClassicMaterial* classic_material;
     const Texture* texture;
 
     int id;

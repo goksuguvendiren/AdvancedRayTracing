@@ -12,7 +12,11 @@ set(SOURCE_FILES main.cpp Camera.cpp Camera.h ImagePlane.cpp ImagePlane.h Color.
         Material.h tinyxml/tinyxml2.cpp tinyxml/tinyxml2.h Vertex.cpp Vertex.h Shapes/Mesh.cpp Shapes/Mesh.h
         Lights/PointLight.h Shapes/Shape.h Transformation.cpp Transformation.h Box.cpp Box.h BoundingVolume.cpp
         BoundingVolume.h Lights/Light.h Lights/Light.cpp Lights/SpotLight.h Lights/AreaLight.cpp Lights/AreaLight.h
-        Texture.cpp Texture.hpp PerlinNoise.cpp PerlinNoise.hpp Lights/DirectionalLight.cpp Lights/DirectionalLight.hpp)
+        Texture.cpp Texture.hpp PerlinNoise.cpp PerlinNoise.hpp Lights/DirectionalLight.cpp Lights/DirectionalLight.hpp
+        Materials/BlinnPhongBRDF.cpp Materials/BlinnPhongBRDF.hpp Materials/PhongBRDF.cpp Materials/PhongBRDF.hpp 
+		Materials/Materialx.cpp Materials/Materialx.hpp Materials/ClassicMaterial.cpp Materials/ClassicMaterial.hpp
+		Materials/BRDF.hpp Materials/BRDF.cpp Materials/BlinnPhongBRDF_Mdf.cpp Materials/BlinnPhongBRDF_Mdf.hpp
+		Materials/PhongBRDF_Mdf.cpp Materials/PhongBRDF_Mdf.hpp)
 
 add_executable(RayTracer ${SOURCE_FILES})
 

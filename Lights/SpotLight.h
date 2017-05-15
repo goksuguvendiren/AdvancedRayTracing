@@ -8,13 +8,14 @@
 #include <iostream>
 #include <algorithm>
 
-#include "../glm/geometric.hpp"
-#include "../glm/vec3.hpp"
-#include "../glm/glm.hpp"
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 #include "Light.h"
 
 class SpotLight : public Light
 {
+    int id;
     glm::vec3 position;
     glm::vec3 direction;
     glm::vec3 intensity;
@@ -22,12 +23,11 @@ class SpotLight : public Light
     float coverageAngle;
     float fallOffAngle;
 
-    int id;
 
 public:
     SpotLight(int lid, glm::vec3 pos, glm::vec3 intens,
               glm::vec3 dir, float ca, float foa) : id(lid), position(pos),
-                                                    intensity(intens), direction(dir),
+                                                    direction(dir), intensity(intens),
                                                     coverageAngle(ca), fallOffAngle(foa){}
 
     glm::vec3 Position() const { return position; }

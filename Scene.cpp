@@ -8,6 +8,7 @@
 #include "Transformation.h"
 #include "Shapes/Mesh.h"
 #include "BoundingVolume.h"
+#include "Materials/BRDF.hpp"
 #include "tinyxml/tinyxml2.h"
 #include <sstream>
 #include <map>
@@ -81,11 +82,16 @@ void Scene::CreateScene(std::string filename)
         }
         lights = LoadLights(elem);
     }
+    
+    if (auto elem = docscene->FirstChildElement("BRDFs"))
+    {
+        brdfs = LoadBRDFs(elem);
+    }
 
     if (auto elem = docscene->FirstChildElement("Materials")){
         materials = LoadMaterials(elem);
     }
-
+    
     if (auto elem = docscene->FirstChildElement("TexCoordData")){
         texCoords = LoadTexCoordData(elem);
     }
@@ -134,7 +140,9 @@ void Scene::CreateScene(std::string filename)
         shapes.push_back(&msh);
     });
     
-    boundingBox = BoundingVolume(shapes, Axis::X);
+    if (shapes.size() > 0)
+        boundingBox = BoundingVolume(shapes, Axis::X);
+    else boundingBox = BoundingVolume();
 }
 
 glm::mat4 Scene::GetTransformation(std::string str) const
@@ -205,6 +213,8 @@ void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
 void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
 const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
+const BRDF* Scene::GetBRDF(int id) { return brdfs[id - 1].get(); }
+
 const Texture&  Scene::GetTexture(int id)  { return textures[id - 1]; }
 const Triangle& Scene::GetTriangle(int id) { return triangles[id - 1]; }
 

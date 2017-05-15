@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "../tinyxml/tinyxml2.h"
 #include <vector>
 #include <memory>

@@ -5,11 +5,13 @@
 #pragma once
 
 #include <cassert>
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "Ray.h"
 #include "Material.h"
 #include "Shapes/Shape.h"
 #include "Texture.hpp"
+
+class ClassicMaterial;
 
 class HitInfo
 {
@@ -19,6 +21,7 @@ class HitInfo
     Ray ray;
 
     const Material* mat;
+    const ClassicMaterial* classic_material;
     const Texture*  tex;
 
     glm::vec2 uv;
@@ -28,20 +31,21 @@ public:
     HitInfo(glm::vec3 n,
             const Shape* sh,
             const Material* m,
+            const ClassicMaterial* cm,
             const Texture* textr,
             glm::vec3 point,
             Ray r,
             glm::vec2 _uv = {0, 0},
-            float t = std::numeric_limits<float>::infinity()) : normal(n), mat(m),
-                                                                position(point), uv(_uv),
-                                                                ray(r), param(t),
-                                                                shape(sh), tex(textr)
+            float t = std::numeric_limits<float>::infinity()) : param(t), normal(n), position(point), ray(r),
+                                                                mat(m), classic_material(cm), tex(textr),
+                                                                uv(_uv), shape(sh)
     {}
 
 
     HitInfo() : param(std::numeric_limits<float>::infinity()) {}
 
     const Material& GetMaterial() const { return *mat; }
+    const ClassicMaterial& GetClassicMaterial() const { return *classic_material; }
     const Texture* GetTexture() const { return tex; }
     const Shape* GetShape() const { return shape; }
     void SetShape(const Shape* sh) { shape = sh; }

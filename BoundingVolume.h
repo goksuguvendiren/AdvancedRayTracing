@@ -4,7 +4,7 @@
 
 #pragma once
 #include <vector>
-#include "glm/vec3.hpp"
+#include <glm/vec3.hpp>
 #include "boost/optional.hpp"
 #include "Box.h"
 

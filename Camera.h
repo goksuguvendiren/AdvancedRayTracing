@@ -4,8 +4,8 @@
 #pragma once
 
 #include <iostream>
-#include "glm/vec3.hpp"
-#include "glm/glm.hpp"
+#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 #include "ImagePlane.h"
 #include "tinyxml/tinyxml2.h"
 
@@ -16,23 +16,23 @@ extern std::vector<int> samples;
 
 class Camera
 {
+    ImagePlane imagePlane;
+ 
     int id;
     std::string imageName;
 
     glm::vec3 position;
-    glm::vec3 up;
-    glm::vec3 gaze;
-    glm::vec3 right;
-
-    ImagePlane imagePlane;
-
     glm::vec3 planePosition;
     int sampleCount;
     int divCount;
 
     int focalDistance;
     float apertureSize;
-
+    
+    glm::vec3 up;
+    glm::vec3 gaze;
+    glm::vec3 right;
+    
     glm::vec3 GetCameraPosition() const;
 
 public:
@@ -42,9 +42,8 @@ public:
            std::string name = "",
            int numSamp = 1,
            int fd = 1, float as = 0) : imagePlane(plane),
-                                       position(p), id(i),
-                                       imageName(name),
-                                       sampleCount(numSamp),
+                                       id(i), imageName(name),
+                                       position(p), sampleCount(numSamp),
                                        divCount(std::floor(std::sqrt(numSamp))),
                                        focalDistance(fd), apertureSize(as)
     {
@@ -71,7 +70,7 @@ public:
 
     glm::vec3 PlanePosition() const { return planePosition; }
     glm::vec3 GetPixelLocation(int i, int j) const;
-
+    glm::vec3 CalculateMaterialReflectances(const HitInfo& hit, int recDepth) const;
 
     glm::vec3 CalculateReflectance(const HitInfo& hit, int recDepth) const;
     glm::vec3 CalculateMirror(const HitInfo& hit, int recDepth) const;

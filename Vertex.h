@@ -4,9 +4,9 @@
 
 #pragma once
 #include <vector>
-#include "glm/vec3.hpp"
 #include "tinyxml/tinyxml2.h"
-#include "glm/vec2.hpp"
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 class Vertex
 {
@@ -17,8 +17,7 @@ class Vertex
     int id;
 
 public:
-    Vertex(int i = 0, glm::vec3 d = {0, 0, 0}, glm::vec3 n = {1, 0, 0}, glm::vec2 _uv = {0, 0}) : id(i), data(d),
-                                                                                                  normal(n), uv(_uv)
+    Vertex(int i = 0, glm::vec3 d = {0, 0, 0}, glm::vec3 n = {1, 0, 0}, glm::vec2 _uv = {0, 0}) : data(d), normal(n), uv(_uv), id(i)
     {}
 
     auto Data() const { return data; }

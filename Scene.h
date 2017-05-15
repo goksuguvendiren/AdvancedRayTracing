@@ -18,6 +18,8 @@ class Mesh;
 class Light;
 class Shape;
 class Texture;
+class Materialx;
+class BRDF;
 
 class Scene
 {
@@ -43,6 +45,7 @@ class Scene
 
     std::map<std::string, glm::mat4> transformations;
     std::vector<std::unique_ptr<Light>> lights;
+    std::vector<std::unique_ptr<BRDF>> brdfs;
     std::vector<Camera> cameras;
     std::vector<Texture> textures;
 
@@ -99,6 +102,7 @@ public:
     void AddVertex(const Vertex& vert);
 
     const Material& GetMaterial(int id);
+    const BRDF* GetBRDF(int id);
     const Texture&  GetTexture(int id);
     const Triangle& GetTriangle(int id);
     Vertex& GetVertex(int id);

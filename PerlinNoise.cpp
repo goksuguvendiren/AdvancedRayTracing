@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <iostream>
 #include "PerlinNoise.hpp"
-#include "glm/common.hpp"
-#include "glm/geometric.hpp"
+#include <glm/common.hpp>
+#include <glm/geometric.hpp>
 
 float PerlinNoise::weight(float t) const
 {

@@ -5,7 +5,7 @@
 #include <vector>
 #include <sstream>
 #include "Vertex.h"
-#include "glm/vec2.hpp"
+#include <glm/vec2.hpp>
 
 Vertex GetVertex(std::istringstream& stream, int id)
 {

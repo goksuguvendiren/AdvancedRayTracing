@@ -9,8 +9,8 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv/cv.hpp>
-#include "glm/vec3.hpp"
-#include "glm/vec2.hpp"
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 #include "tinyxml/tinyxml2.h"
 #include "PerlinNoise.hpp"
 

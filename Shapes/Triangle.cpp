@@ -49,7 +49,7 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
         normal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, normal, uv));
     }
 
-    return HitInfo(normal, this, material, texture, point, ray, uv, param);
+    return HitInfo(normal, this, material, classic_material, texture, point, ray, uv, param);
 }
 
 std::pair<glm::vec3, glm::vec3> Triangle::GradientVectors(glm::vec3 normal) const
@@ -121,6 +121,9 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c,
         texture = &scene.GetTexture(tid);
         assert(texture->ID()==tid);
     }
+    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
+                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
+
 }
 
 int Triangle::ID() const

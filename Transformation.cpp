@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Transformation.h"
 #include "Material.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 static glm::vec3 GetElem(std::istringstream& ss)
 {
@@ -35,12 +35,12 @@ std::map<std::string, glm::mat4> LoadTransformations(tinyxml2::XMLElement *elem)
         trs.insert(translation);
     }
 
-    auto rotations = std::move(LoadRotations(elem));
+    auto rotations = LoadRotations(elem);
     for (auto rotation : rotations){
         trs.insert(rotation);
     }
 
-    auto scalings = std::move(LoadScalings(elem));
+    auto scalings = LoadScalings(elem);
     for (auto scaling : scalings){
         trs.insert(scaling);
     }
