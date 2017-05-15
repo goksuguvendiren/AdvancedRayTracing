@@ -26,7 +26,7 @@ glm::vec3 ClassicMaterial::ComputeReflectance(const HitInfo& hit, const Light& l
     
         // Diffuse shading :
         auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), glm::normalize(direction)));
-        color += theta * diffuse * intensity;
+        color += theta * color * intensity;
     
         // Specular shading :
         auto half = glm::normalize(glm::normalize(direction) + glm::normalize(hit.HitRay().Origin() - hit.Position()));
