@@ -22,8 +22,8 @@ float G(const glm::vec3& w_i, const glm::vec3& w_o, const glm::vec3& normal, flo
 {
     float cos_theta_o = glm::dot(w_o, normal);
     
-    auto local_min = std::min(1.f, (2 * cos_theta_h * cos_theta_o) / (cos_alpha_h));
-    return std::min(local_min, (2 * cos_theta_h * cos_theta_i) / (cos_alpha_h));
+    auto local_min = std::min(1.f, (2.f * cos_theta_h * cos_theta_o) / (cos_alpha_h));
+    return std::min(local_min, (2.f * cos_theta_h * cos_theta_i) / (cos_alpha_h));
 }
 
 glm::vec3 F(float cos_alpha_h, const glm::vec3& specular)
