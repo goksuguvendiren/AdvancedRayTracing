@@ -15,8 +15,8 @@ std::string GetFileName(int set, int index);
 
 int main(int argc, char** argv)
 {
-    int inputset = 8;
-    int index = 2;
+    int inputset = 9;
+    int index = 0;
 
     if (argc == 3){
         inputset = std::stoi(argv[1]);

@@ -12,11 +12,31 @@
 #include <random>
 #include <functional>
 #include "PerlinNoise.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
+
+#include "Lights/DirectionalLight.hpp"
 
 #include "Materials/ClassicMaterial.hpp"
 
 std::vector<int> samples;
 std::vector<int> grsamples;
+
+std::mt19937 hemisphere_seed;
+
+glm::vec3 sample_hemisphere()
+{
+    std::uniform_real_distribution<float> asd(0, 1);
+    std::uniform_real_distribution<float> asd1(0, 1);
+    float sample1 = asd(hemisphere_seed);
+    float sample2 = asd1(hemisphere_seed);
+    
+    auto dir = glm::vec3{cos(2 * glm::pi<float>() * sample2) * glm::sqrt(1 - glm::pow(sample1, 2.f)),
+        sample1,
+        sin(2 * glm::pi<float>() * sample2) * glm::sqrt(1 - glm::pow(sample2, 2.f))};
+    
+    return glm::normalize(dir);
+}
 
 glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth) const
 {
@@ -35,6 +55,32 @@ glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth
         
         color += hit.GetClassicMaterial().ComputeReflectance(hit, *light);
     }
+    
+    // Monte Carlo Integration
+    if (recDepth < scene.MaxRecursionDepth())
+    {
+        auto direction = sample_hemisphere();
+        Ray monte_carlo_ray (hit.Position() + (scene.ShadowRayEpsilon() * direction), direction);
+        
+        boost::optional<HitInfo> mc_hit = scene.Hit(monte_carlo_ray);
+        
+        if (mc_hit)// && !std::isinf(mc_hit->Parameter()))
+        {
+            assert(!std::isinf(mc_hit->Parameter()));
+            assert(!std::isnan(mc_hit->Parameter()));
+            
+            auto& sth = *mc_hit;
+            auto mc_color = CalculateMaterialReflectances(*mc_hit, recDepth + 1);
+            
+            //            std::cerr << mc_color.r << " - " << mc_color.g << " - " << mc_color.b << '\n';
+            
+            DirectionalLight dl(direction, mc_color, 0);
+            auto some_color = hit.GetClassicMaterial().ComputeReflectance(hit, dl);
+            assert(some_color.r >= 0 && some_color.g >= 0 && some_color.b >= 0);
+            color += some_color;
+        }
+    }
+
     
     return color;
 }

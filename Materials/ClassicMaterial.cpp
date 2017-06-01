@@ -35,5 +35,7 @@ glm::vec3 ClassicMaterial::ComputeReflectance(const HitInfo& hit, const Light& l
         return color;
     }
     
-    return brdf_material->ComputeReflectance(hit, light, *this) * light.Intensity(direction);
+    auto refl = brdf_material->ComputeReflectance(hit, light, *this);
+    auto intens = light.Intensity(direction);
+    return refl * intens;
 }
