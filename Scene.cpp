@@ -80,6 +80,10 @@ void Scene::CreateScene(std::string filename)
             auto ambient = GetElem(al);
             AmbientLight(ambient);
         }
+        else
+        {
+            AmbientLight({0, 0, 0});
+        }
         lights = LoadLights(elem);
     }
     

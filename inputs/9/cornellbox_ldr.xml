@@ -14,13 +14,21 @@
         <NearPlane>-10 10 -10 6</NearPlane>
         <NearDistance>10</NearDistance>
         <ImageResolution>750 600</ImageResolution>
-        <NumSamples>64</NumSamples>
+        <NumSamples>16</NumSamples>
         <!-- Sample values larger than ClampSamples will
              be clamped to that value. Trades-off lighting
              accuracy with noise -->
         <ClampSamples>1000</ClampSamples>
 		<ImageName>cornellbox_ldr.png</ImageName>
 	</Camera>
+
+	<Lights>
+        <AmbientLight>20 20 20</AmbientLight>
+        <PointLight id="1">
+            <Position>0 4 2</Position>
+            <Intensity>62800 62800 62800</Intensity>
+        </PointLight>
+    </Lights>
 
     <BRDFs>
         <ModifiedBlinnPhong id="1">
@@ -128,13 +136,13 @@
                 2 7 6
             </Faces>
         </Mesh>
-        <Mesh id="6">
+        <!--<Mesh id="6">
             <Material>1</Material>
             <Faces>
                 1 3 2
                 3 1 4
             </Faces>
-        </Mesh>
+        </Mesh> -->
         <Sphere id="1">
             <Material>6</Material>
             <Center>9</Center>
