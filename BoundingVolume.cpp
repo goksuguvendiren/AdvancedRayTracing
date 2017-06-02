@@ -99,8 +99,8 @@ boost::optional<HitInfo> BoundingVolume::Hit(const Ray &ray) const
     if (!box.Hit(ray)) return boost::none;
     if (!left && !right) return shape->Hit(ray);
 
-    boost::optional<HitInfo> leftHitInfo  = left->Hit(ray);
-    boost::optional<HitInfo> rightHitInfo = right->Hit(ray);
+    boost::optional<HitInfo> leftHitInfo  = left ? left->Hit(ray) : boost::none;
+    boost::optional<HitInfo> rightHitInfo = right ? right->Hit(ray) : boost::none;
 
     if (!leftHitInfo && !rightHitInfo) return boost::none;
 

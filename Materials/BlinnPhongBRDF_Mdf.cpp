@@ -12,7 +12,8 @@
 
 glm::vec3 BlinnPhongModified::ComputeReflectance(const HitInfo& hit, const Light& light, const ClassicMaterial& material) const
 {
-    auto direction = light.Direction(hit.Position());
+    auto direction = light.Direction(hit.Position()); //point to light direction
+    
     glm::vec3 w_i  = glm::normalize(direction);
     glm::vec3 w_o  = glm::normalize(-hit.HitRay().Direction());
     glm::vec3 half = glm::normalize(w_i + w_o);

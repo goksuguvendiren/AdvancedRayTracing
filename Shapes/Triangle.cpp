@@ -36,7 +36,7 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
     auto param = determinant(col1, col2, col4) / detA;
     auto alpha = 1 - beta - gamma;
 
-    if (alpha < -0.00001 || gamma < -0.00001 || beta < -0.00001 || param < 0) return boost::none;
+    if (alpha < -0.0001 || gamma < -0.0001 || beta < -0.0001 || param < -0.0001) return boost::none;
 
     auto point = ray.Origin() + param * ray.Direction();
 

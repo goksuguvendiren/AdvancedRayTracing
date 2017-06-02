@@ -14,6 +14,7 @@
 #include "PerlinNoise.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Lights/DirectionalLight.hpp"
 
@@ -24,10 +25,10 @@ std::vector<int> grsamples;
 
 std::mt19937 hemisphere_seed;
 
-glm::vec3 sample_hemisphere()
+glm::vec3 sample_hemisphere(const glm::vec3& normal)
 {
-    std::uniform_real_distribution<float> asd(0, 1);
-    std::uniform_real_distribution<float> asd1(0, 1);
+    static std::uniform_real_distribution<float> asd(0, 1);
+    static std::uniform_real_distribution<float> asd1(0, 1);
     float sample1 = asd(hemisphere_seed);
     float sample2 = asd1(hemisphere_seed);
     
@@ -35,7 +36,10 @@ glm::vec3 sample_hemisphere()
         sample1,
         sin(2 * glm::pi<float>() * sample2) * glm::sqrt(1 - glm::pow(sample2, 2.f))};
     
-    return glm::normalize(dir);
+    auto c = glm::cross(glm::vec3{0.f, 1.f, 0.f}, normal);
+    auto angle = glm::acos(glm::dot(glm::vec3{0, 1, 0}, normal));
+    
+    return glm::angleAxis(angle, c) * glm::normalize(dir);
 }
 
 glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth) const
@@ -59,13 +63,19 @@ glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth
     // Monte Carlo Integration
     if (recDepth < scene.MaxRecursionDepth())
     {
-        auto direction = sample_hemisphere();
+        auto direction = sample_hemisphere(hit.Normal());
         Ray monte_carlo_ray (hit.Position() + (scene.ShadowRayEpsilon() * direction), direction);
         
         boost::optional<HitInfo> mc_hit = scene.Hit(monte_carlo_ray);
         
-        if (mc_hit)// && !std::isinf(mc_hit->Parameter()))
+        if (mc_hit)
         {
+//            if (mc_hit->GetShape()->ID() == hit.GetShape()->ID())
+//            {
+//                std::cerr << mc_hit->GetShape()->ID() << '\n';
+//            }
+            
+//            std::cerr << glm::dot(hit.Normal(), direction) << '\n';
             assert(!std::isinf(mc_hit->Parameter()));
             assert(!std::isnan(mc_hit->Parameter()));
             
