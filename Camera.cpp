@@ -72,11 +72,13 @@ glm::vec3 Camera::CalculateMaterialReflectances(const HitInfo& hit, int recDepth
             auto& sth = *mc_hit;
             auto mc_color = CalculateMaterialReflectances(*mc_hit, recDepth + 1);
             
-            //            std::cerr << mc_color.r << " - " << mc_color.g << " - " << mc_color.b << '\n';
+                        //std::cerr << mc_color.r << " - " << mc_color.g << " - " << mc_color.b << '\n';
             
-            DirectionalLight dl(direction, mc_color, 0);
+            DirectionalLight dl(-direction, mc_color, 0);
             auto some_color = hit.GetClassicMaterial().ComputeReflectance(hit, dl);
             assert(some_color.r >= 0 && some_color.g >= 0 && some_color.b >= 0);
+            //std::cerr << some_color.r << " - " << some_color.g << " - " << some_color.b << '\n';
+
             color += some_color;
         }
     }
