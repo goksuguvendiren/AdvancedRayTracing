@@ -16,7 +16,8 @@ set(SOURCE_FILES main.cpp Camera.cpp Camera.h ImagePlane.cpp ImagePlane.h Color.
         Materials/BlinnPhongBRDF.cpp Materials/BlinnPhongBRDF.hpp Materials/PhongBRDF.cpp Materials/PhongBRDF.hpp 
 		Materials/Materialx.cpp Materials/Materialx.hpp Materials/ClassicMaterial.cpp Materials/ClassicMaterial.hpp
 		Materials/BRDF.hpp Materials/BRDF.cpp Materials/BlinnPhongBRDF_Mdf.cpp Materials/BlinnPhongBRDF_Mdf.hpp
-		Materials/PhongBRDF_Mdf.cpp Materials/PhongBRDF_Mdf.hpp Materials/TorranceSparrow.cpp Materials/TorranceSparrow.hpp)
+		Materials/PhongBRDF_Mdf.cpp Materials/PhongBRDF_Mdf.hpp Materials/TorranceSparrow.cpp Materials/TorranceSparrow.hpp
+Materials/LightMaterial.hpp)
 
 add_executable(RayTracer ${SOURCE_FILES})
 

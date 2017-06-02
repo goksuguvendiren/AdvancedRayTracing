@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "Mesh.h"
+#include "../Materials/LightMaterial.hpp"
 
 inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexOffset, int texCoordsOffset,
                                          const glm::mat4& matrix, int matID, int index, bool smooth, int texID)
@@ -119,6 +120,73 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         msh.SetShadingMode(mode);
 
+        msh.BoundingBox();
+        meshes.push_back(std::move(msh));
+    }
+    
+    for (auto child = elem->FirstChildElement("LightMesh"); child != nullptr; child = child->NextSiblingElement("LightMesh"))
+    {
+        static int new_mat_id = 10000;
+        int id;
+        child->QueryIntAttribute("id", &id);
+        int matID = ++new_mat_id;
+
+        std::vector<std::string> transformations;
+        if(auto trns = child->FirstChildElement("Transformations")){
+            std::istringstream ss {trns->GetText()};
+            transformations = GetTransformations(ss);
+        }
+        
+        glm::mat4 matrix;
+        for (auto& tr : transformations){
+            auto m = scene.GetTransformation(tr);
+            matrix = m * matrix;
+        }
+        
+        glm::vec3 rad = {0, 0, 0};
+        if(auto radiance = child->FirstChildElement("Radiance"))
+        {
+            std::istringstream stream { radiance->GetText() };
+            
+            float datax;
+            float datay;
+            float dataz;
+            
+            stream >> datax;
+            stream >> datay;
+            stream >> dataz;
+            
+            rad = glm::vec3{datax, datay, dataz};
+        }
+        
+        scene.AddMaterial(Material::MakeLightMat(matID, rad));
+        Mesh msh {id, &scene.GetMaterial(matID)};
+        auto FaceData = child->FirstChildElement("Faces");
+        std::istringstream stream { FaceData->GetText() };
+        int vertexOffset = 0;
+        int texCoordOffset = 0;
+        
+        if (FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
+        if (FaceData->QueryIntAttribute("textureOffset", &texCoordOffset));
+        
+        boost::optional<Triangle> tr;
+        int index = 1;
+
+        ShadingMode mode = ShadingMode::Flat;
+        const char* asd = child->Attribute("shadingMode");
+        if (asd != nullptr){
+            std::string sm = std::string(asd);
+            if (sm == "smooth") {
+                mode = ShadingMode::Smooth;
+            }
+        }
+        
+        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++, (mode == ShadingMode::Smooth), -1))){
+            auto tri = *tr;
+            msh.AddFace(std::move(*tr));
+        }
+        
+        msh.SetShadingMode(mode);
         msh.BoundingBox();
         meshes.push_back(std::move(msh));
     }

@@ -48,7 +48,7 @@ public:
         
     int ID() const { return id; }
     glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light) const;
-    
+    bool is_BRDF() const { return brdf_material != nullptr; }
 };
 
 //std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);

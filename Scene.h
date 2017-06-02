@@ -39,7 +39,7 @@ class Scene
     std::vector<Mesh> meshes;
     std::vector<Mesh> meshInstances;
 
-    std::vector<Material> materials;
+    std::map<int, Material> materials;
     std::vector<Vertex> vertices;
     std::vector<glm::vec2> texCoords;
 

@@ -14,7 +14,7 @@
         <NearPlane>-10 10 -10 6</NearPlane>
         <NearDistance>10</NearDistance>
         <ImageResolution>750 600</ImageResolution>
-        <NumSamples>16</NumSamples>
+        <NumSamples>512</NumSamples>
         <!-- Sample values larger than ClampSamples will
              be clamped to that value. Trades-off lighting
              accuracy with noise -->
@@ -24,10 +24,10 @@
 
 	<Lights>
         <!-- <AmbientLight>20 20 20</AmbientLight> -->
-        <PointLight id="1">
-            <Position>0 4 2</Position>
-            <Intensity>62800 62800 62800</Intensity>
-        </PointLight>
+        <!-- <PointLight id="1">
+            <Position>0 4.5 0</Position>
+            <Intensity>15000 15000 25000</Intensity>
+        </PointLight> -->
     </Lights>
 
     <BRDFs>
@@ -57,16 +57,16 @@
             <DiffuseReflectance>1 1 1</DiffuseReflectance>
             <SpecularReflectance>0 0 0</SpecularReflectance>
         </Material>
-        <Material id="5" BRDF="1">
+        <Material id="5">
             <AmbientReflectance>1 1 1</AmbientReflectance>
             <DiffuseReflectance>0 0 0</DiffuseReflectance>
             <SpecularReflectance>0 0 0</SpecularReflectance>
             <MirrorReflectance>0.9 0.9 0.9</MirrorReflectance>
         </Material>
-        <Material id="6" BRDF="1">
+        <Material id="6">
             <AmbientReflectance>0 0 0</AmbientReflectance>
             <DiffuseReflectance>0 0 0</DiffuseReflectance>
-            <SpecularReflectance>0.3 0.3 0.3</SpecularReflectance>
+            <SpecularReflectance>0 0 0</SpecularReflectance>
             <Transparency>0.99 0.99 0.99</Transparency>
             <RefractionIndex>2.0</RefractionIndex>
         </Material>

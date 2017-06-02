@@ -93,7 +93,10 @@ void Scene::CreateScene(std::string filename)
     }
 
     if (auto elem = docscene->FirstChildElement("Materials")){
-        materials = LoadMaterials(elem);
+        for (auto mat : LoadMaterials(elem))
+        {
+            AddMaterial(mat);
+        }
     }
     
     if (auto elem = docscene->FirstChildElement("TexCoordData")){
@@ -210,13 +213,13 @@ void Scene::AddSphere(const Sphere& sph) { spheres.push_back(sph); }
 void Scene::AddTriangle(Triangle&& tri) { triangles.push_back(std::move(tri)); }
 void Scene::AddTriangle(const Triangle& tri) { triangles.push_back(tri); }
 
-void Scene::AddMaterial(Material&& mat) { materials.push_back(std::move(mat)); }
-void Scene::AddMaterial(const Material& mat) { materials.push_back(mat); }
+void Scene::AddMaterial(Material&& mat) { materials.emplace(mat.ID(), std::move(mat)); }
+void Scene::AddMaterial(const Material& mat) { materials.emplace(mat.ID(), mat); }
 
 void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
 void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
-const Material& Scene::GetMaterial(int id) { return materials[id - 1]; }
+const Material& Scene::GetMaterial(int id) { return materials.find(id)->second; }
 const BRDF* Scene::GetBRDF(int id) { return brdfs[id - 1].get(); }
 
 const Texture&  Scene::GetTexture(int id)  { return textures[id - 1]; }
@@ -251,11 +254,6 @@ const std::vector<Mesh>& Scene::Meshes() const
 const std::vector<std::unique_ptr<Light>>& Scene::Lights() const
 {
     return lights;
-}
-
-const std::vector<Material>& Scene::Materials() const
-{
-    return materials;
 }
 
 boost::optional<float> Scene::ShadowHit(const Ray& ray)
