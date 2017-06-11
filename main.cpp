@@ -13,12 +13,14 @@
 
 Scene scene;
 
+//#define CREATE_MASK
+
 std::string GetFileName(int set, int index);
 
 int main(int argc, char** argv)
 {
-    int inputset = 9;
-    int index = 0;
+    int inputset = 10;
+    int index = 1;
 
     if (argc == 3){
         inputset = std::stoi(argv[1]);

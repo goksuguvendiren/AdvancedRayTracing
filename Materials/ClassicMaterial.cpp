@@ -3,6 +3,7 @@
 #include "ClassicMaterial.hpp"
 #include "../HitInfo.h"
 #include "../Lights/Light.h"
+#include "../Texture.hpp"
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/constants.hpp>
@@ -21,6 +22,10 @@ glm::vec3 ClassicMaterial::ComputeReflectance(const HitInfo& hit, const Light& l
         {
             glm::vec2 texCoords = hit.GetUV();
             glm::vec3 tex_color = hit.GetTexture()->GetColor(texCoords);
+            if (hit.GetTexture()->ReplaceAll())
+            {
+                return tex_color;
+            }
             color = hit.GetTexture()->BlendColor(color, tex_color);
         }
     

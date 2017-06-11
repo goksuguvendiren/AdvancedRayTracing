@@ -9,6 +9,8 @@
 #include "PhongBRDF.hpp"
 #include "PhongBRDF_Mdf.hpp"
 #include "Mirror.hpp"
+#include "Glass.hpp"
+#include "LightSource.h"
 #include <sstream>
 
 static glm::vec3 GetElem(tinyxml2::XMLElement* element)
@@ -30,6 +32,17 @@ std::vector<Materialx*> LoadMaterials(tinyxml2::XMLElement *elem)
         int id;
         child->QueryIntAttribute("id", &id);
 
+        tinyxml2::XMLElement* tmp;
+        if ((tmp = child->FirstChildElement("LightSource"))) // then the material should be a glass (transparent)
+        {
+            std::string name = "/Users/goksu/Documents/AdvancedRayTracer/";
+            name += tmp->GetText();
+            
+            auto material = new LightSource(id, name);
+            mats.push_back(material);
+            continue;
+        }
+        
         int brdf_id = -1;
         if (child->QueryIntAttribute("BRDF", &brdf_id));
 
@@ -37,14 +50,12 @@ std::vector<Materialx*> LoadMaterials(tinyxml2::XMLElement *elem)
         auto  diffuse  = GetElem(child->FirstChildElement("DiffuseReflectance"));
         auto  specular = GetElem(child->FirstChildElement("SpecularReflectance"));
 
-        tinyxml2::XMLElement* tmp;
-        glm::vec3  mirror = {0, 0, 0}, transparency = {0, 0, 0};
-        float refIndex = 1;
+        
+        glm::vec3  mirror = {0, 0, 0}, transparency = {0, 0, 0}, glass = {0, 0, 0};
         float phongEx = 0;
         
         if ((tmp = child->FirstChildElement("PhongExponent")))
             phongEx  = tmp->FloatText(1);
-        
         
         auto mtrl = new ClassicMaterial(id, ambient, diffuse, specular, phongEx, brdf_id);
         
@@ -65,17 +76,19 @@ std::vector<Materialx*> LoadMaterials(tinyxml2::XMLElement *elem)
             continue;
         }
         
-//        if ((tmp = child->FirstChildElement("Transparency"))) // then the material should be transparent
-//        {
-//            tinyxml2::XMLElement* tmp_tr;
-//            if ((tmp_tr = child->FirstChildElement("RefractionIndex")))
-//                refIndex = tmp_tr->FloatText(1);
-//
-//            transparency = GetElem(tmp);
-//            auto material = new Transparent(id, transparency, refIndex);
-//            mats.push_back(material);
-//            continue;
-//        }
+        if ((tmp = child->FirstChildElement("Transparency"))) // then the material should be a glass (transparent)
+        {
+            tinyxml2::XMLElement* tmp_m;
+            glass = GetElem(tmp);
+            float refraction_index = 1.f;
+            if ((tmp_m = child->FirstChildElement("RefractionIndex"))) {
+                refraction_index = tmp_m->FloatText(1.f);
+            }
+            
+            auto material = new Glass(id, refraction_index, glass);
+            mats.push_back(material);
+            continue;
+        }
 
         mats.push_back(mtrl);
     }

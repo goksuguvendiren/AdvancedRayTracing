@@ -11,6 +11,7 @@
 #include "../Scene.h"
 
 class Material;
+class Texture;
 class Vertex;
 class Box;
 

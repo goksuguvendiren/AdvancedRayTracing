@@ -6,6 +6,7 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
+#include "../Texture.hpp"
 #include "../Materials/Materialx.hpp"
 
 extern Scene scene;

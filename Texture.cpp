@@ -97,17 +97,27 @@ std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
     return texs;
 }
 
+//glm::vec3 Texture::GetHDRColor(glm::vec2 texCoords) const
+//{
+//    return {};
+//}
+
 glm::vec3 Texture::GetColor(glm::vec2 texCoords) const
 {
+//    if (is_hdr) return GetHDRColor(texCoords);
+    
+//    std::swap(texCoords.x, texCoords.y);
+    
     texCoords.x = texCoords.x - int(std::floor(texCoords.x));
     texCoords.y = texCoords.y - int(std::floor(texCoords.y));
 
     float i = texCoords.y * image.rows;
     float j = texCoords.x * image.cols;
-
+    
     cv::Vec3b final_color;
     float diff_a, diff_b;
     int a, b;
+    int a2, b2;
 
     switch (interpolation)
     {
@@ -117,20 +127,27 @@ glm::vec3 Texture::GetColor(glm::vec2 texCoords) const
 
         diff_a = i - a;
         diff_b = j - b;
+            
+        a2 = a != image.rows - 1 ? a + 1 : 0;
+        b2 = b != image.cols - 1 ? a + 1 : 0;
 
         final_color = (1 - diff_a) * (1 - diff_b) * image.at<cv::Vec3b>(a, b) +
-                      (1 - diff_a) * diff_b       * image.at<cv::Vec3b>(a, b + 1) +
-                      diff_a       * (1 - diff_b) * image.at<cv::Vec3b>(a + 1, b) +
-                      diff_a       * diff_b       * image.at<cv::Vec3b>(a + 1, b + 1);
+                      (1 - diff_a) * diff_b       * image.at<cv::Vec3b>(a, b2) +
+                      diff_a       * (1 - diff_b) * image.at<cv::Vec3b>(a2, b) +
+                      diff_a       * diff_b       * image.at<cv::Vec3b>(a2, b2);
 
         return {final_color[2] / 255.f,
                 final_color[1] / 255.f,
                 final_color[0] / 255.f};
 
     case Interpolation::Nearest:
+        i = std::floor(i);
+        j = std::floor(j);
+            
         return {image.at<cv::Vec3b>(i, j)[2] / 255.f,
                 image.at<cv::Vec3b>(i, j)[1] / 255.f,
                 image.at<cv::Vec3b>(i, j)[0] / 255.f};
+    
     case Interpolation::None:
             assert(false);
     }
@@ -156,9 +173,6 @@ glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
     default:
         return {0, 0, 0};
     }
-    
-    assert(false);
-    return {0, 0, 0};
 }
 
 glm::vec2 Texture::GetImageGradients(const glm::vec2& uv) const

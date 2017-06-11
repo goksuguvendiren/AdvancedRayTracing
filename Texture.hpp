@@ -5,9 +5,11 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 #include <string>
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv/cv.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
@@ -68,8 +70,12 @@ public:
                                                      type(typ), pn(nor, app == Appearance::Patch ? Noise_Appeareance::Patch : Noise_Appeareance::Vein),
                                                      scale(nor), id(i), is_bump(bump)
     {
-        if (type!=Type::Perlin) {
-            image = cv::imread(imageSource, CV_LOAD_IMAGE_COLOR);
+
+        if (type!=Type::Perlin)
+        {
+            image = cv::imread(source, CV_LOAD_IMAGE_COLOR);
+            //cv::normalize(image, image, 0, 255);
+            std::cerr << image.type() << '\n';
             assert(image.data);
             assert(image.rows!=0 && image.cols!=0);
         }
@@ -77,6 +83,9 @@ public:
 
     auto GetDecalMode() const { return mode; }
     bool IsPerlin() const { return type == Type::Perlin; }
+    
+    bool ReplaceAll() const { return mode == DecalMode::Replace_All; }
+    
     const PerlinNoise& Perlin() const { return pn; }
     float Scale() const { return scale; }
     int ID() const { return id; }

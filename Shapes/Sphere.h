@@ -6,16 +6,16 @@
 
 #include <vector>
 #include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
 #include "../Material.h"
-//#include "../Materials/ClassicMaterial.hpp"
 #include "Shape.h"
 #include "../Vertex.h"
-#include "../Texture.hpp"
 #include "../Materials/Materialx.hpp"
 
 class Ray;
 class HitInfo;
 class Vertex;
+class Texture;
 class ClassicMaterial;
 
 class Sphere : public Shape
@@ -23,9 +23,7 @@ class Sphere : public Shape
     int id;
     float radius;
     Vertex center;
-//    const Material* material;
     const Materialx* material;
-//    const ClassicMaterial* classic_material;
     const Texture* texture;
 
     glm::vec3 maxval;
@@ -47,6 +45,9 @@ public:
         inverseTrMatrix = glm::inverse(transformationMatrix);
         inverseTranspose = glm::transpose(inverseTrMatrix);
     }
+
+    glm::vec3 Center() const { return center.Data(); }
+    float Radius() const { return radius; }
 
     glm::vec3 Max() const { return maxval; }
     glm::vec3 Min() const { return minval; }

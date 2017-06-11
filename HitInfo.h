@@ -9,9 +9,9 @@
 #include "Ray.h"
 #include "Materials/Materialx.hpp"
 #include "Shapes/Shape.h"
-#include "Texture.hpp"
 
 class ClassicMaterial;
+class Texture;
 
 class HitInfo
 {

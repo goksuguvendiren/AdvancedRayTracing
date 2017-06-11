@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include "Mesh.h"
+#include "../Texture.hpp"
 #include "../Materials/LightMaterial.hpp"
 
 inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexOffset, int texCoordsOffset,

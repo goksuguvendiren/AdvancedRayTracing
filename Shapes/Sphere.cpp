@@ -9,6 +9,7 @@
 #include "Sphere.h"
 #include "../Ray.h"
 #include "../HitInfo.h"
+#include "../Texture.hpp"
 #include "../Scene.h"
 #include "../Materials/ClassicMaterial.hpp"
 
@@ -97,9 +98,6 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
     {
         return boost::none;
     }
-//    
-//    assert(!std::isinf(param));
-//    assert(!std::isnan(param));
     
     return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, uv, param);
 }
