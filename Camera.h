@@ -70,6 +70,8 @@ public:
 
     glm::vec3 PlanePosition() const { return planePosition; }
     glm::vec3 GetPixelLocation(int i, int j) const;
+    
+    void SetSampleCount(int numsamp) { sampleCount = numsamp; }
 //    glm::vec3 CalculateMaterialReflectances(const HitInfo& hit, int recDepth) const;
 //
 //    glm::vec3 CalculateReflectance(const HitInfo& hit, int recDepth) const;

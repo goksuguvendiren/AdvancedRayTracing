@@ -13,9 +13,10 @@
 
 Scene scene;
 
-//#define CREATE_MASK
+#define CREATE_MASK
 
 std::string GetFileName(int set, int index);
+void IBL_PostProcess();
 
 int main(int argc, char** argv)
 {
@@ -43,14 +44,14 @@ int main(int argc, char** argv)
 
     std::vector<Image> images;
 
-//    cnt.store(0);
     std::cerr << "Started rendering the scene...\n";
     auto beginRender = std::chrono::steady_clock::now();
 
-    for (auto& cam : scene.Cameras()){
+    for (auto& cam : scene.Cameras())
+    {
         images.push_back(cam.Render());
     }
-//    std::cout << cnt.load() << '\n';
+
     std::chrono::steady_clock::time_point endRender = std::chrono::steady_clock::now();
 
     unsigned int time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(endRender - beginRender).count();
@@ -76,7 +77,7 @@ int main(int argc, char** argv)
         std::cerr << name << '\n';
         cv::imwrite(name, im);
     }
-
+    
     return 0;
 }
 

@@ -26,6 +26,16 @@ glm::vec3 sample_hemisphere(const glm::vec3& normal)
     auto c = glm::cross(glm::vec3{0.f, 1.f, 0.f}, normal);
     auto angle = glm::acos(glm::dot(glm::vec3{0, 1, 0}, normal));
     auto res = glm::angleAxis(angle, c) * glm::normalize(dir);
+    
+    
+//    const float r = std::sqrt(sample1);
+//    const float theta = 2 * glm::pi<float>() * sample2;
+//    
+//    const float x = r * std::cos(theta);
+//    const float y = r * std::sin(theta);
+//    
+//    return glm::vec3(x, y, std::sqrt(std::max(0.0f, 1 - sample1)));
+//    
 
     if (normal == glm::vec3{0, -1, 0})
     {
@@ -48,7 +58,6 @@ glm::vec3 CalculateMaterialReflectances(const HitInfo& hit, int recDepth)
         // TODO : It may be necessary to call Compute Reflectance for the material because right now, after mirror, no color is computed using light data etc.
         // Orda bi gariplikler soz konusu but not that bad.
         
-        
         // Monte Carlo Integration
         if (recDepth < scene.MaxRecursionDepth())
         {
@@ -59,8 +68,7 @@ glm::vec3 CalculateMaterialReflectances(const HitInfo& hit, int recDepth)
 
             if (mc_hit)
             {
-                auto& sth = *mc_hit;
-                
+//                auto& sth = *mc_hit;
 //                assert(hit.GetShape()->ID() != mc_hit->GetShape()->ID());
                 assert(!std::isinf(mc_hit->Parameter()));
                 assert(!std::isnan(mc_hit->Parameter()));
@@ -82,71 +90,3 @@ glm::vec3 CalculateMaterialReflectances(const HitInfo& hit, int recDepth)
     else
         return {};
 }
-
-//glm::vec3 Camera::CalculateReflectance(const HitInfo& hit, int recDepth) const
-//{
-//    if (hit.GetTexture() && hit.GetTexture()->GetDecalMode() == DecalMode::Replace_All)
-//    {
-//        glm::vec2 texCoords = hit.GetUV();
-//        return hit.GetTexture()->GetColor(texCoords) * 255.f;
-//    }
-//
-//    if (hit.GetMaterial().IsLight())
-//    {
-//        return hit.GetMaterial().GetLight();
-//    }
-//
-//    // Ambient shading :
-//    auto ambient = hit.GetMaterial().Ambient() * scene.AmbientLight();
-//
-//    if (hit.GetMaterial().IsMirror() && recDepth < scene.MaxRecursionDepth()) {
-//        auto reflectedColor = CalculateMirror(hit, recDepth);
-//        ambient += reflectedColor;
-//    }
-//
-//    if (hit.GetMaterial().IsTransparent() && recDepth < scene.MaxRecursionDepth()) {
-//        auto trColor = CalculateTransparency(hit, recDepth);
-//        if (trColor != glm::vec3{0, 0, 0})
-//            ambient += trColor;
-//    }
-//
-//    for (auto& light : scene.Lights()){
-//        auto direction = light->Direction(hit.Position());
-//        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * glm::normalize(direction)),
-//                      glm::normalize(direction));
-//
-//        boost::optional<float> sh;
-//        if ((sh = scene.ShadowHit(shadowRay))){
-//            if (*sh < glm::length(direction))
-//                continue;
-//        }
-//
-//        auto intensity = light->Intensity(direction);
-//
-//        auto diffuse_color = hit.GetMaterial().Diffuse();
-//        if(hit.GetTexture())
-//        {
-//            if (hit.GetTexture()->IsPerlin()) {
-//                auto noise = hit.GetTexture()->Perlin().Sample(hit.Position());
-//                diffuse_color = hit.GetTexture()->BlendColor(diffuse_color, {noise, noise, noise});
-//            }
-//            else {
-//                glm::vec2 texCoords = hit.GetUV();
-//                glm::vec3 tex_color = hit.GetTexture()->GetColor(texCoords);
-//                diffuse_color = hit.GetTexture()->BlendColor(diffuse_color, tex_color);
-//            }
-//        }
-//
-//        // Diffuse shading :
-//        auto theta = std::max(0.f, glm::dot(glm::normalize(hit.Normal()), glm::normalize(direction)));
-//        ambient += (theta * diffuse_color * intensity);
-//
-//        // Specular shading :
-//        auto half = glm::normalize(glm::normalize(direction) + glm::normalize(hit.HitRay().Origin() - hit.Position()));
-//        ambient  += intensity *
-//                    hit.GetMaterial().Specular() *
-//                    std::pow(std::max(glm::dot(half, hit.Normal()), 0.0f), hit.GetMaterial().PhongExp());
-//    }
-//
-//    return ambient;
-//}

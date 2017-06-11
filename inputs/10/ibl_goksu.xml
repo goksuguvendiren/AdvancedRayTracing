@@ -13,8 +13,8 @@
 		<Up>0 1 0</Up>
         <NearPlane>-1.5 1.5 -1.5 1.5</NearPlane>
         <NearDistance>1</NearDistance>
-        <ImageResolution>400 400</ImageResolution>
-        <NumSamples>512</NumSamples>
+        <ImageResolution>600 600</ImageResolution>
+        <NumSamples>256</NumSamples>
 		<ImageName>skybox.png</ImageName>
 	</Camera>
 
@@ -43,7 +43,7 @@
         </Material>
         <Material id="3">
             <AmbientReflectance>1 1 1</AmbientReflectance>
-            <DiffuseReflectance>0.4 0.4 0.4</DiffuseReflectance>
+            <DiffuseReflectance>0.8 0.8 0.8</DiffuseReflectance>
             <SpecularReflectance>1 1 1</SpecularReflectance>
             <PhongExponent>100</PhongExponent>
         </Material>
@@ -146,12 +146,24 @@
             <Center>5</Center>
             <Radius>3</Radius>
         </Sphere>
+        <!-- <Sphere id="3">
+            <Material>3</Material>
+            <Transformations>t15 t7</Transformations>
+            <Center>5</Center>
+            <Radius>1.5</Radius>
+        </Sphere> -->
         <Sphere id="4">
             <Material>4</Material>
             <Transformations>t16 t8</Transformations>
             <Center>5</Center>
             <Radius>1.5</Radius>
         </Sphere>
+        <!-- <Sphere id="5">
+            <Material>3</Material>
+            <Transformations>t15 t9</Transformations>
+            <Center>5</Center>
+            <Radius>1.5</Radius>
+        </Sphere> -->
         <Sphere id="6">
             <Material>3</Material>
             <Transformations>t17 t10</Transformations>

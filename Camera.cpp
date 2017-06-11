@@ -17,6 +17,8 @@
 std::vector<int> samples;
 std::vector<int> grsamples;
 
+//#define CREATE_MASK
+
 glm::vec3 Camera::GetCameraPosition() const
 {
     if (apertureSize == 0)
@@ -70,7 +72,12 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
     pixelBeginning += cellWidth / 2.f;
     pixelBeginning += cellHeight / 2.f;
 
-    for (int i = 0; i < sampleCount; i++) {
+    int samples = 1;
+#ifndef CREATE_MASK
+    samples = sampleCount;
+#endif
+    
+    for (int i = 0; i < samples; i++) {
         //calculate pixel location
         int indH = i / divCount;
         int indW = i % divCount;
@@ -81,18 +88,31 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
         auto ray = Ray(cameraLocation, glm::normalize(pixelLocation - cameraLocation));
 
         boost::optional<HitInfo> hit  = scene.Hit(ray);
-
+//        auto sth = *hit;
+        
+#ifdef CREATE_MASK
         if (hit)
         {
-            pixelColor += CalculateMaterialReflectances(*hit, 0);
+            pixelColor = {255, 255, 255};
+        }
+        else
+        {
+            pixelColor = {0, 0, 0};
+        }
+#else
+        if (hit)
+        {
+            auto col = CalculateMaterialReflectances(*hit, 0);
+            pixelColor += glm::min(col, {500.f, 500.f, 500.f});
         }
         else
         {
             pixelColor += scene.BackgroundColor();
         }
+#endif
     }
-
-    return pixelColor / float(sampleCount);
+    
+    return pixelColor / float(samples);
 }
 
 Image Camera::Render() const
@@ -118,17 +138,6 @@ Image Camera::Render() const
         rowPixLocation = rowBeginning;
         for (int j = 0; j < imagePlane.NX(); j++){      // nx = width
             rowPixLocation += oneRight;
-            
-//            if (i == 127 && j == 378)
-//            {
-//                int x = 0;
-//            }
-//
-        
-            for (auto& mesh : scene.Meshes())
-            {
-                assert(mesh.GetMaterial());
-            }
             
             image.at(i, j) = RenderPixel(rowPixLocation);
         }
