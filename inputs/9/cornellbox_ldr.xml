@@ -14,7 +14,7 @@
         <NearPlane>-10 10 -10 6</NearPlane>
         <NearDistance>10</NearDistance>
         <ImageResolution>750 600</ImageResolution>
-        <NumSamples>512</NumSamples>
+        <NumSamples>16</NumSamples>
         <!-- Sample values larger than ClampSamples will
              be clamped to that value. Trades-off lighting
              accuracy with noise -->
@@ -24,10 +24,10 @@
 
 	<Lights>
         <!-- <AmbientLight>20 20 20</AmbientLight> -->
-        <!-- <PointLight id="1">
+        <PointLight id="1">
             <Position>0 4.5 0</Position>
             <Intensity>15000 15000 25000</Intensity>
-        </PointLight> -->
+        </PointLight>
     </Lights>
 
     <BRDFs>
@@ -143,12 +143,12 @@
                 3 1 4
             </Faces>
         </Mesh> -->
-        <Sphere id="1">
+        <Sphere id="7">
             <Material>6</Material>
             <Center>9</Center>
             <Radius>4</Radius>
         </Sphere>
-        <Sphere id="2">
+        <Sphere id="8">
             <Material>5</Material>
             <Center>10</Center>
             <Radius>4</Radius>

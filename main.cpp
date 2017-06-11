@@ -9,6 +9,8 @@
 #include <chrono>
 #include <string>
 
+#include "Shapes/Mesh.h"
+
 Scene scene;
 
 std::string GetFileName(int set, int index);

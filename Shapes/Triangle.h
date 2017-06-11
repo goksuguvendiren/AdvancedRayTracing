@@ -9,7 +9,6 @@
 #include "../HitInfo.h"
 #include "../tinyxml/tinyxml2.h"
 #include "../Scene.h"
-#include "../Materials/ClassicMaterial.hpp"
 
 class Material;
 class Vertex;
@@ -22,8 +21,7 @@ class Triangle : public Shape
     Vertex pointC;
 
     glm::vec3 surfNormal;
-    const Material* material;
-    const ClassicMaterial* classic_material;
+    const Materialx* material;
     const Texture* texture;
 
     int id;
@@ -33,11 +31,11 @@ class Triangle : public Shape
 
 public:
     Triangle() = default;
-    Triangle(Vertex a, Vertex b, Vertex c, int mid, int tid = -1, int tr_id = 1, bool sm = false);
+    Triangle(Vertex a, Vertex b, Vertex c, const Materialx* matr, int tid = -1, int tr_id = 1, bool sm = false);
 
     ~Triangle();
 
-    const Material* Mat() const;
+    const Materialx* Mat() const;
     boost::optional<HitInfo> Hit (const Ray& ray) const;
     boost::optional<float>   ShadowHit(const Ray& ray) const;
     int ID() const;

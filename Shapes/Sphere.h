@@ -11,6 +11,7 @@
 #include "Shape.h"
 #include "../Vertex.h"
 #include "../Texture.hpp"
+#include "../Materials/Materialx.hpp"
 
 class Ray;
 class HitInfo;
@@ -22,8 +23,9 @@ class Sphere : public Shape
     int id;
     float radius;
     Vertex center;
-    const Material* material;
-    const ClassicMaterial* classic_material;
+//    const Material* material;
+    const Materialx* material;
+//    const ClassicMaterial* classic_material;
     const Texture* texture;
 
     glm::vec3 maxval;
@@ -34,7 +36,7 @@ class Sphere : public Shape
     glm::mat4 inverseTranspose;
 
 public:
-    Sphere(int sid, float rd, Vertex c, int mid, int tid);
+    Sphere(int sid, float rd, Vertex c, const Materialx* matr, int tid);
     boost::optional<HitInfo> Hit(const Ray &inverseRay) const;
     boost::optional<float>   ShadowHit(const Ray& ray) const;
     int ID() const { return id; }

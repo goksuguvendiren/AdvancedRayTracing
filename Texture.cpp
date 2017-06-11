@@ -18,6 +18,7 @@ Interpolation GetInterpolation(const std::string& text)
     default:
         return Interpolation::None;
     }
+    return Interpolation::None;
 }
 
 DecalMode GetDecalMode(const std::string& text)
@@ -40,6 +41,7 @@ Appearance GetAppearance(const std::string& text)
     default:
         return Appearance::None;
     }
+    return Appearance::None;
 }
 
 std::vector<Texture> LoadTextures(tinyxml2::XMLElement *elem)
@@ -132,6 +134,9 @@ glm::vec3 Texture::GetColor(glm::vec2 texCoords) const
     case Interpolation::None:
             assert(false);
     }
+    
+    assert(false);
+    return {0, 0, 0};
 }
 
 glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
@@ -151,6 +156,9 @@ glm::vec3 Texture::BlendColor(glm::vec3 diffuse, glm::vec3 texcolor) const
     default:
         return {0, 0, 0};
     }
+    
+    assert(false);
+    return {0, 0, 0};
 }
 
 glm::vec2 Texture::GetImageGradients(const glm::vec2& uv) const

@@ -6,6 +6,7 @@
 #include <sstream>
 #include <boost/optional.hpp>
 #include "Triangle.h"
+#include "../Materials/Materialx.hpp"
 
 extern Scene scene;
 
@@ -49,7 +50,7 @@ boost::optional<HitInfo> Triangle::Hit(const Ray &ray) const
         normal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, normal, uv));
     }
 
-    return HitInfo(normal, this, material, classic_material, texture, point, ray, uv, param);
+    return HitInfo(normal, this, material, texture, point, ray, uv, param);
 }
 
 std::pair<glm::vec3, glm::vec3> Triangle::GradientVectors(glm::vec3 normal) const
@@ -95,11 +96,11 @@ boost::optional<float> Triangle::ShadowHit(const Ray& ray) const
 }
 
 Triangle::Triangle(Vertex a, Vertex b, Vertex c,
-                   int mid, int tid, int trid, bool sm) : pointA(a),
+                   const Materialx* matr, int tid, int trid, bool sm) : pointA(a),
                                                           pointB(b),
                                                           pointC(c),
-                                                          material(&scene.GetMaterial(mid)),
-                                                          texture(&scene.GetTexture(tid)),
+                                                          material(matr),
+                                                          texture(&scene.GetTexture(tid)),  // TODO : get the pointer as the argument, not its id
                                                           id(trid), smooth(sm)
 
 {
@@ -121,8 +122,8 @@ Triangle::Triangle(Vertex a, Vertex b, Vertex c,
         texture = &scene.GetTexture(tid);
         assert(texture->ID()==tid);
     }
-    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
-                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
+//    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
+//                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
 
 }
 
@@ -131,7 +132,7 @@ int Triangle::ID() const
     return id;
 }
 
-const Material* Triangle::Mat() const
+const Materialx* Triangle::Mat() const
 {
     return material;
 }
@@ -206,13 +207,14 @@ std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem)
             tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}, {0, 0, 0}, scene.Get_UV(id0)},
                             Vertex{id1, {ind1.x, ind1.y, ind1.z}, {0, 0, 0}, scene.Get_UV(id1)},
                             Vertex{id2, {ind2.x, ind2.y, ind2.z}, {0, 0, 0}, scene.Get_UV(id2)},
-                            matID, texID, id});
+                            scene.GetMaterial(matID), texID, id});
         }
         else
         {
             tris.push_back({Vertex{id0, {ind0.x, ind0.y, ind0.z}},
                             Vertex{id1, {ind1.x, ind1.y, ind1.z}},
-                            Vertex{id2, {ind2.x, ind2.y, ind2.z}}, matID, texID, id});
+                            Vertex{id2, {ind2.x, ind2.y, ind2.z}},
+                            scene.GetMaterial(matID), texID, id});
         }
 
     }

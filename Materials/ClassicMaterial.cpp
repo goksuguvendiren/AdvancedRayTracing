@@ -39,3 +39,25 @@ glm::vec3 ClassicMaterial::ComputeReflectance(const HitInfo& hit, const Light& l
     auto intens = light.Intensity(direction);
     return refl * intens;
 }
+
+glm::vec3 ClassicMaterial::CalculateColor(const HitInfo& hit, int recdepth) const
+{
+    glm::vec3 color = ambient * scene.AmbientLight();
+    
+    for (auto& light : scene.Lights()){
+        auto direction = light->Direction(hit.Position());
+        Ray shadowRay(hit.Position() + (scene.ShadowRayEpsilon() * glm::normalize(direction)),
+                        glm::normalize(direction));
+    
+        boost::optional<float> sh;
+        if ((sh = scene.ShadowHit(shadowRay))){
+            if (*sh < glm::length(direction))
+                continue;
+            }
+    
+        color += ComputeReflectance(hit, *light);
+    }
+    
+    return color;
+
+}

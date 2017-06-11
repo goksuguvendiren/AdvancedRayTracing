@@ -15,8 +15,10 @@ class BRDF;
 class Materialx
 {
 public:
+    virtual bool is_BRDF() const = 0;
     virtual int ID() const = 0;
     virtual glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light) const = 0;
+    virtual glm::vec3 CalculateColor(const HitInfo& hit, int recursionDepth) const = 0;
 };
 
-//std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);
+std::vector<Materialx*> LoadMaterials(tinyxml2::XMLElement *elem);

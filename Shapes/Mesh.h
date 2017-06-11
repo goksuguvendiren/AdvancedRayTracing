@@ -20,8 +20,8 @@ class BoundingVolume;
 class Mesh : public Shape
 {
     int id;
-    const Material* material;
-    const Texture*  texture;
+    const Materialx* material;
+    const Texture*   texture;
     ShadingMode shmode;
 
     std::vector<Triangle> faces;
@@ -31,7 +31,9 @@ class Mesh : public Shape
 
 public:
 
-    Mesh(int mid = 1, const Material* mat = nullptr) : id(mid), material(mat), shmode(ShadingMode::Flat) {}
+    Mesh(int mid = 1, const Materialx* mat = nullptr) : id(mid), material(mat), shmode(ShadingMode::Flat)
+    {}
+    
     Mesh(const Mesh& m) = delete;
     Mesh(Mesh&& m) = default;
 
@@ -41,7 +43,7 @@ public:
     }
 
     void BoundingBox();
-    void AssociateV2T();
+//    void AssociateV2T();
     void InsertVT(Triangle face);
     void SetNormal(Vertex& vert);
 
@@ -55,7 +57,7 @@ public:
     const auto& Faces() const { return faces; }
 
     auto GetMaterial() const { return material; }
-    auto GetTexture()  const { return texture; }
+//    auto GetTexture()  const { return texture; }
 
     glm::vec3 Min() const { return volume.BBox().Min(); }
     glm::vec3 Max() const { return volume.BBox().Max(); }

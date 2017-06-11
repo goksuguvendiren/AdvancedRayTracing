@@ -42,14 +42,14 @@ inline boost::optional<Triangle> GetFace(std::istringstream& stream, int vertexO
         return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}, {0, 0, 0}, scene.Get_UV(a + texCoordsOffset)},
                         Vertex{y, {ind1.x, ind1.y, ind1.z}, {0, 0, 0}, scene.Get_UV(b + texCoordsOffset)},
                         Vertex{z, {ind2.x, ind2.y, ind2.z}, {0, 0, 0}, scene.Get_UV(c + texCoordsOffset)},
-                        matID, texID, index, smooth};
+                        scene.GetMaterial(matID), texID, index, smooth};
     }
     else
     {
         return Triangle{Vertex{x, {ind0.x, ind0.y, ind0.z}},
                         Vertex{y, {ind1.x, ind1.y, ind1.z}},
                         Vertex{z, {ind2.x, ind2.y, ind2.z}},
-                        matID, texID, index, smooth};
+                        scene.GetMaterial(matID), texID, index, smooth};
     }
 }
 
@@ -92,7 +92,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
             matrix = m * matrix;
         }
 
-        Mesh msh {id, &scene.GetMaterial(matID)};
+        Mesh msh {id, scene.GetMaterial(matID)};
         auto FaceData = child->FirstChildElement("Faces");
         std::istringstream stream { FaceData->GetText() };
         int vertexOffset = 0;
@@ -122,75 +122,15 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
         msh.BoundingBox();
         meshes.push_back(std::move(msh));
+        
     }
     
-    for (auto child = elem->FirstChildElement("LightMesh"); child != nullptr; child = child->NextSiblingElement("LightMesh"))
+    
+    for (auto& mesh : meshes)
     {
-        static int new_mat_id = 10000;
-        int id;
-        child->QueryIntAttribute("id", &id);
-        int matID = ++new_mat_id;
-
-        std::vector<std::string> transformations;
-        if(auto trns = child->FirstChildElement("Transformations")){
-            std::istringstream ss {trns->GetText()};
-            transformations = GetTransformations(ss);
-        }
-        
-        glm::mat4 matrix;
-        for (auto& tr : transformations){
-            auto m = scene.GetTransformation(tr);
-            matrix = m * matrix;
-        }
-        
-        glm::vec3 rad = {0, 0, 0};
-        if(auto radiance = child->FirstChildElement("Radiance"))
-        {
-            std::istringstream stream { radiance->GetText() };
-            
-            float datax;
-            float datay;
-            float dataz;
-            
-            stream >> datax;
-            stream >> datay;
-            stream >> dataz;
-            
-            rad = glm::vec3{datax, datay, dataz};
-        }
-        
-        scene.AddMaterial(Material::MakeLightMat(matID, rad));
-        Mesh msh {id, &scene.GetMaterial(matID)};
-        auto FaceData = child->FirstChildElement("Faces");
-        std::istringstream stream { FaceData->GetText() };
-        int vertexOffset = 0;
-        int texCoordOffset = 0;
-        
-        if (FaceData->QueryIntAttribute("vertexOffset", &vertexOffset));
-        if (FaceData->QueryIntAttribute("textureOffset", &texCoordOffset));
-        
-        boost::optional<Triangle> tr;
-        int index = 1;
-
-        ShadingMode mode = ShadingMode::Flat;
-        const char* asd = child->Attribute("shadingMode");
-        if (asd != nullptr){
-            std::string sm = std::string(asd);
-            if (sm == "smooth") {
-                mode = ShadingMode::Smooth;
-            }
-        }
-        
-        while((tr = GetFace(stream, vertexOffset, texCoordOffset, matrix, matID, index++, (mode == ShadingMode::Smooth), -1))){
-            auto tri = *tr;
-            msh.AddFace(std::move(*tr));
-        }
-        
-        msh.SetShadingMode(mode);
-        msh.BoundingBox();
-        meshes.push_back(std::move(msh));
+        assert(mesh.GetMaterial());
     }
-
+    
     return meshes;
 }
 
@@ -200,7 +140,9 @@ boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
     if (res)
     {
         res->SetShape(this);
+        assert(res->GetMaterial());
     }
+    
     return res;
 };
 
@@ -221,7 +163,7 @@ void Mesh::SetShadingMode(enum ShadingMode mode)
     shmode = mode;
     switch(shmode){
         case ShadingMode::Smooth:
-            AssociateV2T();
+//            AssociateV2T();
             break;
         case ShadingMode::Flat:
         default:
@@ -249,18 +191,18 @@ void Mesh::BoundingBox()
     volume = BoundingVolume(faces, Axis::X);
 }
 
-void Mesh::AssociateV2T()
-{
-    for (auto& face : faces){
-        InsertVT(face);
-    }
-
-    for (auto& face : faces){
-        SetNormal(face.PointA());
-        SetNormal(face.PointB());
-        SetNormal(face.PointC());
-    }
-}
+//void Mesh::AssociateV2T()
+//{
+//    for (auto& face : faces){
+//        InsertVT(face);
+//    }
+//
+//    for (auto& face : faces){
+//        SetNormal(face.PointA());
+//        SetNormal(face.PointB());
+//        SetNormal(face.PointC());
+//    }
+//}
 
 glm::vec2 Mesh::GetTexCoords(glm::vec3 pos) const
 {
@@ -302,7 +244,7 @@ std::vector<Mesh> LoadMeshInstances(tinyxml2::XMLElement *elem)
             auto vertex1 = Vertex{face.PointB().ID(), {vert1.x, vert1.y, vert1.z}};
             auto vertex2 = Vertex{face.PointC().ID(), {vert2.x, vert2.y, vert2.z}};
 
-            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.GetMaterial()->ID(), mesh.GetTexture()->ID(),
+            auto tri = Triangle{vertex0, vertex1, vertex2, mesh.GetMaterial(), -1,
                                 index++, baseMesh.GetShadingMode() == ShadingMode::Smooth};
             mesh.AddFace(std::move(tri));
         }

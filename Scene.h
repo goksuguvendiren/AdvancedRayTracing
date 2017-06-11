@@ -39,7 +39,10 @@ class Scene
     std::vector<Mesh> meshes;
     std::vector<Mesh> meshInstances;
 
-    std::map<int, Material> materials;
+//    std::map<int, Material> materials;
+    std::map<int, const Materialx*> materials;
+    
+//    std::vector<Materialx*> materialxs;
     std::vector<Vertex> vertices;
     std::vector<glm::vec2> texCoords;
 
@@ -82,7 +85,8 @@ public:
     const std::vector<Camera>& Cameras() const;
     const std::vector<Sphere>& Spheres() const;
     const std::vector<Triangle>& Triangles() const;
-    const std::vector<Material>& Materials() const;
+//    const std::vector<Material>& Materials() const;
+    const std::vector<Materialx*>& Materialxs() const;
     const std::vector<Mesh>& Meshes() const;
     const std::vector<std::unique_ptr<Light>>& Lights() const;
 
@@ -95,13 +99,14 @@ public:
     void AddTriangle(Triangle&& tri);
     void AddTriangle(const Triangle& tri);
 
-    void AddMaterial(Material&& mat);
-    void AddMaterial(const Material& mat);
+//    void AddMaterial(Materialx&& mat);
+    void AddMaterial(const Materialx* mat);
 
     void AddVertex(Vertex&& vert);
     void AddVertex(const Vertex& vert);
 
-    const Material& GetMaterial(int id);
+    const Materialx* GetMaterial(int id);
+//    const Material& GetMaterial(int id);
     const BRDF* GetBRDF(int id);
     const Texture&  GetTexture(int id);
     const Triangle& GetTriangle(int id);

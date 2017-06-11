@@ -21,6 +21,8 @@ public:
     LightMaterial(int i, glm::vec3 rad) : id(i), radiance(rad) {}
     int ID() const { return id; }
     glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light) const { return radiance; }
+    glm::vec3 CalculateColor(const HitInfo& hit) const { return radiance; }
+    bool is_BRDF() const { return false; }
 };
 
 //std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);

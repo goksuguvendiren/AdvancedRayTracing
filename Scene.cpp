@@ -122,6 +122,11 @@ void Scene::CreateScene(std::string filename)
         meshes        = LoadMeshes(objects);
         meshInstances = LoadMeshInstances(objects);
     }
+    
+    for (auto& mesh : meshes)
+    {
+        assert(mesh.GetMaterial());
+    }
 
     AddCamera(camera);
 
@@ -213,13 +218,13 @@ void Scene::AddSphere(const Sphere& sph) { spheres.push_back(sph); }
 void Scene::AddTriangle(Triangle&& tri) { triangles.push_back(std::move(tri)); }
 void Scene::AddTriangle(const Triangle& tri) { triangles.push_back(tri); }
 
-void Scene::AddMaterial(Material&& mat) { materials.emplace(mat.ID(), std::move(mat)); }
-void Scene::AddMaterial(const Material& mat) { materials.emplace(mat.ID(), mat); }
+//void Scene::AddMaterial(Material&& mat) { materials.emplace(mat.ID(), std::move(mat)); }
+void Scene::AddMaterial(const Materialx* mat) { materials.emplace(mat->ID(), mat); }
 
 void Scene::AddVertex(Vertex&& vert) { vertices.push_back(std::move(vert)); }
 void Scene::AddVertex(const Vertex& vert) { vertices.push_back(vert); }
 
-const Material& Scene::GetMaterial(int id) { return materials.find(id)->second; }
+const Materialx* Scene::GetMaterial(int id) { return materials.find(id)->second; }
 const BRDF* Scene::GetBRDF(int id) { return brdfs[id - 1].get(); }
 
 const Texture&  Scene::GetTexture(int id)  { return textures[id - 1]; }

@@ -12,11 +12,11 @@
 #include "../Scene.h"
 #include "../Materials/ClassicMaterial.hpp"
 
-Sphere::Sphere(int sid, float rd, Vertex c, int mid, int tid) : id(sid), radius(rd), center(c), material(&scene.GetMaterial(mid))
+Sphere::Sphere(int sid, float rd, Vertex c, const Materialx* matr, int tid) : id(sid), radius(rd), center(c), material(matr)
 {
     // TODO: Clean up this code !!!
-    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
-                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
+//    classic_material = new ClassicMaterial(material->ID(), material->Ambient(), material->Diffuse(), material->Specular(),
+//                                           material->RefractionIndex(), material->PhongExp(), material->BRDF_ID());
     minval = center.Data()-rd;
     maxval = center.Data()+rd;
 
@@ -93,7 +93,15 @@ boost::optional<HitInfo> Sphere::Hit(const Ray &ray) const
         surfaceNormal = glm::normalize(texture->CalculateBumpNormal(gradientVectors.first, gradientVectors.second, surfaceNormal, uv));
     }
 
-    return HitInfo(surfaceNormal, this, material, classic_material, texture, worldPoint, ray, uv, param);
+    if (std::isinf(param) || std::isnan(param))
+    {
+        return boost::none;
+    }
+//    
+//    assert(!std::isinf(param));
+//    assert(!std::isnan(param));
+    
+    return HitInfo(surfaceNormal, this, material, texture, worldPoint, ray, uv, param);
 }
 
 std::pair<glm::vec3, glm::vec3> Sphere::GradientVectors(const glm::vec2& uv, const glm::vec3& localCoord) const
@@ -161,7 +169,7 @@ std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem)
             tid = tex->IntText(-1);
         }
 
-        Sphere sp {id, radius, center, matID, tid};
+        Sphere sp {id, radius, center, scene.GetMaterial(matID), tid};
         sp.TransformationMatrix(matrix);
 
         spheres.push_back(std::move(sp));

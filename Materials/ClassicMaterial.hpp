@@ -24,14 +24,13 @@ class ClassicMaterial : public Materialx
     glm::vec3 ambient;
     
     float phong_exp;
-    float ref_index;
     
     const BRDF* brdf_material;
     
 public:
     ClassicMaterial(int i, glm::vec3 a, glm::vec3 d, glm::vec3 s,
-                    float r = 1.0f, float p = 1, int bid = -1) : id(i), diffuse(d), specular(s), ambient(a),
-                                                                 phong_exp(p), ref_index(r), brdf_material(nullptr)
+                    float p = 1, int bid = -1) : id(i), diffuse(d), specular(s), ambient(a),
+                                                 phong_exp(p), brdf_material(nullptr)
     {
         if (bid != -1)
         {
@@ -44,11 +43,12 @@ public:
     glm::vec3 Ambient() const { return ambient; }
     
     float PhongExp() const { return phong_exp; }
-    float RefractionIndex() const { return ref_index; }
         
     int ID() const { return id; }
     glm::vec3 ComputeReflectance(const HitInfo& hit, const Light& light) const;
     bool is_BRDF() const { return brdf_material != nullptr; }
+    
+    glm::vec3 CalculateColor(const HitInfo& hit, int recdepth) const;
 };
 
 //std::vector<Material> LoadMaterials(tinyxml2::XMLElement *elem);
