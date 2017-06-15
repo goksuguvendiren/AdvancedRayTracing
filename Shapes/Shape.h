@@ -21,4 +21,5 @@ public:
     virtual glm::vec3 Min() const = 0;
     virtual glm::vec3 Max() const = 0;
     virtual glm::vec3 Middle() const = 0;
+    virtual bool isArtificial() const = 0;
 };

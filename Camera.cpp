@@ -85,7 +85,7 @@ glm::vec3 Camera::RenderPixel(const glm::vec3& pixelcenter) const
         glm::vec3 pixelLocation = pixelBeginning + (float(indW) * oneRight + float(indH) * oneDown);
         glm::vec3 cameraLocation = GetCameraPosition();
 
-        auto ray = Ray(cameraLocation, glm::normalize(pixelLocation - cameraLocation));
+        auto ray = Ray(cameraLocation, glm::normalize(pixelLocation - cameraLocation), true);
 
         boost::optional<HitInfo> hit  = scene.Hit(ray);
 //        auto sth = *hit;

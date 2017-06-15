@@ -58,6 +58,8 @@ public:
 
     glm::vec2 GetTexCoords(glm::vec3 pos, float beta, float gamma) const;
     std::pair<glm::vec3, glm::vec3> GradientVectors(glm::vec3 normal) const;
+    
+    bool isArtificial() const { return false; }
 };
 
 std::vector<Triangle> LoadTriangles(tinyxml2::XMLElement* elem);

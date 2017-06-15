@@ -14,7 +14,7 @@
         <NearPlane>-1.5 1.5 -1.5 1.5</NearPlane>
         <NearDistance>1</NearDistance>
         <ImageResolution>600 600</ImageResolution>
-        <NumSamples>256</NumSamples>
+        <NumSamples>4096</NumSamples>
 		<ImageName>skybox.png</ImageName>
 	</Camera>
 
@@ -103,7 +103,7 @@
         <Translation id="14">0 -5 7 </Translation>
         <Translation id="15">0 0 7 </Translation>
         <Translation id="16">4 -6 7 </Translation>
-        <Translation id="17">2 -5 11</Translation>
+        <Translation id="17">3 -5 11</Translation>
         <Rotation id="1">45 0.0 0.0 1.0</Rotation>
         <Rotation id="2">0 0.0 1.0 0.0</Rotation>
         <Rotation id="3">0 1.0 0.0 0.0</Rotation>
@@ -125,7 +125,7 @@
     </TexCoordData>
 
     <Objects>
-        <Mesh id="1">
+        <Mesh id="1" artificial="true">
             <Material>1</Material>
             <Texture>1</Texture>
             <Transformations>t12 s1</Transformations>
@@ -140,30 +140,18 @@
             <Center>5</Center>
             <Radius>30</Radius>
         </Sphere>
-        <Sphere id="2">
+        <!-- <Sphere id="2">
             <Material>3</Material>
             <Transformations>t6</Transformations>
             <Center>5</Center>
             <Radius>3</Radius>
         </Sphere>
-        <!-- <Sphere id="3">
-            <Material>3</Material>
-            <Transformations>t15 t7</Transformations>
-            <Center>5</Center>
-            <Radius>1.5</Radius>
-        </Sphere> -->
         <Sphere id="4">
             <Material>4</Material>
             <Transformations>t16 t8</Transformations>
             <Center>5</Center>
             <Radius>1.5</Radius>
         </Sphere>
-        <!-- <Sphere id="5">
-            <Material>3</Material>
-            <Transformations>t15 t9</Transformations>
-            <Center>5</Center>
-            <Radius>1.5</Radius>
-        </Sphere> -->
         <Sphere id="6">
             <Material>3</Material>
             <Transformations>t17 t10</Transformations>
@@ -175,6 +163,6 @@
             <Transformations>t14 t11</Transformations>
             <Center>5</Center>
             <Radius>2</Radius>
-        </Sphere>
+        </Sphere> -->
     </Objects>
 </Scene>

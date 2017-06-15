@@ -56,6 +56,8 @@ public:
 
     glm::vec2 GetTexCoords(glm::vec3 pos) const;
     std::pair<glm::vec3, glm::vec3> GradientVectors(const glm::vec2& uv, const glm::vec3& localCoord) const;
+    
+    bool isArtificial() const { return false; }
 };
 
 std::vector<Sphere> LoadSpheres(tinyxml2::XMLElement *elem);

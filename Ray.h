@@ -12,10 +12,12 @@ class Ray
     glm::vec3 origin;
     glm::vec3 direction;
     glm::vec3 invdirection;
+    
+    bool is_primary;
 
 public:
     Ray() : origin({0, 0, 0}), direction({1, 0, 0}), invdirection(glm::vec3(1.0f, 1.f, 1.f) / direction) {};
-    Ray(glm::vec3 o, glm::vec3 d) : origin(o), direction(d)
+    Ray(glm::vec3 o, glm::vec3 d, bool isp = false) : origin(o), direction(d), is_primary(isp)
     {
 //        direction = glm::normalize(d);
 //        assert(glm::length(direction) < 1.001f && glm::length(direction) > 0.99f);
@@ -25,4 +27,6 @@ public:
     glm::vec3 Origin() const { return origin; }
     glm::vec3 Direction() const { return direction; }
     glm::vec3 InvDirection() const { return invdirection; }
+    
+    bool IsPrimary() const { return is_primary; }
 };

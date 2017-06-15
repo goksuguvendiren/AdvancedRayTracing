@@ -28,6 +28,7 @@ class Mesh : public Shape
     std::multimap<int, int> vertex_triangle_associtations;
 
     BoundingVolume volume;
+    bool is_artificial;
 
 public:
 
@@ -65,6 +66,9 @@ public:
     glm::vec3 Middle() const { return volume.BBox().Middle(); }
 
     glm::vec2 GetTexCoords(glm::vec3 pos) const;
+    
+    bool isArtificial() const { return is_artificial; }
+    void SetArtificial(bool art) { is_artificial = art; }
 };
 
 

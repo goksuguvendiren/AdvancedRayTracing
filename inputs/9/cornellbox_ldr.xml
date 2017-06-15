@@ -14,7 +14,7 @@
         <NearPlane>-10 10 -10 6</NearPlane>
         <NearDistance>10</NearDistance>
         <ImageResolution>750 600</ImageResolution>
-        <NumSamples>16</NumSamples>
+        <NumSamples>1024</NumSamples>
         <!-- Sample values larger than ClampSamples will
              be clamped to that value. Trades-off lighting
              accuracy with noise -->

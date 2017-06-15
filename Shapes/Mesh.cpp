@@ -74,6 +74,12 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
     for (auto child = elem->FirstChildElement("Mesh"); child != nullptr; child = child->NextSiblingElement("Mesh")) {
         int id;
         child->QueryIntAttribute("id", &id);
+        
+        bool is_art = false;
+        if (child->QueryBoolText(&is_art))
+        {
+            is_art = true;
+        }
 
         int matID = child->FirstChildElement("Material")->IntText(0);
         int texID = -1;
@@ -120,6 +126,7 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
         }
 
         msh.SetShadingMode(mode);
+        msh.SetArtificial(is_art);
 
         msh.BoundingBox();
         meshes.push_back(std::move(msh));
@@ -137,6 +144,11 @@ std::vector<Mesh> LoadMeshes(tinyxml2::XMLElement *elem)
 
 boost::optional<HitInfo> Mesh::Hit(const Ray &ray) const
 {
+    if (!ray.IsPrimary() && is_artificial)
+    {
+        return boost::none;
+    }
+    
     auto res = volume.Hit(ray);
     if (res)
     {
